@@ -30,11 +30,12 @@ except ImportError:
 try:
     from routers import memory, llm, system, agent, voice, reasoning, master_agent, osint
     from routers import autonomous, multimodal, predictive, workflows, integrations
+    from routers.jina_mcp import router as jina_mcp_router
     from config import Settings
     from database import Database
     ENHANCED_ROUTERS_AVAILABLE = True
 except ImportError as e:
-    logger.warning(f"Some enhanced routers not available: {e}")
+    logger.warning(f"Some enhanced routers not available: {e} - including Jina MCP: {e}")
     ENHANCED_ROUTERS_AVAILABLE = False
 # Load environment variables
 load_dotenv()
@@ -138,6 +139,13 @@ if ENHANCED_ROUTERS_AVAILABLE:
     app.include_router(predictive.router, prefix="/api/v1", tags=["Predictive Analytics"])
     app.include_router(workflows.router, prefix="/api/v1", tags=["Workflows"])
     app.include_router(integrations.router, prefix="/api/v1", tags=["Integrations"])
+
+    # Add Jina MCP Router - Full 16-tool integration
+    try:
+        app.include_router(jina_mcp_router, tags=["Jina MCP"])
+        logger.info("✅ Jina Remote MCP Server integrated - 16 advanced tools available")
+    except Exception as e:
+        logger.warning(f"⚠️ Jina MCP router not available: {e}")
 @app.get("/")
 async def root():
     """Enhanced root endpoint with comprehensive feature list"""
@@ -163,7 +171,18 @@ async def root():
             "🔄 Workflow Automation",
             "🕵️ OSINT Intelligence Gathering",
             "💾 MongoDB Memory System",
-            "🎯 Personalized AI Adaptation"
+            "🎯 Personalized AI Adaptation",
+            "🐸 Jina MCP Remote Server - 16 Advanced Tools",
+            "🔍 Parallel Web Search & Content Reading",
+            "📚 ArXiv Academic Paper Integration",
+            "🖼️ Image Search Across the Web",
+            "📸 Web Page Screenshot Capture",
+            "🔄 Query Expansion & Reranking",
+            "🧹 Content Deduplication (Strings/Images)",
+            "📅 Page Publish Date Analysis",
+            "🌍 Localized Contextual Information",
+            "🧪 Advanced Research Automation",
+            "📊 Competitive Intelligence Reports"
         ],
         "philosophy": "Daniel Miessler's PAI (Personal AI) - Your AI should know you, adapt to you, and work for you",
         "design": "Edward Tufte-inspired minimalist precision",

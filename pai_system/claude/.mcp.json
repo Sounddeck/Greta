@@ -1,5 +1,13 @@
 {
   "mcpServers": {
+    "jina-ai": {
+      "type": "http",
+      "description": "Advanced Jina AI Remote MCP Server providing web search, content reading, reranking, deduplication, ArXiv search, and academic research capabilities",
+      "url": "https://mcp.jina.ai/sse",
+      "headers": {
+        "Authorization": "Bearer ${JINA_API_KEY}"
+      }
+    },
     "httpx": {
       "type": "http",
       "description": "Use for getting information on web servers or site stack information, like what tech stack a given website is running, and other similar use cases.",
