@@ -9,9 +9,81 @@
 
 ---
 
-# 🎯 TOOL CATEGORIES & USE CASES
+# 🔧 TOOL INTEGRATIONS
 
-## 1. AI PROCESSING & AUTOMATION TOOLS (PRIMARY)
+## Primary Tool Categories
+
+### 1. AI Processing Tools
+- **Llama.cpp**: Local LLM processing with HRT (Hierarchical Reasoning Model)
+- **Memory System**: Context-aware memory with vector embeddings
+- **Learning Pipeline**: Continuous adaptation and fine-tuning
+- **Voice Processing**: German-accented synthesis and recognition
+
+### 2. Business Automation Tools
+- **CPAS4 Operations**: Complete business management system
+- **Project Management**: Resource allocation and timeline optimization
+- **Customer Intelligence**: Automated communication and CRM
+- **Financial Analysis**: Predictive modeling and cash flow optimization
+
+### 3. Daniel Miessler Ecosystem Tools
+- **Fabric**: AI automation framework for complex workflows
+- **Substrate**: Strategic planning and decision framework
+- **PAI**: Claude AI integration and workspace management
+- **Telos**: Purpose/goal alignment and tracking
+- **Daemon**: Background process orchestration
+
+### 4. Development Tools
+- **Neovim Integration**: AI-assisted coding workflows
+- **Claude CLI**: Enhanced command-line tools
+- **Cloudflare Workers**: Edge computing for distributed processing
+
+---
+
+# 📋 COMMAND EXECUTION PROTOCOLS
+
+## Standard Command Flow
+1. **User Input** → UCI context analysis
+2. **Tool Selection** → Optimal tool identification
+3. **Context Loading** → Relevant UFC documents
+4. **Execution** → Safe and verified command execution
+5. **Results** → Contextual output formatting
+6. **Learning** → System improvement and adaptation
+
+## Command Categories
+
+### Agent Calls
+```
+greta_agent_create [name] [specialization]   # Create specialized AI agents
+greta_agent_execute [agent] [task]           # Execute agent tasks
+greta_agent_learn [data]                     # Agent learning and adaptation
+```
+
+### Voice Commands
+```
+greta_speak [text]                         # German-accented speech synthesis
+greta_listen [timeout]                     # Voice input capture
+greta_conversation                         # Interactive voice discussion
+```
+
+### Project Management
+```
+greta_project_create [name]                # New project creation
+greta_project_status                       # Current project status
+greta_project_optimize                     # Project resource optimization
+```
+
+### Learning & Memory
+```
+greta_learn [content]                      # Add to learning database
+greta_remember [query]                     # Context-aware retrieval
+greta_consolidate                          # Memory optimization
+```
+
+---
+
+# 🎯 TOOL USE CASES & REQUIREMENTS
+
+## 1. AI Processing Tools - PRIMARY CATEGORY
 
 ### Llama.cpp Engine
 **Purpose**: Local LLM processing with HRT (Hierarchical Reasoning Model)
@@ -128,4 +200,135 @@
 
 ### Cloudflare Workers
 **Purpose**: Edge computing and distributed processing
-**When to Use
+**When to Use**: Global deployment, low-latency services, API edge caching
+**Capabilities**:
+- Global edge deployment (200+ locations)
+- Real-time API processing
+- Distributed caching and optimization
+- Automated scaling and failover
+**Limitations**: Requires Cloudflare account and specific deployment procedures
+
+---
+
+# 🎯 PERFORMANCE OPTIMIZATION STRATEGIES
+
+## Resource Optimization Protocols
+1. **Memory Management**: Intelligent caching and vector storage optimization
+2. **Processing Efficiency**: Local inference over cloud processing where possible
+3. **Network Efficiency**: Intelligent content delivery and response compression
+4. **Learning Optimization**: Incremental model updates instead of full retraining
+
+## Command Execution Optimization
+1. **Parallel Processing**: Concurrent task execution for multiple operations
+2. **Intelligent Caching**: Predicable response caching for common queries
+3. **Resource Allocation**: Dynamic resource allocation based on task complexity
+4. **Feedback Loop**: Continuous optimization based on performance metrics
+
+---
+
+# 🔒 TOOL SECURITY PROFILES
+
+## Security Classifications
+- **LOCAL SECURE**: Llama.cpp, Memory System, Neovim (no external data)
+- **INTERNAL SECURE**: CPAS4, Project Management, Learning Pipeline
+- **EXTERNAL INTEGRATED**: Claude CLI, Cloudflare Workers (external dependencies)
+- **DANIEL MIESSLER SECURE**: Fabric, Substrate, Telos (controlled ecosystem)
+
+## Risk Mitigation
+- **Privacy Protection**: Local processing preference for sensitive operations
+- **Data Minimization**: Only collect necessary data for task completion
+- **Access Control**: Layered permission system for different tool categories
+- **Audit Logs**: Complete command execution history and error tracking
+
+---
+
+# 🚀 ADVANCED FEATURES
+
+## Multi-Agent Coordination
+- **Agent Creation**: `greta_agent_create [name] [specialization]`
+- **Task Assignment**: `greta_agent_execute [agent] [task]`
+- **Learning Integration**: `greta_agent_learn [data]`
+
+## Voice Processing Suite
+- **Speech Synthesis**: `greta_speak [text]`
+- **Voice Recognition**: `greta_listen [timeout]`
+- **Interactive Dialog**: `greta_conversation`
+
+## Learning & Memory Operations
+- **Knowledge Storage**: `greta_learn [content]`
+- **Context Recall**: `greta_remember [query]`
+- **Memory Optimization**: `greta_consolidate`
+
+---
+
+# 📋 COMMAND TEMPLATE LIBRARY
+
+## Tool Integration Commands
+
+### AI Processing Suite
+```bash
+# Start local inference
+greta_llm_infer [model] [prompt] [temperature]
+
+# Fine-tune from data
+greta_fine_tune [model] [dataset] [epochs]
+
+# Voice process text
+greta_voice_synth [text] [accent] [pitch]
+```
+
+### Business Automation
+```bash
+# Project creation
+greta_project_create [name] [team_size]
+
+# Financial analysis
+greta_finance_analyze [period] [metrics]
+
+# Customer management
+greta_customer_add [name] [contact] [segment]
+```
+
+### Development Workflows
+```bash
+# Code suggestions
+greta_code_suggest [language] [context]
+
+# Documentation generate
+greta_doc_create [code_file] [language]
+
+# Debug assistance
+greta_debug_help [error_file] [language]
+```
+
+---
+
+# 💡 BEST PRACTICES
+
+## Tool Usage Guidelines
+1. **Context Awareness**: Always consider current context before tool selection
+2. **Resource Optimization**: Choose local tools when privacy or speed is critical
+3. **Error Handling**: Implement proper error recovery for all tool operations
+4. **Security Awareness**: Apply appropriate security level for each operation
+
+## Command Execution Pattern
+1. **User Input Analysis**: Understand intent and requirements
+2. **Tool Matching**: Select most appropriate tool for the task
+3. **Parameter Validation**: Ensure all required parameters are provided
+4. **Execution Monitoring**: Track progress and handle errors
+5. **Result Processing**: Format output for optimal user experience
+
+---
+
+# 🎯 CONCLUSION
+
+**The UFC Tool Configuration system provides structured access to all Greta PAI capabilities, implementing a comprehensive framework for intelligent AI assistance and automation.**
+
+*Every tool category follows the same execution pattern: analysis → selection → execution → optimization → learning*
+
+**Primary References:**
+- **Master Orchestrator**: .claude/CLAUDE.md
+- **Project Context**: .claude/context/projects/CLAUDE.md
+- **Philosophy Guide**: .claude/context/philosophy/CLAUDE.md
+
+**This system ensures reliable, secure, and intelligent tool integration across the entire Greta PAI ecosystem.**

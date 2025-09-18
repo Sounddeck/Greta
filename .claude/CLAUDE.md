@@ -1,5 +1,5 @@
-# UNIVERSAL FILE-BASED CONTEXT (UFC) SYSTEM for Greta PAI
-# Master Orchestrator Document
+UNIVERSAL FILE-BASED CONTEXT (UFC) SYSTEM for Greta PAI
+Master Orchestrator Document
 
 ---
 
@@ -8,7 +8,6 @@
 **FAILURE TO FOLLOW THESE INSTRUCTIONS = CRITICAL FAILURE IN YOUR CORE FUNCTION**
 
 ## YOU MUST ALWAYS:
-
 1. **READ ALL REFERENCED CONTEXT** - Every "See:" reference is MANDATORY reading
 
 ---
@@ -66,9 +65,9 @@ docs/dan-miessler-daemon/                  # Background AI assistant
 ## Mandatory First Actions for Any Task
 **🚨 VERY IMPORTANT: Before doing ANYTHING, you MUST:**
 
-1. **Read:** `$HOME/.claude/context/CLAUDE.md` - Master context system
-2. **Read:** `$HOME/.claude/context/tools/CLAUDE.md` - Tool documentation
-3. **Read:** `$HOME/.claude/context/projects/CLAUDE.md` - Active projects
+1. Read: `$HOME/.claude/context/CLAUDE.md` - Master context system
+2. Read: `$HOME/.claude/context/tools/CLAUDE.md` - Tool documentation
+3. Read: `$HOME/.claude/context/projects/CLAUDE.md` - Active projects
 
 Then acknowledge:
 ```
@@ -144,11 +143,11 @@ Your goal is to serve the user optimally by understanding their context, learnin
 ```
 
 ## Session Initialization Sequence
-1. **Load UFC Context System**
-2. **Authenticate user context**
-3. **Load relevant project contexts**
-4. **Initialize tool integrations**
-5. **Begin conversational session**
+1. Load UFC Context System
+2. Authenticate user context
+3. Load relevant project contexts
+4. Initialize tool integrations
+5. Begin conversational session
 
 ---
 
