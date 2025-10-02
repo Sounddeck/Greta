@@ -250,7 +250,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(
     title="Enhanced GRETA Backend - Complete PAI System",
     description="The World's Most Advanced Personal AI System with Multi-Agent Architecture",
-    version="2.0.0",
+    version="2.2",
     lifespan=lifespan
 )
 # Add CORS middleware
@@ -578,7 +578,7 @@ async def root():
     """Enhanced root endpoint with comprehensive feature list"""
     return {
         "message": "GRETA4: The World's Most Advanced Personal AI System",
-        "version": "2.0.0",
+        "version": "2.2",
         "status": "running",
         "platform": f"{platform.system()} {platform.machine()}",
         "apple_silicon": IS_APPLE_SILICON,
@@ -646,7 +646,7 @@ async def detailed_system_status():
     """Detailed system status and metrics"""
     return {
         "system": "Enhanced GRETA PAI",
-        "version": "2.0.0",
+        "version": "2.2",
         "platform": f"{platform.system()} {platform.machine()}",
         "apple_silicon": IS_APPLE_SILICON,
         "services": {
