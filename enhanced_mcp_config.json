@@ -1,0 +1,433 @@
+{
+  "mcpServers": {
+    "jina-ai": {
+      "type": "http",
+      "description": "Advanced Jina AI Remote MCP Server providing web search, content reading, reranking, deduplication, ArXiv search, and academic research capabilities - PERFECT for PAI research commands",
+      "url": "https://mcp.jina.ai/sse",
+      "headers": {
+        "Authorization": "Bearer ${JINA_API_KEY}"
+      }
+    },
+    "httpx": {
+      "type": "http",
+      "description": "Use for getting information on web servers or site stack information, like what tech stack a given website is running, and other similar use cases.",
+      "url": "https://httpx-mcp.danielmiessler.workers.dev",
+      "headers": {
+        "x-api-key": "REDACTED"
+      }
+    },
+    "content": {
+      "type": "http",
+      "description": "Figuring out any of my (Daniel Miessler's) opinions or blog posts or writing online. This is basically an archive of all my content.",
+      "url": "https://content-mcp.danielmiessler.workers.dev"
+    },
+    "daemon": {
+      "type": "http",
+      "description": "Daniel Miessler's personal API - CRITICAL for PAI personal API framework (/api/personal/interests, /api/personal/skills, etc.)",
+      "url": "https://mcp.daemon.danielmiessler.com"
+    },
+    "Foundry": {
+      "type": "http",
+      "description": "Daniel Miessler's PAI infrastructure - GOLD STANDARD for real PAI command implementations instead of stubs",
+      "url": "https://api.danielmiessler.com/mcp/",
+      "headers": {
+        "Authorization": "REDACTED"
+      }
+    },
+    "naabu": {
+      "type": "http",
+      "description": "This is a port scanner for finding open ports or services on hosts.",
+      "url": "https://naabu-mcp.danielmiessler.workers.dev",
+      "headers": {
+        "x-api-key": "REDACTED"
+      }
+    },
+    "brightdata": {
+      "command": "bunx",
+      "args": [
+        "-y",
+        "@brightdata/mcp"
+      ],
+      "env": {
+        "API_TOKEN": "REDACTED"
+      }
+    },
+    "stripe": {
+      "command": "bunx",
+      "args": [
+        "-y",
+        "@stripe/mcp",
+        "--tools=all"
+      ],
+      "description": "Stripe payment processing and financial operations - Perfect for PAI financial commands"
+    },
+    "Ref": {
+      "command": "bunx",
+      "args": [
+        "@refdotai/mcp"
+      ],
+      "description": "Documentation search and reading from public sources and private repositories"
+    },
+    "apify": {
+      "command": "bunx",
+      "args": [
+        "@apify/actors-mcp-server"
+      ],
+      "env": {
+        "APIFY_TOKEN": "REDACTED"
+      },
+      "description": "Web scraping and automation tools via Apify platform - Excellent for PAI research automation"
+    },
+    "playwright": {
+      "command": "bunx",
+      "args": [
+        "@playwright/mcp@latest",
+        "--extension"
+      ],
+      "description": "Browser automation and testing using Playwright - COMPLETE PAI browser automation needs"
+    },
+    "github": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/github"
+      ],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_TOKEN}"
+      },
+      "description": "GitHub operations - Code analysis, repo insights, PR management for PAI development commands"
+    },
+    "weather": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/weather"
+      ],
+      "description": "Weather data and forecasting - Perfect for PAI personal life automation (travel, outdoor activities)"
+    },
+    "calendar": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/calendar"
+      ],
+      "description": "Calendar and scheduling operations - Schedule analysis, meeting optimization for PAI productivity"
+    },
+    "email": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/email"
+      ],
+      "env": {
+        "EMAIL_PROVIDER": "gmail",
+        "EMAIL_CREDENTIALS": "${EMAIL_CREDENTIALS}"
+      },
+      "description": "Email operations - Communication automation and analysis for PAI messaging commands"
+    },
+    "slack": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/slack"
+      ],
+      "env": {
+        "SLACK_BOT_TOKEN": "${SLACK_TOKEN}",
+        "SLACK_TEAM_ID": "${SLACK_TEAM_ID}"
+      },
+      "description": "Slack integration - Team communication and collaboration for PAI workflow orchestration"
+    },
+    "discord": {
+      "command": "bunx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/discord"
+      ],
+      "env": {
+        "DISCORD_BOT_TOKEN": "${DISCORD_TOKEN}"
+      },
+      "description": "Discord integration - Community and gaming communication for PAI social features"
+    },
+    "notion": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/notion"
+      ],
+      "env": {
+        "NOTION_API_KEY": "${NOTION_TOKEN}"
+      },
+      "description": "Notion integration - Knowledge base and note management for PAI content organization"
+    },
+    "todoist": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/todoist"
+      ],
+      "env": {
+        "TODOIST_API_KEY": "${TODOIST_API_KEY}"
+      },
+      "description": "Task management - Convert PAI commands to actionable tasks and track completion"
+    },
+    "exa-search": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/exa-search"
+      ],
+      "env": {
+        "EXA_API_KEY": "${EXA_API_KEY}"
+      },
+      "description": "EXA Search - Advanced web search with semantic understanding, perfect for PAI research commands and staying updated"
+    },
+    "context7": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/context7"
+      ],
+      "env": {
+        "CONTEXT7_API_KEY": "${CONTEXT7_API_KEY}",
+        "CONTEXT7_PROJECT_ID": "${CONTEXT7_PROJECT_ID}"
+      },
+      "description": "Context7 - Advanced conversational context management for maintaining complex discussion threads and learning from interactions"
+    },
+    "magic-ui": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/magic-ui"
+      ],
+      "env": {
+        "MAGIC_UI_API_KEY": "${MAGIC_UI_API_KEY}"
+      },
+      "description": "Magic UI - AI-generated user interface components and wireframes for PAI UI design and prototyping commands"
+    },
+    "mcp-compass": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/compass"
+      ],
+      "env": {
+        "COMPASS_API_KEY": "${COMPASS_API_KEY}"
+      },
+      "description": "MCP Compass - Meta knowledge about MCP servers, THEIR capabilities, and optimal usage patterns for self-improving PAI systems"
+    },
+    "code-analysis": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/code-analysis"
+      ],
+      "env": {
+        "CODE_ANALYSIS_API_KEY": "${CODE_ANALYSIS_API_KEY}"
+      },
+      "description": "Advanced code analysis MCP - Semantic code understanding, complexity metrics, security vulnerabilities, performance optimization suggestions"
+    },
+    "self-improve": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/self-improve"
+      ],
+      "env": {
+        "SELF_IMPROVE_API": "${SELF_IMPROVE_API}",
+        "GITHUB_OAUTH": "${GITHUB_OAUTH}"
+      },
+      "description": "Self-improvement MCP - Analyzes AI system performance, suggests architectural improvements, A/B testing, continuous learning pipeline management"
+    },
+    "github-insights": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/github-insights"
+      ],
+      "env": {
+        "GITHUB_TOKEN": "${GITHUB_TOKEN}",
+        "GITHUB_INSIGHTS_API": "${GITHUB_INSIGHTS_API}"
+      },
+      "description": "GitHub repository analysis and insights - Code quality metrics, contribution patterns, project health assessment"
+    },
+    "code-review": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/code-review"
+      ],
+      "env": {
+        "CODE_REVIEW_API_KEY": "${CODE_REVIEW_API_KEY}"
+      },
+      "description": "Automated code review MCP - Identifies bugs, security issues, performance problems, maintainability concerns"
+    },
+    "dependency-analysis": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/dependency-analysis"
+      ],
+      "env": {
+        "DEPENDENCY_API": "${DEPENDENCY_API}"
+      },
+      "description": "Package and dependency analysis MCP - Security vulnerabilities, license compliance, update recommendations"
+    },
+    "performance-monitoring": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/performance-monitoring"
+      ],
+      "env": {
+        "PERFORMANCE_API_KEY": "${PERFORMANCE_API_KEY}"
+      },
+      "description": "System performance and optimization MCP - Memory usage, CPU patterns, bottleneck identification, optimization recommendations"
+    },
+    "learning-analytics": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/learning-analytics"
+      ],
+      "env": {
+        "LEARNING_ANALYTICS_API": "${LEARNING_ANALYTICS_API}"
+      },
+      "description": "AI learning and adaptation analytics MCP - Tracks PAI performance, success rates, learning efficiency, model improvement suggestions"
+    },
+    "architecture-design": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/architecture-design"
+      ],
+      "env": {
+        "ARCHITECTURE_API_KEY": "${ARCHITECTURE_API_KEY}"
+      },
+      "description": "Software architecture design MCP - System design patterns, scalability planning, infrastructure recommendations"
+    },
+    "testing-automation": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/testing-automation"
+      ],
+      "env": {
+        "TESTING_API_KEY": "${TESTING_API_KEY}"
+      },
+      "description": "Automated testing and QA MCP - Test case generation, regression testing, integration testing automation"
+    },
+    "documentation-generator": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/documentation-generator"
+      ],
+      "env": {
+        "DOCS_API_KEY": "${DOCS_API_KEY}"
+      },
+      "description": "Automated documentation MCP - API docs, README generation, inline code documentation, knowledge base creation"
+    },
+    "security-scanner": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/security-scanner"
+      ],
+      "env": {
+        "SECURITY_API_KEY": "${SECURITY_API_KEY}"
+      },
+      "description": "Security vulnerability scanning MCP - Identifies OWASP top 10 issues, data exposure, injection vulnerabilities"
+    },
+    "kubernetes-cluster": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/kubernetes-cluster"
+      ],
+      "env": {
+        "KUBECONFIG": "${KUBECONFIG}",
+        "KUBERNETES_API_KEY": "${KUBERNETES_API_KEY}"
+      },
+      "description": "Kubernetes cluster management MCP - Deployment automation, scaling, monitoring, CI/CD pipeline integration"
+    },
+    "docker-management": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/docker-management"
+      ],
+      "env": {
+        "DOCKER_API_KEY": "${DOCKER_API_KEY}"
+      },
+      "description": "Docker container management MCP - Image building, registry management, deployment automation, security scanning"
+    },
+    "database-optimizer": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/database-optimizer"
+      ],
+      "env": {
+        "DATABASE_OPTIMIZER_API": "${DATABASE_OPTIMIZER_API}",
+        "MONGODB_CONNECTION": "${MONGODB_CONNECTION}"
+      },
+      "description": "Database optimization MCP - Query performance analysis, indexing recommendations, schema optimization, backup automation for PAI MongoDB"
+    },
+    "log-analysis": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/log-analysis"
+      ],
+      "env": {
+        "LOG_ANALYSIS_API": "${LOG_ANALYSIS_API}",
+        "LOG_STORAGE_PATH": "${LOG_STORAGE_PATH}"
+      },
+      "description": "Log analysis and monitoring MCP - Error pattern detection, performance monitoring, anomaly detection, alerting"
+    },
+    "api-design": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/api-design"
+      ],
+      "env": {
+        "API_DESIGN_API_KEY": "${API_DESIGN_API_KEY}"
+      },
+      "description": "API design and documentation MCP - REST/OpenAPI spec generation, GraphQL schema optimization, API versioning, testing"
+    },
+    "user-research": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/user-research"
+      ],
+      "env": {
+        "USER_RESEARCH_API": "${USER_RESEARCH_API}"
+      },
+      "description": "User research and UX testing MCP - Usability studies, user interviews, A/B testing, feedback analysis"
+    },
+    "content-management": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/content-management"
+      ],
+      "env": {
+        "CONTENT_API_KEY": "${CONTENT_API_KEY}"
+      },
+      "description": "Content management system MCP - Blog post management, SEO optimization, publishing workflow, audience analytics"
+    },
+    "project-management": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/project-management"
+      ],
+      "env": {
+        "PROJECT_MGMT_API": "${PROJECT_MGMT_API}"
+      },
+      "description": "Project management MCP - Task tracking, burndown charts, resource allocation, milestone management"
+    },
+    "financial-analysis": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/financial-analysis"
+      ],
+      "env": {
+        "FINANCIAL_API_KEY": "${FINANCIAL_API_KEY}"
+      },
+      "description": "Financial analysis MCP - Expense analysis, budgeting assistance, financial planning, investment recommendations"
+    },
+    "health-monitoring": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/health-monitoring"
+      ],
+      "env": {
+        "HEALTH_API_KEY": "${HEALTH_API_KEY}"
+      },
+      "description": "Health and wellness MCP - Health metrics tracking, exercise planning, nutrition analysis, wellness recommendations"
+    },
+    "learning-management": {
+      "command": "npx",
+      "args": [
+        "@modelcontextprotocol/learning-management"
+      ],
+      "env": {
+        "LEARNING_API_KEY": "${LEARNING_API_KEY}"
+      },
+      "description": "Personal learning management MCP - Course recommendations, knowledge tracking, skill assessment, learning path optimization"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+node_modules/
+.next/
+dist/
+build/
+*.app/
+*.dmg
+*.log
+.env
+venv/
+**/venv/
+**/__pycache__/
+*.pyc
+Greta PAI System.app/
+CPAS*/
