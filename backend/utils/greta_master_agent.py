@@ -554,6 +554,10 @@ class GretaMasterAgent:
 
             return master_controller
 
+        except ImportError:
+            logger.warning("AutoGen not available - using simplified implementation")
+            return self._create_autogen_fallback()
+
     async def _simulate_autogen_coordination(self, task_analysis, agent_team, available_agents):
         """Simulate AutoGen multi-agent coordination"""
         results = {}
@@ -570,10 +574,6 @@ class GretaMasterAgent:
                 }
 
         return {'coordinated_results': results, 'conversation_summary': 'Multi-agent coordination completed successfully'}
-
-            except ImportError:
-                logger.warning("AutoGen not available - using simplified implementation")
-                return self._create_autogen_fallback()
 
     async def _initialize_crewai(self) -> Any:
         """Initialize CrewAI for agent team management"""

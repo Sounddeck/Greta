@@ -3,7 +3,7 @@ Large Language Model processing and completion endpoints with enhanced AI integr
 """
 
 from fastapi import APIRouter, HTTPException, Depends
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from pydantic import BaseModel, Field
 import logging
 import asyncio
@@ -75,20 +75,60 @@ async def generate_completion(request: CompletionRequest):
             system_message=request.system_message
         )
 
-        # Generate completion
-        response = await llm_integration_service.generate_completion(integration_request)
+        try:
+            # Generate completion
+            response = await llm_integration_service.generate_completion(integration_request)
 
-        processing_time = asyncio.get_event_loop().time() - start_time
+            processing_time = asyncio.get_event_loop().time() - start_time
 
-        return CompletionResponse(
-            completion=response.text,
-            model=response.model_used,
-            provider=response.provider,
-            tokens_used=response.tokens_used,
-            finish_reason=response.finish_reason,
-            processing_time=response.processing_time,
-            timestamp=datetime.now()
-        )
+            # Handle both object and dict responses (LLM service might return raw dict)
+            if hasattr(response, 'text'):
+                completion_text = response.text
+                model_used = getattr(response, 'model_used', request.model)
+                provider = getattr(response, 'provider', model_config.provider)
+                tokens_used = getattr(response, 'tokens_used', len(request.prompt.split()))
+                finish_reason = getattr(response, 'finish_reason', 'completed')
+                response_time = getattr(response, 'processing_time', processing_time)
+            elif isinstance(response, dict) and 'generated_text' in response:
+                # Handle dict format from some LLM services
+                completion_text = response.get('generated_text', response.get('response', response.get('text', f"[ERROR] Invalid response format")))
+                model_used = response.get('model', request.model)
+                provider = response.get('provider', model_config.provider)
+                tokens_used = response.get('tokens_used', len(request.prompt.split()))
+                finish_reason = response.get('finish_reason', 'completed')
+                response_time = response.get('processing_time', processing_time)
+            else:
+                # Fallback for unknown response formats
+                completion_text = f"[MOCK RESPONSE] {request.prompt[:50]}... (Integration service returned unrecognized format)"
+                model_used = request.model
+                provider = "mock_fallback"
+                tokens_used = len(request.prompt.split())
+                finish_reason = "fallback"
+                response_time = processing_time
+
+            return CompletionResponse(
+                completion=completion_text,
+                model=model_used,
+                provider=provider,
+                tokens_used=tokens_used,
+                finish_reason=finish_reason,
+                processing_time=response_time,
+                timestamp=datetime.now()
+            )
+
+        except Exception as svc_error:
+            logger.warning(f"LLM service call failed: {svc_error}, falling back to mock response")
+
+            # Fallback to mock response on service failure
+            return CompletionResponse(
+                completion=f"[MOCK RESPONSE - Service Error] Would process: '{request.prompt[:100]}...' with model {request.model}. Service error: {str(svc_error)}",
+                model=request.model,
+                provider="mock_fallback",
+                tokens_used=len(request.prompt.split()),
+                finish_reason="service_error",
+                processing_time=asyncio.get_event_loop().time() - start_time,
+                timestamp=datetime.now()
+            )
 
     except HTTPException:
         raise
@@ -103,8 +143,9 @@ async def list_available_models():
     try:
         if not _integration_available:
             return {"models": [
-                {"name": "mock-model", "provider": "local_mock", "model_name": "mock-model", "max_tokens": 2048, "context_window": 4096, "temperature": 0.7}
-            ], "message": "Integration service not available - using mock"}
+                {"name": "mock-model", "provider": "local_mock", "model_name": "mock-model", "max_tokens": 2048, "context_window": 4096, "temperature": 0.7},
+                {"name": "llama3-personalized", "provider": "llama.cpp", "model_name": "llama3-personalized", "max_tokens": 4096, "context_window": 8192, "temperature": 0.7}
+            ], "message": "Integration service not available - using mock models"}
 
         return {"models": llm_integration_service.list_available_models()}
 

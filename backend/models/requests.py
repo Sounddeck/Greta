@@ -45,7 +45,7 @@ class ChatRequest(SecurityValidatedRequest):
     """Validated chat message request"""
     message: str = Field(..., min_length=1, max_length=10000,
                         description="User message content")
-    conversation_id: Optional[str] = Field(None, regex=r'^conv_[a-f0-9]{8,}$',
+    conversation_id: Optional[str] = Field(None, pattern=r'^conv_[a-f0-9]{8,}$',
                                          description="Optional conversation ID")
     context_window: Optional[int] = Field(1000, ge=1, le=10000,
                                         description="Context window size")
@@ -55,7 +55,7 @@ class ChatRequest(SecurityValidatedRequest):
                                              description="Additional metadata")
 
     class Config:
-        schema_extra = {
+        json_schema_extra = {
             "example": {
                 "message": "Hello Greta, please analyze this document",
                 "conversation_id": None,
@@ -105,11 +105,11 @@ class FileUploadRequest(SecurityValidatedRequest):
 
 class AgentTaskRequest(SecurityValidatedRequest):
     """Validated agent task request"""
-    agent_type: str = Field(..., regex=r'^[a-z_]{2,20}$',
+    agent_type: str = Field(..., pattern=r'^[a-z_]{2,20}$',
                            description="Agent type identifier")
     task_description: str = Field(..., min_length=10, max_length=2000,
                                 description="Task description")
-    priority: str = Field("normal", regex=r'^(normal|high|urgent)$',
+    priority: str = Field("normal", pattern=r'^(normal|high|urgent)$',
                          description="Task priority")
     timeout_seconds: int = Field(300, ge=30, le=3600,
                                description="Task timeout in seconds")
@@ -119,9 +119,9 @@ class VoiceSynthesisRequest(SecurityValidatedRequest):
     """Validated voice synthesis request"""
     text: str = Field(..., min_length=1, max_length=5000,
                      description="Text to synthesize")
-    emotion: str = Field("neutral", regex=r'^(neutral|happy|sad|angry|excited)$',
+    emotion: str = Field("neutral", pattern=r'^(neutral|happy|sad|angry|excited)$',
                         description="Emotional tone")
-    language: str = Field("de", regex=r'^(de|en)$',
+    language: str = Field("de", pattern=r'^(de|en)$',
                          description="Language code")
     speed: float = Field(1.0, ge=0.5, le=2.0,
                         description="Speech speed multiplier")
@@ -129,7 +129,7 @@ class VoiceSynthesisRequest(SecurityValidatedRequest):
 
 class LearningFeedbackRequest(SecurityValidatedRequest):
     """Validated learning feedback request"""
-    interaction_id: str = Field(..., regex=r'^int_[a-f0-9]{8,}$',
+    interaction_id: str = Field(..., pattern=r'^int_[a-f0-9]{8,}$',
                               description="Interaction identifier")
     rating: float = Field(..., ge=0.0, le=5.0,
                          description="User rating (0-5)")
@@ -141,7 +141,7 @@ class LearningFeedbackRequest(SecurityValidatedRequest):
 
 class SystemCommandRequest(SecurityValidatedRequest):
     """Validated system command request"""
-    command: str = Field(..., regex=r'^[a-z_][a-z0-9_]*$',
+    command: str = Field(..., pattern=r'^[a-z_][a-z0-9_]*$',
                         description="System command name")
     parameters: Dict[str, Any] = Field(default_factory=dict,
                                      description="Command parameters")
@@ -192,7 +192,7 @@ class ErrorResponse(BaseModel):
 # WebSocket message validation
 class WebSocketMessage(BaseModel):
     """Validated WebSocket message"""
-    type: str = Field(..., regex=r'^[a-z_]+$', description="Message type")
+    type: str = Field(..., pattern=r'^[a-z_]+$', description="Message type")
     payload: Dict[str, Any] = Field(..., description="Message payload")
-    message_id: Optional[str] = Field(None, regex=r'^msg_[a-f0-9]{8,}$',
+    message_id: Optional[str] = Field(None, pattern=r'^msg_[a-f0-9]{8,}$',
                                     description="Message identifier")

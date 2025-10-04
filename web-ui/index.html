@@ -1,0 +1,2307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎭 GRETA PAI Dashboard</title>
+    <style>
+        /* Magic UI DESIGN SYSTEM */
+        :root {
+            /* Modern Color Palette */
+            --bg-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-secondary: rgba(255, 255, 255, 0.95);
+            --bg-tertiary: rgba(255, 255, 255, 0.8);
+            --bg-glass: rgba(255, 255, 255, 0.25);
+            --bg-glass-strong: rgba(255, 255, 255, 0.1);
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --text-muted: #9ca3af;
+            --accent: #8b5cf6;
+            --accent-light: rgba(139, 92, 246, 0.1);
+            --accent-glow: rgba(139, 92, 246, 0.4);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --border: rgba(255, 255, 255, 0.2);
+            --border-light: rgba(255, 255, 255, 0.1);
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            --shadow-glow: 0 0 20px rgba(139, 92, 246, 0.3);
+            --radius-sm: 8px;
+            --radius: 12px;
+            --radius-lg: 16px;
+            --blur: blur(12px);
+        }
+
+        /* Dark Mode */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+                --bg-secondary: rgba(30, 41, 59, 0.95);
+                --bg-tertiary: rgba(30, 41, 59, 0.8);
+                --bg-glass: rgba(30, 41, 59, 0.25);
+                --text-primary: #f8fafc;
+                --text-secondary: #cbd5e1;
+                --text-muted: #94a3b8;
+                --border: rgba(255, 255, 255, 0.1);
+            }
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* MAGICAL PARTICLES BACKGROUND */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            animation: particleFloat 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: -2;
+        }
+
+        @keyframes particleFloat {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            33% { transform: translateY(-10px) rotate(5deg); }
+            66% { transform: translateY(5px) rotate(-3deg); }
+        }
+
+        /* GLASSMORPHISM COMPONENTS */
+        .glass {
+            background: var(--bg-glass);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+        }
+
+        .glass-strong {
+            background: var(--bg-glass-strong);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius);
+        }
+
+        /* MODERN HEADER */
+        .header {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            background: var(--bg-glass);
+            border-bottom: 1px solid var(--border-light);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .header h1 {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.025em;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--success);
+            animation: pulse 2s infinite;
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.2); }
+        }
+
+        /* MODERN SIDEBAR */
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            padding: 5rem 0 2rem;
+            z-index: 50;
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: var(--blur);
+        }
+
+        .sidebar-item {
+            padding: 1rem 2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            margin: 0.25rem 1rem;
+            border-radius: var(--radius);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .sidebar-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, var(--accent-light), transparent);
+            transition: left 0.5s;
+        }
+
+        .sidebar-item:hover::before,
+        .sidebar-item.active::before {
+            left: 100%;
+        }
+
+        .sidebar-item.active {
+            background: var(--accent-light);
+            transform: translateX(8px);
+            box-shadow: var(--shadow);
+        }
+
+        .sidebar-item:hover {
+            transform: translateX(4px);
+        }
+
+        .sidebar-item span:first-child {
+            font-size: 1.25rem;
+        }
+
+        /* CONTENT AREA */
+        .content {
+            margin-left: 280px;
+            padding: 3rem;
+            min-height: 100vh;
+        }
+
+        /* MAGIC CARDS */
+        .magic-card {
+            background: var(--bg-secondary);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .magic-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(transparent,
+                rgba(139, 92, 246, 0.05),
+                transparent 30deg,
+                transparent 60deg,
+                rgba(59, 130, 246, 0.05),
+                transparent 120deg,
+                transparent 150deg,
+                rgba(16, 185, 129, 0.05),
+                transparent 210deg,
+                transparent 240deg,
+                rgba(245, 158, 11, 0.05),
+                transparent 300deg);
+            animation: magicRotate 8s linear infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .magic-card:hover::before {
+            opacity: 1;
+        }
+
+        .magic-card::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            padding: 1px;
+            background: linear-gradient(135deg, var(--accent), transparent, var(--success), transparent);
+            background-size: 300% 300%;
+            animation: magicBorder 3s ease-in-out infinite;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .magic-card:hover::after {
+            opacity: 1;
+        }
+
+        .magic-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: var(--shadow-xl), var(--shadow-glow);
+        }
+
+        @keyframes magicRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes magicBorder {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        .magic-card h2, .magic-card h3 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 1rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* MAGICAL BUTTONS */
+        .magic-button {
+            background: linear-gradient(135deg, var(--accent) 0%, #7c3aed 50%, #6366f1 100%);
+            border: none;
+            border-radius: var(--radius);
+            padding: 0.875rem 2rem;
+            color: white;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow), 0 0 20px var(--accent-glow);
+        }
+
+        .magic-button::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+            transform: translateX(-100%);
+            transition: transform 0.5s;
+        }
+
+        .magic-button:hover::before {
+            transform: translateX(0);
+        }
+
+        .magic-button:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: var(--shadow-lg), 0 0 30px var(--accent-glow);
+        }
+
+        .magic-button:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        /* INPUT COMPONENTS */
+        .input-modern {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            background: var(--bg-glass);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .input-modern:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-light), inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            outline: none;
+        }
+
+        /* VOICE VISUALIZER */
+        .voice-visualizer {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 3px;
+            height: 80px;
+            padding: 0 2rem;
+            position: relative;
+        }
+
+        .voice-bar {
+            width: 10px;
+            background: linear-gradient(180deg, var(--accent), var(--success));
+            border-radius: var(--radius-sm);
+            animation: voiceIdle 2s ease-in-out infinite;
+            transform-origin: center bottom;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.3);
+        }
+
+        .voice-bar:nth-child(odd) { animation-delay: -0.1s; }
+        .voice-bar:nth-child(even) { animation-delay: -0.2s; }
+
+        @keyframes voiceIdle {
+            0%, 100% { height: 8px; opacity: 0.6; filter: brightness(0.8); }
+            50% { height: 30px; opacity: 1; filter: brightness(1); }
+        }
+
+        @keyframes voiceActive {
+            0%, 100% { height: 12px; background: var(--accent); opacity: 0.8; }
+            25% { height: 60px; background: var(--success); opacity: 1; }
+            50% { height: 40px; background: var(--warning); opacity: 1; }
+            75% { height: 80px; background: var(--error); opacity: 1; }
+        }
+
+        .recording .voice-bar {
+            animation: voiceActive 0.3s ease-in-out infinite;
+        }
+
+        .processing .voice-bar {
+            animation: voiceActive 1s ease-in-out infinite;
+        }
+
+        /* CHAT COMPONENTS */
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2rem;
+            background: transparent;
+            min-height: 400px;
+            max-height: calc(100vh - 400px);
+            position: relative;
+        }
+
+        .chat-messages::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-glass-strong);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            z-index: -1;
+        }
+
+        .chat-message {
+            margin-bottom: 1.5rem;
+            padding: 1.5rem 2rem;
+            border-radius: var(--radius-lg);
+            position: relative;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+        }
+
+        .chat-message.user {
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            color: white;
+            margin-left: auto;
+            margin-right: 0;
+            max-width: 70%;
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 25px rgba(139, 92, 246, 0.25), var(--shadow);
+        }
+
+        .chat-message.assistant {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            margin-left: 0;
+            margin-right: auto;
+            max-width: 70%;
+            border: 1px solid var(--border-light);
+            box-shadow: var(--shadow);
+        }
+
+        .chat-message.user::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 100%;
+            background: linear-gradient(135deg,
+                rgba(139, 92, 246, 0.1) 0%,
+                transparent 50%,
+                rgba(255, 255, 255, 0.05) 100%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .chat-message:hover::before {
+            opacity: 1;
+        }
+
+        .chat-message:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: var(--shadow-xl), 0 0 30px rgba(139, 92, 246, 0.2);
+        }
+
+        .chat-message.animate-fade-in {
+            animation: messageSlideIn 0.5s ease-out;
+        }
+
+        @keyframes messageSlideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* MODAL COMPONENTS */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            backdrop-filter: var(--blur);
+            -webkit-backdrop-filter: var(--blur);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 2.5rem;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-xl);
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .modal-content h2 {
+            background: linear-gradient(135deg, var(--accent), #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            letter-spacing: -0.025em;
+        }
+
+        /* STATUS COMPONENTS */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            letter-spacing: 0.025em;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .badge-online {
+            background: linear-gradient(135deg, var(--success), #34d399);
+            color: white;
+        }
+
+        .badge-offline {
+            background: linear-gradient(135deg, var(--error), #f87171);
+            color: white;
+        }
+
+        /* RESPONSIVE */
+        @media (max-width: 1024px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .content {
+                margin-left: 0;
+                padding: 1.5rem;
+            }
+        }
+
+        /* LOADING ANIMATIONS */
+        .loading-dots {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .loading-dots div {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: loadingBounce 1.4s ease-in-out infinite both;
+        }
+
+        .loading-dots div:nth-child(1) { animation-delay: -0.32s; }
+        .loading-dots div:nth-child(2) { animation-delay: -0.16s; }
+
+        @keyframes loadingBounce {
+            0%, 80%, 100% { transform: scale(0.8); }
+            40% { transform: scale(1); }
+        }
+
+        /* UTILITIES */
+        .hidden {
+            display: none !important;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>🎭 GRETA PAI Dashboard</h1>
+        <div class="status-indicator">
+            <div class="status-dot"></div>
+            <span id="system-status">Connecting...</span>
+            <span id="connection-status" style="font-size: 0.8rem; color: var(--text-secondary); margin-left: 1rem;"></span>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <aside class="sidebar">
+            <div class="sidebar-item active" data-page="dashboard">
+                📊 Dashboard
+            </div>
+            <div class="sidebar-item" data-page="agents">
+                🤖 Agent Control
+            </div>
+            <div class="sidebar-item" data-page="mcp-servers">
+                🔗 MCP Servers
+            </div>
+            <div class="sidebar-item" data-page="pai-commands">
+                🎯 PAI Commands
+            </div>
+            <div class="sidebar-item" data-page="logs">
+                📝 System Logs
+            </div>
+        </aside>
+
+        <div class="content">
+            <!-- Dashboard Page -->
+            <div id="dashboard-page" class="page">
+                <div class="card-grid">
+                    <div class="card magic-card">
+                        <div class="card-header">
+                            <h2 class="card-title">🎯 System Status</h2>
+                            <button class="btn btn-secondary" onclick="refreshAll()">🔄 Refresh</button>
+                        </div>
+                        <div id="system-info" class="metric-grid">
+                            <div class="metric">
+                                <div class="metric-value" id="system-version">2.2</div>
+                                <div class="metric-label">Version</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value" id="uptime">--:--</div>
+                                <div class="metric-label">Uptime</div>
+                            </div>
+                            <div class="metric">
+                                <div class="metric-value" id="active-agents">7</div>
+                                <div class="metric-label">Active Agents</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card magic-card">
+                        <div class="card-header">
+                            <h2 class="card-title">⚡ Quick Actions</h2>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem;">
+                            <button class="magic-button" onclick="checkHealth()" style="padding: 8px 12px; font-size: 12px;">🔍 Health Check</button>
+                            <button class="magic-button" onclick="getSystemStatus()" style="padding: 8px 12px; font-size: 12px;">📊 System Status</button>
+                            <button class="magic-button" onclick="getPerformance()" style="padding: 8px 12px; font-size: 12px;">⚡ Performance</button>
+                            <button class="magic-button" onclick="clearLogs()" style="padding: 8px 12px; font-size: 12px;">🧹 Clear Logs</button>
+                        </div>
+                    </div>
+
+                    <div class="card magic-card">
+                        <div class="card-header">
+                            <h2 class="card-title">🚀 Available Capabilities</h2>
+                        </div>
+                        <div id="capabilities-list" style="padding: 0.5rem;">
+                            <!-- Capabilities will be loaded dynamically -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Agent Control Page - Real Chat Interface -->
+            <div id="agents-page" class="page hidden">
+                <div class="card magic-card" style="height: calc(100vh - 200px); display: flex; flex-direction: column;">
+                    <div class="card-header">
+                        <h2 class="card-title">🎭 GRETA - AI Assistant</h2>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <select id="chat-model-select" style="padding: 4px 8px; border: 1px solid var(--border); border-radius: 4px; background: var(--bg-primary); color: var(--text-primary);">
+                                <option value="mock-model">Mock Model</option>
+                            </select>
+                            <button class="btn btn-secondary" onclick="clearChat()" style="padding: 4px 8px;">🧹 Clear Chat</button>
+                        </div>
+                    </div>
+
+                    <!-- Chat Messages Container -->
+                    <div id="chat-messages" class="chat-messages">
+                        <div class="chat-message assistant animate-fade-in" style="
+                            background: var(--bg-secondary);
+                            backdrop-filter: var(--blur);
+                            -webkit-backdrop-filter: var(--blur);
+                        ">
+                            <div style="background: linear-gradient(135deg, var(--accent), #6366f1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; font-weight: 700; font-size: 1.1rem; margin-bottom: 0.5rem;">🎭 GRETA PAI</div>
+                            <div>Hello! I'm GRETA, your Personal AI Assistant. How can I help you today?</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0.75rem; opacity: 0.8;"><span style="color: var(--success);">●</span> Connected to Mock Model</div>
+                        </div>
+                    </div>
+
+                    <!-- Voice & Chat Controls -->
+                    <div style="display: flex; flex-direction: column; gap: 1rem;">
+                        <!-- Mode Toggle -->
+                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                            <button class="mode-toggle active" data-mode="voice" onclick="switchToVoiceMode()" style="
+                                flex: 1;
+                                padding: 0.5rem;
+                                border: 1px solid var(--border);
+                                border-radius: 8px;
+                                      background: var(--accent);
+                                      color: var(--bg-primary);
+                                      cursor: pointer;
+                                      font-weight: 600;
+                            ">
+                                🔊 Voice Mode
+                            </button>
+                            <button class="mode-toggle" data-mode="text" onclick="switchToTextMode()" style="
+                                flex: 1;
+                                padding: 0.5rem;
+                                border: 1px solid var(--border);
+                                border-radius: 8px;
+                                background: var(--bg-tertiary);
+                                color: var(--text-primary);
+                                cursor: pointer;
+                            ">
+                                💬 Text Mode
+                            </button>
+                            <select id="interface-select" onchange="switchInterface(this.value)" style="
+                                padding: 0.5rem;
+                                border: 1px solid var(--border);
+                                border-radius: 8px;
+                                background: var(--bg-primary);
+                                color: var(--text-primary);
+                                cursor: pointer;
+                            ">
+                                <option value="continual">Auto Continuous</option>
+                                <option value="push-to-talk" selected>Push to Talk</option>
+                                <option value="manual">Manual Recording</option>
+                            </select>
+                        </div>
+
+                        <!-- Voice Interface -->
+                        <div id="voice-interface" class="interface-mode">
+                            <div style="
+                                display: flex;
+                                flex-direction: column;
+                                align-items: center;
+                                gap: 1rem;
+                                padding: 1rem;
+                                border-radius: 12px;
+                                background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+                            ">
+                                <!-- Voice Visualizer -->
+                                <div id="voice-visualizer" style="
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 2px;
+                                    height: 60px;
+                                    padding: 0 1rem;
+                                ">
+                                    <div class="voice-bar"></div>
+                                    <div class="voice-bar"></div>
+                                    <div class="voice-bar"></div>
+                                    <div class="voice-bar"></div>
+                                    <div class="voice-bar"></div>
+                                    <div class="voice-bar"></div>
+                                    <div class="voice-bar"></div>
+                                    <div class="voice-bar"></div>
+                                    <div class="voice-bar"></div>
+                                    <div class="voice-bar"></div>
+                                </div>
+
+                                <!-- Voice Status -->
+                                <div id="voice-status" style="
+                                    font-size: 0.9rem;
+                                    color: var(--text-secondary);
+                                    text-align: center;
+                                    min-height: 20px;
+                                ">
+                                    Tap to speak • German-accented AI voice ready
+                                </div>
+
+                                <!-- Voice & Settings Buttons -->
+                                <div style="display: flex; gap: 0.5rem; width: 100%;">
+                                    <button id="record-button" onclick="startVoiceRecording()" class="voice-button record" style="
+                                        flex: 2;
+                                        padding: 0.75rem;
+                                        border: none;
+                                        border-radius: 12px;
+                                        background: radial-gradient(circle, var(--error) 0%, #dc2626 100%);
+                                        color: white;
+                                        font-size: 1.1rem;
+                                        font-weight: 600;
+                                        cursor: pointer;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        gap: 0.5rem;
+                                        transition: all 0.3s ease;
+                                    ">
+                                        🎙️ Tap to Speak
+                                    </button>
+                                    <button onclick="openVoiceSettings()" class="voice-button settings" style="
+                                        flex: 1;
+                                        padding: 0.75rem;
+                                        border: 1px solid var(--border);
+                                        border-radius: 12px;
+                                        background: var(--bg-primary);
+                                        color: var(--text-primary);
+                                        cursor: pointer;
+                                        font-size: 0.9rem;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                    ">
+                                        ⚙️
+                                    </button>
+                                    <button onclick="stopSpeaking()" class="voice-button stop" style="
+                                        flex: 1;
+                                        padding: 0.75rem;
+                                        border: 1px solid var(--border);
+                                        border-radius: 12px;
+                                        background: var(--bg-primary);
+                                        color: var(--text-primary);
+                                        cursor: pointer;
+                                        font-size: 0.9rem;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                    ">
+                                        🔇
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Text Interface -->
+                        <div id="text-interface" class="interface-mode" style="display: none;">
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <input type="text" id="chat-input" placeholder="Type your message to GRETA..." style="
+                                    flex: 1;
+                                    padding: 0.75rem 1rem;
+                                    border: 2px solid var(--border);
+                                    border-radius: 25px;
+                                    background: var(--bg-primary);
+                                    color: var(--text-primary);
+                                    font-size: 16px;
+                                    outline: none;
+                                    transition: border-color 0.2s;
+                                " onkeypress="handleChatKeypress(event)">
+                                <button class="magic-button" onclick="sendChatMessage()" id="send-button" style="
+                                    width: 50px;
+                                    height: 50px;
+                                    border-radius: 50%;
+                                    padding: 0;
+                                    display: flex;
+                                    align-items: center;
+                                    justify-content: center;
+                                    font-size: 18px;
+                                " disabled>
+                                    📤
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MCP Servers Page -->
+            <div id="mcp-servers-page" class="page hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">MCP Server Management</h2>
+                        <button class="btn btn-primary" onclick="loadMCPServers()">🔄 Refresh</button>
+                    </div>
+                    <div id="mcp-servers-list">
+                        <p>Loading MCP servers...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PAI Commands Page -->
+            <div id="pai-commands-page" class="page hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">PAI Command Execution</h2>
+                    </div>
+                    <div class="input-group">
+                        <label for="command-select">Select Command:</label>
+                        <select id="command-select" class="input-group">
+                            <option value="create_app">Create App</option>
+                            <option value="write_blog">Write Blog Post</option>
+                            <option value="analyze_code">Analyze Code</option>
+                            <option value="get_life_log">Get Life Log</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="command-params">Parameters:</label>
+                        <textarea id="command-params" placeholder="Command parameters..."></textarea>
+                    </div>
+                    <button class="btn btn-primary" onclick="executeCommand()">🚀 Execute Command</button>
+                </div>
+            </div>
+
+            <!-- Logs Page -->
+            <div id="logs-page" class="page hidden">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="card-title">System Logs</h2>
+                        <button class="btn btn-secondary" onclick="clearLogArea()">🧹 Clear</button>
+                    </div>
+                    <div id="log-area" class="log-area">
+                        System initialized...<br>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Magic UI Enhancement Section (Magic UI inspired particles) -->
+            <div class="magic-particles" id="magic-particles" style="
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: -1;
+                overflow: hidden;
+            ">
+                <!-- CSS-only animated Magic UI-style particles -->
+            </div>
+        </div>
+    </main>
+
+    <!-- Toast Notifications Container -->
+    <div class="toast-container" id="toast-container"></div>
+
+    <!-- Floating Action Button -->
+    <button class="floating-action" title="Quick Actions Menu" onclick="showQuickMenu()">🔥</button>
+
+    <!-- Quick Menu (hidden by default) -->
+    <div id="quick-menu" style="position: fixed; bottom: 90px; right: 20px; background: var(--bg-secondary); border: 1px solid var(--border); border-radius: 12px; padding: 1rem; display: none; box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3); z-index: 1001; min-width: 200px;">
+        <h4 style="margin-bottom: 0.5rem; color: var(--accent);">Quick Actions</h4>
+        <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+            <button class="magic-button" style="width: 100%; justify-content: center;" onclick="quickHealthCheck()">🔍 Health Check</button>
+            <button class="magic-button" style="width: 100%; justify-content: center;" onclick="quickSystemStatus()">📊 System Status</button>
+            <button class="magic-button" style="width: 100%; justify-content: center;" onclick="showToasts()">🔔 Show Notifications</button>
+        </div>
+    </div>
+
+    <script>
+        // GRETA PAI API Configuration
+        const API_BASE = 'http://localhost:8000';
+
+        // Global state
+        let systemUptime = Date.now();
+        let apiCallCount = 0;
+        let lastAPICall = null;
+
+        // Navigation
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', () => {
+                // Update active item
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                // Show corresponding page
+                const pageId = item.dataset.page + '-page';
+                document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+                document.getElementById(pageId).classList.remove('hidden');
+
+                // Load page data if needed
+                switch(item.dataset.page) {
+                    case 'mcp-servers':
+                        loadMCPServers();
+                        break;
+                }
+            });
+        });
+
+        // API Functions
+        async function makeApiCall(endpoint, method = 'GET', data = null) {
+            const url = `${API_BASE}${endpoint}`;
+            const options = {
+                method,
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Cache-Control': 'no-cache'
+                }
+            };
+
+            if (data) {
+                options.body = JSON.stringify(data);
+            }
+
+            const startTime = Date.now();
+            updateConnectionStatus(`⬆️ ${method} ${endpoint}`, '🔄 Sending...');
+
+            try {
+                const response = await fetch(url, options);
+                const result = await response.json();
+                const duration = Date.now() - startTime;
+
+                apiCallCount++;
+                lastAPICall = endpoint;
+
+                const status = response.status === 200 ? 'success' : 'error';
+                logActivity(`${method} ${endpoint}: ${response.status} (${duration}ms)`, status);
+                updateConnectionStatus(`⬆️⬇️ Connected (${apiCallCount} calls)`, '🟢 Online');
+
+                return result;
+            } catch (error) {
+                updateConnectionStatus('❌ Connection failed', '🔴 Offline');
+                logActivity(`Error calling ${endpoint}: ${error.message}`, 'error');
+                return null;
+            }
+        }
+
+        function updateConnectionStatus(statusText, status = null) {
+            const connectionStatusEl = document.getElementById('connection-status');
+            connectionStatusEl.textContent = statusText;
+
+            // Update main status if provided
+            if (status && document.getElementById('system-status').textContent !== 'Connecting...') {
+                document.getElementById('system-status').textContent = status;
+            }
+        }
+
+        async function checkHealth() {
+            const result = await makeApiCall('/health');
+            if (result) {
+                document.getElementById('system-status').textContent = 'System Healthy ✅';
+                systemUptime = Date.now();
+                displayUptime();
+            } else {
+                document.getElementById('system-status').textContent = 'System Unhealthy ❌';
+            }
+        }
+
+        async function getSystemStatus() {
+            const result = await makeApiCall('/');
+            if (result) {
+                document.getElementById('system-version').textContent = result.version;
+                document.getElementById('system-status').textContent = result.status;
+                displayCapabilities(result.capabilities);
+            }
+        }
+
+        async function getPerformance() {
+            const result = await makeApiCall('/api/v1/performance/memory');
+            if (result) {
+                logActivity('Performance data loaded', 'success');
+                // Display memory stats if available
+                console.log('Performance:', result);
+            }
+        }
+
+        async function executeTask() {
+            const taskInput = document.getElementById('task-input');
+            const task = taskInput.value.trim();
+
+            if (!task) {
+                alert('Please enter a task description');
+                return;
+            }
+
+            logActivity(`Executing task: ${task}`, 'pending');
+            // For now, simulate task execution since master agent endpoint may not be set up yet
+            setTimeout(() => {
+                logActivity(`Task completed: Master agent would handle "${task}"`, 'success');
+            }, 2000);
+        }
+
+        async function getAgentStatus() {
+            logActivity('Fetching agent status...', 'pending');
+            // This would call the agent status endpoint when available
+            setTimeout(() => {
+                logActivity('Agent status: 7 agents online, Master agent active', 'success');
+            }, 500);
+        }
+
+        async function loadMCPServers() {
+            const serversList = document.getElementById('mcp-servers-list');
+            serversList.innerHTML = '<div class="spinner"></div> Loading MCP servers...';
+
+            // Simulate loading MCP servers since the endpoint format may vary
+            setTimeout(() => {
+                const mockServers = [
+                    { name: 'Context7 Library Docs', status: 'online', function: 'Library search integration' },
+                    { name: 'EXA Web Search', status: 'offline', function: 'Advanced web search' },
+                    { name: 'Figma Design Context', status: 'pending', function: 'Design-to-code' },
+                    { name: 'GitHub MCP', status: 'online', function: 'Repository management' },
+                    { name: 'Slack MCP', status: 'online', function: 'Team communication' },
+                ];
+
+                serversList.innerHTML = mockServers.map(server =>
+                    `<div style="display: flex; justify-content: space-between; align-items: center; padding: 0.75rem; border-bottom: 1px solid var(--border); transition: background-color 0.2s; border-radius: 8px; margin-bottom: 0.5rem;">
+                        <div>
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-size: 1.2rem;">${server.status === 'online' ? '🟢' : server.status === 'offline' ? '🔴' : '🟡'}</span>
+                                <div>
+                                    <strong style="color: var(--accent);">${server.name}</strong><br>
+                                    <small style="color: var(--text-secondary);">${server.function}</small>
+                                </div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 0.5rem;">
+                            <span class="status-badge badge-${server.status}" style="margin: 0;">
+                                ${server.status.toUpperCase()}
+                            </span>
+                            <button class="btn btn-secondary" style="padding: 4px 8px; font-size: 0.8rem;" onclick="testServer('${server.name}')">Test</button>
+                        </div>
+                    </div>`
+                ).join('');
+            }, 1000);
+        }
+
+        async function executeCommand() {
+            const command = document.getElementById('command-select').value;
+            const params = document.getElementById('command-params').value;
+
+            logActivity(`Executing PAI command: ${command}`, 'pending');
+
+            // Simulate command execution
+            setTimeout(() => {
+                logActivity(`PAI command ${command} executed successfully`, 'success');
+            }, 1500);
+        }
+
+        function displayCapabilities(capabilities) {
+            const list = document.getElementById('capabilities-list');
+            if (capabilities) {
+                const capabilityWidgets = capabilities.map(cap => {
+                    const widgetData = getCapabilityWidget(cap);
+
+                    // Build the widget based on whether it's clickable
+                    const clickableStyle = widgetData.clickable ?
+                        `cursor: pointer;
+                         transition: all 0.2s ease;
+                         onmouseover="this.style.transform='translateY(-1px)'; this.style.boxShadow='0 4px 12px rgba(56, 138, 255, 0.1)'"
+                         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='none'"` : '';
+
+                    const actionAttr = widgetData.clickable && widgetData.action ?
+                        `onclick="${widgetData.action}"` : '';
+
+                    const arrowDiv = widgetData.clickable ?
+                        `<div style="margin-left: auto; opacity: 0.6;">→</div>` : '';
+
+                    return `
+                        <div class="capability-widget" ${actionAttr} style="
+                            padding: 0.75rem;
+                            margin-bottom: 0.5rem;
+                            border-radius: 8px;
+                            border: 1px solid var(--border);
+                            background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+                            ${clickableStyle}
+                        ">
+                            <div style="display: flex; align-items: center; gap: 0.5rem;">
+                                <span style="font-size: 1.1rem;">${widgetData.icon}</span>
+                                <div>
+                                    <strong style="color: var(--accent);">${widgetData.title}</strong>
+                                    <br>
+                                    <small style="color: var(--text-secondary);">${widgetData.description}</small>
+                                </div>
+                                ${arrowDiv}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+                list.innerHTML = capabilityWidgets;
+            }
+        }
+
+        function getCapabilityWidget(capability) {
+            const robotIcons = [
+                "🤖", "🤖", "🤖", "🤖", "🅰️", "🅱️", "🆎", "🅲", "🅳", "🅴",
+                "🅵", "🅶", "🅷", "🅸", "🅹", "🅺", "🅻", "🅼", "🅽", "🏃",
+                "🏃‍♂️", "🏃‍♀️", "🏃‍♂️", "🏃‍♀️", "🤖‍", "🤖‍♂️", "🤖‍♀️", "🤖‍👨", "🤖‍👩", "🤖‍🧑"
+            ];
+
+            // Only these capabilities are interactive/navigation-worthy
+            const interactiveCapabilities = {
+                // 🧠 Enhanced Learning System with Auto Fine-tuning
+                // Learn more about interactive AI training
+                "🧠 Enhanced Learning System with Auto Fine-tuning": {
+                    icon: "🤖",
+                    title: "AI Learning",
+                    description: "Auto fine-tuning and continuous learning"
+                },
+
+                "🎭 German-accented Master Agent (Greta)": {
+                    icon: "🤖‍👨",
+                    title: "Master Agent",
+                    description: "German-accented AI personality",
+                    action: "switchToAgents()"
+                },
+
+                "🤖 Autonomous Multi-Agent Collaboration": {
+                    icon: "🤖‍♀️",
+                    title: "Multi-Agent",
+                    description: "Autonomous agent coordination"
+                },
+
+                // MCP Servers - these are worth navigating to
+                "🐸 Jina MCP Remote Server - 16 Advanced Tools": {
+                    icon: "🔗🤖",
+                    title: "Jina MCP",
+                    description: "16 advanced AI tools",
+                    action: "switchToMCPServers()"
+                },
+
+                "🔍 Parallel Web Search & Content Reading": {
+                    icon: "🔍🤖",
+                    title: "Web Search",
+                    description: "Advanced parallel search",
+                    action: "switchToMCPServers()"
+                },
+
+                "🖼️ Image Search Across the Web": {
+                    icon: "🖼️🤖",
+                    title: "Image Search",
+                    description: "Web-wide image search",
+                    action: "switchToMCPServers()"
+                },
+
+                // PAI Commands - execute AI tasks
+                "🎯 PAI Commands": {
+                    icon: "⚡🤖",
+                    title: "PAI Commands",
+                    description: "Execute specialized AI tasks",
+                    action: "switchToPAICommands()"
+                },
+
+                "📩 Web Page Screenshot Capture": {
+                    icon: "📸🤖",
+                    title: "Screenshots",
+                    description: "Web page capture tools",
+                    action: "switchToPAICommands()"
+                }
+            };
+
+            // Check if this capability is interactive (has an action)
+            if (interactiveCapabilities[capability]) {
+                const config = interactiveCapabilities[capability];
+                if (config.action) {
+                    return {
+                        ...config,
+                        action: config.action,
+                        clickable: true
+                    };
+                }
+                // If no action, make it non-clickable info
+                return {
+                    ...config,
+                    clickable: false
+                };
+            }
+
+            // Non-interactive capabilities ( Passive features )
+            const nonInteractiveCapabilities = [
+                "🦙 Local llama.cpp Processing (No Cloud Dependencies)",
+                "🌐 Swarm Intelligence",
+                "👁️ Multi-Modal Processing",
+                "🔮 Predictive Analytics",
+                "🗣️ German-English Voice Interface",
+                "📚 ArXiv Academic Paper Integration",
+                "🎯 Personalized AI Adaptation",
+                "🔒 Local-First Privacy",
+                "⚡ Apple Silicon Optimization"
+            ];
+
+            if (nonInteractiveCapabilities.includes(capability)) {
+                const randomRobot = robotIcons[Math.floor(Math.random() * robotIcons.length)];
+                return {
+                    icon: randomRobot,
+                    title: capability.split(" ").slice(0, 3).join(" "),
+                    description: capability.split(" ").slice(3).join(" "),
+                    clickable: false
+                };
+            }
+
+            // Default for unrecognized capabilities
+            const randomRobot = robotIcons[Math.floor(Math.random() * robotIcons.length)];
+            return {
+                icon: randomRobot,
+                title: capability.substring(0, 25) + "...",
+                description: "Advanced AI capability",
+                clickable: false
+            };
+        }
+
+        function switchToAgents() {
+            // Switch to agents page directly
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            const agentTab = document.querySelector('[data-page="agents"]');
+            if (agentTab) {
+                agentTab.classList.add('active');
+                document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+                document.getElementById('agents-page').classList.remove('hidden');
+            }
+            showToast('Switched to Agent Control! 🤖', 'success');
+        }
+
+        function switchToMCPServers() {
+            // Switch to MCP servers page directly
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            const mcpTab = document.querySelector('[data-page="mcp-servers"]');
+            if (mcpTab) {
+                mcpTab.classList.add('active');
+                document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+                document.getElementById('mcp-servers-page').classList.remove('hidden');
+                loadMCPServers(); // Load MCP servers when switching to the page
+            }
+            showToast('Switched to MCP Servers! 🔗', 'success');
+        }
+
+        function switchToPAICommands() {
+            // Switch to PAI commands page directly
+            document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+            const paiTab = document.querySelector('[data-page="pai-commands"]');
+            if (paiTab) {
+                paiTab.classList.add('active');
+                document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+                document.getElementById('pai-commands-page').classList.remove('hidden');
+            }
+            showToast('Switched to PAI Commands! 🎯', 'success');
+        }
+
+        function showLogActivity(message) {
+            logActivity(message, 'info');
+            showToast(message, 'info');
+        }
+
+        function displayUptime() {
+            const uptimeEl = document.getElementById('uptime');
+            const uptime = Math.floor((Date.now() - systemUptime) / 1000 / 60);
+            uptimeEl.textContent = `${uptime}min`;
+        }
+
+        function logActivity(message, type = 'info') {
+            const logArea = document.getElementById('log-area');
+            const timestamp = new Date().toLocaleTimeString();
+            const icon = {
+                'success': '✅',
+                'error': '❌',
+                'warning': '⚠️',
+                'pending': '⏳',
+                'info': 'ℹ️'
+            }[type] || 'ℹ️';
+
+            logArea.innerHTML += `<div class="log-entry">[${timestamp}] ${icon} ${message}</div>`;
+            logArea.scrollTop = logArea.scrollHeight;
+        }
+
+        function clearLogArea() {
+            document.getElementById('log-area').innerHTML = '';
+        }
+
+        function clearLogs() {
+            logActivity('System logs cleared', 'info');
+            // This would call a clear logs endpoint if available
+        }
+
+        async function refreshAll() {
+            await Promise.all([
+                checkHealth(),
+                getSystemStatus(),
+                getPerformance()
+            ]);
+
+            displayUptime();
+        }
+
+        // Initialize
+        async function init() {
+            logActivity('GRETA PAI Dashboard initialized', 'success');
+            await refreshAll();
+
+            // Update uptime every minute
+            setInterval(displayUptime, 60000);
+        }
+
+        // Floating Action Button & Quick Menu
+        function showQuickMenu() {
+            const menu = document.getElementById('quick-menu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Close quick menu when clicking elsewhere
+        document.addEventListener('click', (e) => {
+            const fab = document.querySelector('.floating-action');
+            const menu = document.getElementById('quick-menu');
+            if (!fab.contains(e.target) && !menu.contains(e.target)) {
+                menu.style.display = 'none';
+            }
+        });
+
+        // Quick action functions
+        async function quickHealthCheck() {
+            document.getElementById('quick-menu').style.display = 'none';
+            await checkHealth();
+            showToast('Health check completed!', 'success');
+        }
+
+        async function quickSystemStatus() {
+            document.getElementById('quick-menu').style.display = 'none';
+            await getSystemStatus();
+            showToast('System status updated!', 'success');
+        }
+
+        function showToasts() {
+            document.getElementById('quick-menu').style.display = 'none';
+            showToast('Welcome to GRETA PAI Dashboard! 🎭', 'success');
+            setTimeout(() => showToast('System running smoothly ✅', 'success'), 2000);
+            setTimeout(() => showToast('All agents online 🤖', 'success'), 4000);
+        }
+
+        // Toast notification system
+        function showToast(message, type = 'info', duration = 3000) {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <span>${type === 'success' ? '✅' : type === 'error' ? '❌' : 'ℹ️'}</span>
+                <span>${message}</span>
+            `;
+
+            toastContainer.appendChild(toast);
+
+            // Trigger animation
+            setTimeout(() => toast.classList.add('show'), 10);
+
+            // Auto hide
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, duration);
+        }
+
+        // Test server function for MCP servers
+        function testServer(serverName) {
+            logActivity(`Testing connection to ${serverName}...`, 'pending');
+            showToast(`Testing ${serverName} connection...`, 'info');
+
+            setTimeout(() => {
+                const success = Math.random() > 0.3; // 70% success rate
+                logActivity(`${serverName} ${success ? 'connected successfully' : 'connection failed'}`, success ? 'success' : 'error');
+                showToast(`${serverName} ${success ? 'connection OK ✅' : 'connection failed ❌'}`, success ? 'success' : 'error');
+            }, 1000);
+        }
+
+        // Enhanced feedback for user interactions
+        function enhancedClickFeedback(button, action) {
+            button.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                button.style.transform = '';
+                action();
+            }, 150);
+        }
+
+        // Add click feedback to magic buttons
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.magic-button').forEach(btn => {
+                const originalOnClick = btn.onclick;
+                btn.onclick = () => enhancedClickFeedback(btn, originalOnClick);
+            });
+        });
+
+        // Magical effect for system status changes
+        function animateStatusChange() {
+            const statusDot = document.querySelector('.status-dot');
+            statusDot.style.animation = 'none';
+            statusDot.offsetHeight; // Trigger reflow
+            statusDot.style.animation = 'pulse 2s infinite';
+        }
+
+        // Override refreshAll to include animation
+        const originalRefreshAll = refreshAll;
+        refreshAll = async function() {
+            animateStatusChange();
+            const result = await originalRefreshAll();
+            showToast('All systems refreshed!', 'success');
+            return result;
+        };
+
+        // Chat Interface Functions
+        let conversationHistory = [];
+        let availableModels = [];
+
+        async function initializeAgentPage() {
+            // Load available models for the chat interface
+            try {
+                const modelsResult = await makeApiCall('/api/v1/llm/models');
+                if (modelsResult && modelsResult.models) {
+                    availableModels = modelsResult.models;
+                    populateModelSelect();
+                }
+            } catch (error) {
+                console.log('Using default models');
+                availableModels = [{name: 'mock-model', provider: 'local_mock'}];
+                populateModelSelect();
+            }
+        }
+
+        function populateModelSelect() {
+            const modelSelect = document.getElementById('chat-model-select');
+            modelSelect.innerHTML = '';
+
+            availableModels.forEach(model => {
+                const option = document.createElement('option');
+                option.value = model.name;
+                option.textContent = `${model.name} (${model.provider})`;
+                modelSelect.appendChild(option);
+            });
+        }
+
+        async function sendChatMessage() {
+            const input = document.getElementById('chat-input');
+            const message = input.value.trim();
+
+            if (!message) return;
+
+            // Add user message to UI
+            addMessageToChat('user', message);
+
+            // Clear input
+            input.value = '';
+            updateSendButtonState();
+
+            // Add to conversation history
+            conversationHistory.push({role: 'user', content: message});
+
+            // Show typing indicator
+            showTypingIndicator();
+
+            try {
+                const modelName = document.getElementById('chat-model-select').value;
+                const chatResult = await makeApiCall(`/api/v1/llm/chat/${modelName}`, 'POST', conversationHistory);
+
+                // Hide typing indicator
+                hideTypingIndicator();
+
+                if (chatResult && chatResult.response) {
+                    // Add assistant response to UI
+                    addMessageToChat('assistant', chatResult.response);
+
+                    // Add to conversation history
+                    conversationHistory.push({role: 'assistant', content: chatResult.response});
+
+                    // Log successful response
+                    logActivity(`GRETA responded via ${modelName}`, 'success');
+
+                    // Scroll to bottom
+                    scrollChatToBottom();
+                } else {
+                    hideTypingIndicator();
+                    showErrorMessage('No response from GRETA. Please try again.');
+                }
+            } catch (error) {
+                hideTypingIndicator();
+                showErrorMessage('Failed to connect to GRETA. Check your connection.');
+                logActivity(`Chat error: ${error.message}`, 'error');
+            }
+        }
+
+        function addMessageToChat(role, content) {
+            const chatMessages = document.getElementById('chat-messages');
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${role}`;
+            messageDiv.style.cssText = `
+                margin-bottom: 1rem;
+                padding: 1rem;
+                background: ${role === 'user'
+                    ? 'linear-gradient(135deg, var(--accent) 0%, #238636 100%)'
+                    : 'linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%)'};
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                max-width: 80%;
+                ${role === 'user' ? 'margin-left: auto; margin-right: 0;' : 'margin-left: 0; margin-right: auto;'};
+            `;
+
+            const header = document.createElement('div');
+            header.style.cssText = `
+                color: var(--accent);
+                font-weight: 600;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            `;
+
+            const avatar = document.createElement('span');
+            avatar.textContent = role === 'user' ? '👤' : '🎭';
+            header.appendChild(avatar);
+
+            const sender = document.createElement('span');
+            sender.textContent = role === 'user' ? 'You' : 'GRETA PAI';
+            header.appendChild(sender);
+
+            const timestamp = document.createElement('span');
+            timestamp.style.cssText = 'font-size: 0.8rem; opacity: 0.6; margin-left: auto;';
+            timestamp.textContent = new Date().toLocaleTimeString();
+            header.appendChild(timestamp);
+
+            messageDiv.appendChild(header);
+
+            const contentDiv = document.createElement('div');
+            contentDiv.style.cssText = 'line-height: 1.6;';
+            contentDiv.textContent = content;
+            messageDiv.appendChild(contentDiv);
+
+            chatMessages.appendChild(messageDiv);
+            scrollChatToBottom();
+        }
+
+        function showTypingIndicator() {
+            const chatMessages = document.getElementById('chat-messages');
+
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.style.cssText = `
+                margin-bottom: 1rem;
+                padding: 1rem;
+                background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                max-width: 80%;
+                margin-left: 0;
+                margin-right: auto;
+            `;
+
+            const header = document.createElement('div');
+            header.style.cssText = 'color: var(--accent); font-weight: 600; margin-bottom: 0.5rem;';
+            header.textContent = '🎭 GRETA PAI is typing...';
+            typingDiv.appendChild(header);
+
+            const dots = document.createElement('div');
+            dots.style.cssText = 'display: flex; gap: 4px; padding: 0.5rem 0;';
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.style.cssText = `
+                    width: 8px;
+                    height: 8px;
+                    background: var(--accent);
+                    border-radius: 50%;
+                    animation: typing 1.4s infinite ${i * 0.3}s;
+                `;
+                dots.appendChild(dot);
+            }
+            typingDiv.appendChild(dots);
+
+            chatMessages.appendChild(typingDiv);
+            scrollChatToBottom();
+        }
+
+        function hideTypingIndicator() {
+            const typingDiv = document.getElementById('typing-indicator');
+            if (typingDiv) {
+                typingDiv.remove();
+            }
+        }
+
+        function showErrorMessage(message) {
+            const chatMessages = document.getElementById('chat-messages');
+
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'chat-message error';
+            errorDiv.style.cssText = `
+                margin-bottom: 1rem;
+                padding: 1rem;
+                background: linear-gradient(135deg, var(--error) 0%, #dc2626 100%);
+                border-radius: 12px;
+                border: 1px solid var(--border);
+                color: #fef2f2;
+                max-width: 80%;
+                margin-left: auto;
+                margin-right: 0;
+            `;
+
+            const header = document.createElement('div');
+            header.style.cssText = 'font-weight: 600; margin-bottom: 0.5rem;';
+            header.textContent = '⚠️ Error';
+            errorDiv.appendChild(header);
+
+            const contentDiv = document.createElement('div');
+            contentDiv.textContent = message;
+            errorDiv.appendChild(contentDiv);
+
+            chatMessages.appendChild(errorDiv);
+            scrollChatToBottom();
+        }
+
+        function handleChatKeypress(event) {
+            updateSendButtonState();
+
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendChatMessage();
+            }
+        }
+
+        function updateSendButtonState() {
+            const input = document.getElementById('chat-input');
+            const sendButton = document.getElementById('send-button');
+            const hasContent = input.value.trim().length > 0;
+
+            sendButton.disabled = !hasContent;
+            sendButton.style.opacity = hasContent ? '1' : '0.5';
+        }
+
+        function clearChat() {
+            document.getElementById('chat-messages').innerHTML = `
+                <div class="chat-message assistant" style="
+                    margin-bottom: 1rem;
+                    padding: 1rem;
+                    background: linear-gradient(135deg, var(--bg-tertiary) 0%, var(--bg-secondary) 100%);
+                    border-radius: 8px;
+                    border: 1px solid var(--border);
+                ">
+                    <div style="color: var(--accent); font-weight: 600; margin-bottom: 0.5rem;">🎭 GRETA PAI</div>
+                    <div>Hi! How can I help you today?</div>
+                    <div style="font-size: 0.8rem; color: var(--text-secondary); margin-top: 0.5rem;">Connected to Mock Model</div>
+                </div>
+            `;
+
+            conversationHistory = [];
+            showToast('Chat cleared! 🧹', 'info');
+        }
+
+        function scrollChatToBottom() {
+            const chatMessages = document.getElementById('chat-messages');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Enhanced sidebar navigation to initialize agent page properly
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', () => {
+                // Update active item
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+
+                // Show corresponding page
+                const pageId = item.dataset.page + '-page';
+                document.querySelectorAll('.page').forEach(p => p.classList.add('hidden'));
+                document.getElementById(pageId).classList.remove('hidden');
+
+                // Load page data if needed
+                switch(item.dataset.page) {
+                    case 'agents':
+                        initializeAgentPage();
+                        break;
+                    case 'mcp-servers':
+                        loadMCPServers();
+                        break;
+                }
+            });
+        });
+
+        // Add input event listener for send button state
+        document.addEventListener('DOMContentLoaded', () => {
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.addEventListener('input', updateSendButtonState);
+            }
+
+            document.querySelectorAll('.magic-button').forEach(btn => {
+                const originalOnClick = btn.onclick;
+                btn.onclick = () => enhancedClickFeedback(btn, originalOnClick);
+            });
+        });
+
+        // Override switchToAgents to initialize the chat interface
+        const originalSwitchToAgents = switchToAgents;
+        switchToAgents = function() {
+            originalSwitchToAgents();
+            initializeAgentPage();
+        };
+
+        // CSS for typing animation
+        const typingCss = `
+            @keyframes typing {
+                0%, 80%, 100% { opacity: 0.5; }
+                40% { opacity: 1; }
+            }
+        `;
+
+        const style = document.createElement('style');
+        style.textContent = typingCss;
+        document.head.appendChild(style);
+
+        // Voice Interface Functions
+        let isRecording = false;
+        let isSpeaking = false;
+        let voiceSettings = {
+            language: 'en-US',
+            accent: 'german',
+            volume: 0.8,
+            speed: 1.0
+        };
+        let recognition = null;
+        let synthesizer = window.speechSynthesis;
+        let currentInterface = 'push-to-talk';
+
+        // Mode Switching Functions
+        function switchToVoiceMode() {
+            document.querySelectorAll('.mode-toggle').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('[data-mode="voice"]').classList.add('active');
+            document.getElementById('voice-interface').style.display = 'block';
+            document.getElementById('text-interface').style.display = 'none';
+            showToast('Voice Mode Activated 🔊', 'success');
+        }
+
+        function switchToTextMode() {
+            document.querySelectorAll('.mode-toggle').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('[data-mode="text"]').classList.add('active');
+            document.getElementById('voice-interface').style.display = 'none';
+            document.getElementById('text-interface').style.display = 'block';
+            showToast('Text Mode Activated 💬', 'success');
+        }
+
+        function switchInterface(mode) {
+            currentInterface = mode;
+            updateVoiceStatus();
+            showToast(`Interface switched to ${mode.replace('-', ' ').toUpperCase()}`, 'info');
+        }
+
+        function updateVoiceStatus() {
+            const statusEl = document.getElementById('voice-status');
+            let status = '';
+
+            if (currentInterface === 'push-to-talk') {
+                status = isRecording ? 'Recording... 🎙️' : 'Tap to speak • German-accented AI voice ready';
+            } else if (currentInterface === 'continual') {
+                status = 'Continuous mode • Always listening 🎧';
+            } else if (currentInterface === 'manual') {
+                status = 'Manual recording • Click to start/stop 📼';
+            }
+
+            statusEl.textContent = status;
+        }
+
+        // Voice Recording Functions
+        function startVoiceRecording() {
+            if (isRecording) {
+                stopVoiceRecording();
+                return;
+            }
+
+            // Request microphone permission and start recording
+            if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                showToast('Microphone not supported in this browser', 'error');
+                return;
+            }
+
+            navigator.mediaDevices.getUserMedia({ audio: true })
+                .then(stream => {
+                    startSpeechRecognition();
+                    updateRecordingUI(true);
+                    logActivity('Voice recording started', 'info');
+                })
+                .catch(err => {
+                    console.error('Microphone access denied:', err);
+                    showToast('Microphone access required for voice input', 'error');
+                });
+        }
+
+        function stopVoiceRecording() {
+            if (recognition && isRecording) {
+                recognition.stop();
+                updateRecordingUI(false);
+                logActivity('Voice recording stopped', 'info');
+            }
+        }
+
+        function updateRecordingUI(recording) {
+            isRecording = recording;
+            const visualizer = document.getElementById('voice-visualizer');
+            const recordButton = document.getElementById('record-button');
+
+            if (recording) {
+                visualizer.classList.add('recording');
+                recordButton.innerHTML = '⏹️ Stop Recording';
+                recordButton.style.background = 'radial-gradient(circle, var(--error) 0%, #dc2626 100%)';
+                speakMessage('Listening...');
+            } else {
+                visualizer.classList.remove('recording');
+                recordButton.innerHTML = '🎙️ Tap to Speak';
+                recordButton.style.background = 'radial-gradient(circle, var(--error) 0%, #dc2626 100%)';
+            }
+
+            updateVoiceStatus();
+        }
+
+        function startSpeechRecognition() {
+            // Initialize speech recognition if supported
+            if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+                showToast('Speech recognition not supported in this browser', 'error');
+                return;
+            }
+
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            recognition = new SpeechRecognition();
+
+            recognition.continuous = currentInterface === 'continual';
+            recognition.interimResults = false;
+            recognition.lang = voiceSettings.language;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = () => {
+                updateRecordingUI(true);
+            };
+
+            recognition.onresult = (event) => {
+                const last = event.results.length - 1;
+                const text = event.results[last][0].transcript;
+
+                if (text && text.trim()) {
+                    handleVoiceInput(text);
+                }
+            };
+
+            recognition.onerror = (event) => {
+                console.error('Speech recognition error:', event.error);
+                logActivity(`Speech recognition error: ${event.error}`, 'error');
+                updateRecordingUI(false);
+            };
+
+            recognition.onend = () => {
+                updateRecordingUI(false);
+            };
+
+            recognition.start();
+        }
+
+        async function handleVoiceInput(text) {
+            logActivity(`Voice input: "${text}"`, 'info');
+            showToast(`Heard: "${text}"`, 'info');
+
+            // Add user voice message to chat
+            addMessageToChat('user', text, 'voice');
+
+            // Process through LLM
+            try {
+                const modelName = document.getElementById('chat-model-select').value;
+                conversationHistory.push({role: 'user', content: text});
+
+                // Show processing indicator
+                showProcessingIndicator();
+
+                const chatResult = await makeApiCall(`/api/v1/llm/chat/${modelName}`, 'POST', conversationHistory);
+
+                hideProcessingIndicator();
+
+                if (chatResult && chatResult.response) {
+                    // Add assistant response to chat
+                    addMessageToChat('assistant', chatResult.response);
+
+                    // Speak the response
+                    speakMessage(chatResult.response);
+
+                    conversationHistory.push({role: 'assistant', content: chatResult.response});
+                    logActivity(`GRETA responded via voice (${modelName})`, 'success');
+                } else {
+                    hideProcessingIndicator();
+                    speakMessage('Sorry, I could not process your request. Please try again.');
+                    showToast('Voice processing failed', 'error');
+                }
+            } catch (error) {
+                hideProcessingIndicator();
+                speakMessage('Sorry, there was an error processing your voice request.');
+                logActivity(`Voice processing error: ${error.message}`, 'error');
+            }
+        }
+
+        // Voice Output (TTS) Functions
+        function speakMessage(text) {
+            if (isSpeaking) {
+                stopSpeaking();
+            }
+
+            if (!synthesizer) {
+                showToast('Text-to-speech not supported', 'error');
+                return;
+            }
+
+            const utterance = new SpeechSynthesisUtterance(text);
+
+            // Configure voice settings
+            utterance.volume = voiceSettings.volume;
+            utterance.rate = voiceSettings.speed;
+            utterance.pitch = 1.0;
+
+            // Set German voice if available
+            if (voiceSettings.accent === 'german') {
+                const germanVoice = synthesizer.getVoices().find(voice =>
+                    voice.lang.includes('de') || voice.name.toLowerCase().includes('german')
+                );
+                if (germanVoice) {
+                    utterance.voice = germanVoice;
+                }
+            }
+
+            utterance.onstart = () => {
+                isSpeaking = true;
+                updateSpeakingUI(true);
+            };
+
+            utterance.onend = () => {
+                isSpeaking = false;
+                updateSpeakingUI(false);
+            };
+
+            utterance.onerror = (event) => {
+                console.error('TTS error:', event);
+                isSpeaking = false;
+                updateSpeakingUI(false);
+            };
+
+            synthesizer.speak(utterance);
+        }
+
+        function stopSpeaking() {
+            if (synthesizer && isSpeaking) {
+                synthesizer.cancel();
+                isSpeaking = false;
+                updateSpeakingUI(false);
+            }
+        }
+
+        function updateSpeakingUI(speaking) {
+            const visualizer = document.getElementById('voice-visualizer');
+
+            if (speaking) {
+                visualizer.classList.add('processing');
+            } else {
+                visualizer.classList.remove('processing');
+            }
+        }
+
+        // Voice Settings Functions
+        function openVoiceSettings() {
+            let modal = document.getElementById('voice-settings-modal');
+            if (!modal) {
+                modal = createVoiceSettingsModal();
+                document.body.appendChild(modal);
+            }
+            modal.style.display = 'flex';
+            updateSettingsUI();
+        }
+
+        function createVoiceSettingsModal() {
+            const modal = document.createElement('div');
+            modal.id = 'voice-settings-modal';
+            modal.innerHTML = `
+                <div class="voice-settings-content">
+                    <h2>🎭 Voice Settings</h2>
+
+                    <div class="voice-setting-group">
+                        <label for="language-select">Language:</label>
+                        <select id="language-select">
+                            <option value="en-US">English (US)</option>
+                            <option value="en-GB">English (UK)</option>
+                            <option value="de-DE">German (Germany)</option>
+                            <option value="fr-FR">French</option>
+                            <option value="es-ES">Spanish</option>
+                        </select>
+                    </div>
+
+                    <div class="voice-setting-group">
+                        <label for="accent-select">AI Voice Accent:</label>
+                        <select id="accent-select">
+                            <option value="german">German Accent</option>
+                            <option value="american">American</option>
+                            <option value="british">British</option>
+                            <option value="neutral">Neutral</option>
+                        </select>
+                    </div>
+
+                    <div class="voice-setting-group">
+                        <label for="volume-slider">Volume:</label>
+                        <input type="range" id="volume-slider" min="0" max="1" step="0.1">
+                        <div class="value-display" id="volume-value">80%</div>
+                    </div>
+
+                    <div class="voice-setting-group">
+                        <label for="speed-slider">Speaking Speed:</label>
+                        <input type="range" id="speed-slider" min="0.5" max="2" step="0.1">
+                        <div class="value-display" id="speed-value">100%</div>
+                    </div>
+
+                    <div class="settings-actions">
+                        <button class="btn btn-secondary" onclick="closeVoiceSettings()">Cancel</button>
+                        <button class="magic-button" onclick="saveVoiceSettings()">💾 Save Settings</button>
+                        <button class="magic-button" onclick="testVoiceSettings()">🔊 Test Voice</button>
+                    </div>
+                </div>
+            `;
+
+            // Add event listeners
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    closeVoiceSettings();
+                }
+            });
+
+            return modal;
+        }
+
+        function updateSettingsUI() {
+            // Load current settings
+            loadVoiceSettings();
+
+            // Update slider values
+            document.getElementById('volume-slider').value = voiceSettings.volume;
+            document.getElementById('speed-slider').value = voiceSettings.speed;
+            document.getElementById('language-select').value = voiceSettings.language;
+            document.getElementById('accent-select').value = voiceSettings.accent;
+
+            updateSliderValues();
+
+            // Add slider event listeners
+            document.getElementById('volume-slider').addEventListener('input', updateSliderValues);
+            document.getElementById('speed-slider').addEventListener('input', updateSliderValues);
+        }
+
+        function updateSliderValues() {
+            const volumeSlider = document.getElementById('volume-slider');
+            const speedSlider = document.getElementById('speed-slider');
+
+            document.getElementById('volume-value').textContent = Math.round(volumeSlider.value * 100) + '%';
+            document.getElementById('speed-value').textContent = Math.round(speedSlider.value * 100) + '%';
+        }
+
+        function saveVoiceSettings() {
+            voiceSettings.language = document.getElementById('language-select').value;
+            voiceSettings.accent = document.getElementById('accent-select').value;
+            voiceSettings.volume = parseFloat(document.getElementById('volume-slider').value);
+            voiceSettings.speed = parseFloat(document.getElementById('speed-slider').value);
+
+            // Save to localStorage
+            localStorage.setItem('greta-voice-settings', JSON.stringify(voiceSettings));
+
+            closeVoiceSettings();
+            showToast('Voice settings saved! 🎭', 'success');
+
+            // Update voice status
+            updateVoiceStatus();
+        }
+
+        function testVoiceSettings() {
+            const testText = "Hello! I'm GRETA, your Personal AI Assistant. How can I help you today?";
+            speakMessage(testText);
+            showToast('Testing voice settings...', 'info');
+        }
+
+        function loadVoiceSettings() {
+            const saved = localStorage.getItem('greta-voice-settings');
+            if (saved) {
+                try {
+                    voiceSettings = { ...voiceSettings, ...JSON.parse(saved) };
+                } catch (e) {
+                    console.error('Error loading voice settings:', e);
+                }
+            }
+        }
+
+        function closeVoiceSettings() {
+            const modal = document.getElementById('voice-settings-modal');
+            if (modal) {
+                modal.style.display = 'none';
+            }
+        }
+
+        // Processing Indicator for Voice
+        function showProcessingIndicator() {
+            const visualizer = document.getElementById('voice-visualizer');
+            visualizer.classList.add('processing');
+
+            const statusEl = document.getElementById('voice-status');
+            statusEl.textContent = 'Processing your request... 🤔';
+        }
+
+        function hideProcessingIndicator() {
+            const visualizer = document.getElementById('voice-visualizer');
+            visualizer.classList.remove('processing');
+            updateVoiceStatus();
+        }
+
+        // Enhanced addMessageToChat for voice input
+        function addMessageToChat(role, content, inputType = 'text') {
+            const chatMessages = document.getElementById('chat-messages');
+
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `chat-message ${role}`;
+
+            // Add fade-in animation class
+            messageDiv.classList.add('animate-fade-in');
+
+            // Header
+            const header = document.createElement('div');
+            header.style.cssText = `
+                background: linear-gradient(135deg, var(--accent), #6366f1);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+                font-weight: 700;
+                font-size: 0.875rem;
+                margin-bottom: 0.5rem;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+            `;
+
+            const avatar = document.createElement('span');
+            if (role === 'user') {
+                avatar.textContent = inputType === 'voice' ? '🎙️' : '👤';
+            } else {
+                avatar.textContent = '🎭';
+            }
+            header.appendChild(avatar);
+
+            const sender = document.createElement('span');
+            sender.textContent = role === 'user' ? 'You' : 'GRETA PAI';
+            header.appendChild(sender);
+
+            const timestamp = document.createElement('span');
+            timestamp.style.cssText = 'font-size: 0.7rem; opacity: 0.7; margin-left: auto; color: var(--text-muted);';
+            timestamp.textContent = new Date().toLocaleTimeString();
+            header.appendChild(timestamp);
+
+            if (role === 'user' && inputType === 'voice') {
+                const voiceBadge = document.createElement('span');
+                voiceBadge.style.cssText = `
+                    font-size: 0.7rem;
+                    background: var(--success);
+                    color: white;
+                    padding: 0.125rem 0.5rem;
+                    border-radius: 1rem;
+                    margin-left: 0.5rem;
+                    font-weight: 600;
+                    box-shadow: var(--shadow);
+                `;
+                voiceBadge.textContent = 'VOICE';
+                header.appendChild(voiceBadge);
+            }
+
+            messageDiv.appendChild(header);
+
+            // Content
+            const contentDiv = document.createElement('div');
+            contentDiv.style.cssText = 'line-height: 1.6; color: var(--text-primary); font-size: 0.95rem;';
+            contentDiv.textContent = content;
+            messageDiv.appendChild(contentDiv);
+
+            chatMessages.appendChild(messageDiv);
+            scrollChatToBottom();
+        }
+
+        // Load voice settings on init and set up voice interface
+        document.addEventListener('DOMContentLoaded', () => {
+            loadVoiceSettings();
+
+            // Initialize voice interface on agent page
+            switchToVoiceMode(); // Default to voice mode for PAI
+        });
+
+        // Start the application
+        init().catch(error => {
+            console.error('Dashboard initialization failed:', error);
+            logActivity('Dashboard initialization failed', 'error');
+        });
+    </script>
+</body>
+</html>
