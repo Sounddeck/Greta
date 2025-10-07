@@ -9,7 +9,7 @@ router = APIRouter()
 
 class VoiceSynthesisRequest(BaseModel):
     text: str
-    voice_model: str = "de_DE-karl-medium"
+    voice_model: str = "en_US-lessac-medium"  # Female American English voice
     speed: float = 1.0
     caching: bool = True
 
@@ -40,8 +40,8 @@ async def announce_message(
     try:
         if request.priority == "urgent":
             audio_data = await voice_service.generate_audio(
-                request.message, 
-                "de_DE-karl-medium",
+                request.message,
+                "en_US-lessac-medium",
                 1.0
             )
             return Response(audio_data, 
@@ -52,7 +52,7 @@ async def announce_message(
             background_tasks.add_task(
                 voice_service.generate_audio,
                 request.message,
-                "de_DE-karl-medium",
+                "en_US-lessac-medium",
                 1.0
             )
             return {"status": "queued", "message": request.message}
@@ -120,15 +120,15 @@ async def voice_system_status():
             "queue": queue_status,
             "configuration": {
                 "supported_formats": ["wav"],
-                "default_voice": "de_DE-karl-medium",
-                "german_support": True,
+                "default_voice": "en_US-lessac-medium",
+                "american_english": True,
                 "thread_pool_size": 2
             },
             "capabilities": [
                 "Real-time synthesis",
-                "German accent voices",
+                "Female American English voice",
                 "Background queue processing",
-                " Automatic model downloading",
+                "Automatic model downloading",
                 "Performance monitoring"
             ]
         }
@@ -145,8 +145,8 @@ async def startup_voice_service():
     """Initialize voice service on startup"""
     try:
         await voice_queue.start()
-        # Preload default German voice model
-        voice_service.preload_models(["de_DE-karl-medium", "en_US-lessac-medium"])
+        # Preload default American English voice model
+        voice_service.preload_models(["en_US-lessac-medium", "en_US-amy-medium"])
     except Exception as e:
         print(f"Voice service startup failed: {e}")
 

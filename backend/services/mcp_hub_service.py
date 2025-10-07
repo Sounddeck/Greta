@@ -6,11 +6,19 @@ MCP hub serving as agent toolset with comprehensive tool integration
 import asyncio
 import logging
 import json
+import sys
+import os
 from typing import Dict, Any, Optional, List
 from datetime import datetime
 from pathlib import Path
-from ..config import get_settings
-from ..database import get_database
+
+# Add backend directory to path
+backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if backend_dir not in sys.path:
+    sys.path.insert(0, backend_dir)
+
+from config import get_settings
+import database
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +28,11 @@ class MCPHubService:
     MCP hub serving as agent toolset with comprehensive tool integration
     """
     
-    def __init__(self):
+    def __init__(self, db=None, llm_service=None, learning_service=None):
         self.settings = get_settings()
-        self.db = None
+        self.db = db if db else database.database
+        self.llm_service = llm_service
+        self.learning_service = learning_service
         
         # Available MCP tools
         self.available_tools = {
@@ -914,7 +924,7 @@ if __name__ == "__main__":
     
     async def health_check(self) -> Dict[str, Any]:
         """MCP hub health check"""
-        
+
         return {
             "status": "healthy",
             "service": "mcp_hub_service",
@@ -922,14 +932,100 @@ if __name__ == "__main__":
             "active_sessions": len(self.active_sessions),
             "total_tool_calls": self.tool_usage_metrics["total_tool_calls"],
             "success_rate": (
-                self.tool_usage_metrics["successful_calls"] / 
+                self.tool_usage_metrics["successful_calls"] /
                 max(self.tool_usage_metrics["total_tool_calls"], 1)
             ) * 100,
             "average_response_time": self.tool_usage_metrics["average_response_time"],
             "agent_tool_matrix": {
-                agent_types: len(self.agent_tool_access),
-                total_configurations: sum(len(tools) for tools in self.agent_tool_access.values())
+                "agent_types": len(self.agent_tool_access),
+                "total_configurations": sum(len(tools) for tools in self.agent_tool_access.values())
             },
+            "timestamp": datetime.utcnow().isoformat()
+        }
+
+    # ==================== MCP SERVER MANAGEMENT ====================
+
+    async def register_server(self, server_config: Dict[str, Any]) -> Dict[str, Any]:
+        """Register a new MCP server"""
+        try:
+            import uuid
+            server_id = f"mcp_server_{uuid.uuid4().hex[:8]}"
+
+            server = {
+                "server_id": server_id,
+                "name": server_config.get("name"),
+                "url": server_config.get("url"),
+                "capabilities": server_config.get("capabilities", []),
+                "config": server_config.get("config", {}),
+                "status": "active",
+                "registered_at": datetime.utcnow().isoformat()
+            }
+
+            # Store in database
+            try:
+                await self.db.insert_one("mcp_servers", server)
+            except Exception as e:
+                logger.warning(f"Could not save server to database: {e}")
+
+            logger.info(f"✅ MCP server registered: {server_id}")
+
+            return server
+
+        except Exception as e:
+            logger.error(f"Error registering server: {e}")
+            raise
+
+    async def get_server(self, server_id: str) -> Dict[str, Any]:
+        """Get MCP server details"""
+        try:
+            server = await self.db.find_one("mcp_servers", {"server_id": server_id})
+            return server
+        except Exception as e:
+            logger.error(f"Error getting server: {e}")
+            return None
+
+    async def get_all_servers(self) -> List[Dict[str, Any]]:
+        """Get all MCP servers"""
+        try:
+            servers = await self.db.find("mcp_servers", {})
+            return list(servers) if servers else []
+        except Exception as e:
+            logger.error(f"Error getting servers: {e}")
+            return []
+
+    async def update_server(self, server_id: str, updates: Dict[str, Any]) -> Dict[str, Any]:
+        """Update MCP server"""
+        try:
+            await self.db.update_one(
+                "mcp_servers",
+                {"server_id": server_id},
+                {"$set": updates}
+            )
+
+            server = await self.get_server(server_id)
+            return server
+
+        except Exception as e:
+            logger.error(f"Error updating server: {e}")
+            raise
+
+    async def delete_server(self, server_id: str) -> bool:
+        """Delete MCP server"""
+        try:
+            await self.db.delete_one("mcp_servers", {"server_id": server_id})
+            logger.info(f"✅ MCP server deleted: {server_id}")
+            return True
+        except Exception as e:
+            logger.error(f"Error deleting server: {e}")
+            return False
+
+    async def get_metrics(self) -> Dict[str, Any]:
+        """Get MCP hub metrics"""
+        return {
+            "success": True,
+            "metrics": self.tool_usage_metrics,
+            "active_sessions": len(self.active_sessions),
+            "total_tools": len(self.available_tools),
             "timestamp": datetime.utcnow().isoformat()
         }
 

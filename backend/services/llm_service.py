@@ -7,8 +7,8 @@ import asyncio
 import logging
 from typing import Dict, Any, Optional, List
 from datetime import datetime
-from ..config import get_settings
-from ..database import get_database
+from config import get_settings
+from database import get_database
 
 logger = logging.getLogger(__name__)
 

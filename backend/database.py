@@ -7,7 +7,7 @@ import asyncio
 import logging
 from typing import Dict, Any, Optional, List
 from datetime import datetime
-from .config import get_settings
+from config import get_settings
 
 # Try to import motor, but provide fallback
 try:

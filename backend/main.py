@@ -110,6 +110,7 @@ def safe_router_import():
 
     router_specs = [
         ('web_commands', True, 'Web Commands API'),
+        ('enhanced_master_agent_router', True, 'Enhanced Master Agent'),
         ('jina_mcp', False, 'Jina MCP Integration'),
         ('memory', False, 'Memory System'),
         ('llm', False, 'Language Model'),
@@ -157,7 +158,7 @@ except RuntimeError:
 load_dotenv()
 # Initialize settings and database
 settings = get_settings()
-db = get_database()
+from database import database as db
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Enhanced application lifespan management"""
@@ -275,6 +276,18 @@ else:
 # Include available routers safely
 ROUTER_CONFIG = [
     ('llm', '/api/v1/llm', True),  # Force LLM router to load
+    ('enhanced_master_agent_router', '', True),  # Enhanced Master Agent - no prefix, router has its own
+    ('pai_hub_router', '', True),  # PAI Hub - no prefix, router has its own
+    ('predictive_analytics_router', '', True),  # Predictive Analytics - no prefix, router has its own
+    ('agent_management_router', '', True),  # Agent Management - no prefix, router has its own
+    ('autonomous_operations_router', '', True),  # Autonomous Operations - no prefix, router has its own
+    ('agent_builder_router', '', True),  # Agent Builder - no prefix, router has its own
+    ('mcp_hub_router', '', True),  # MCP Hub - no prefix, router has its own
+    ('osint_router', '', True),  # OSINT - no prefix, router has its own
+    ('multimodal_router', '', True),  # Multi-Modal - no prefix, router has its own
+    ('functional_memory_router', '', True),  # Functional Memory - no prefix, router has its own
+    ('training_platform_router', '', True),  # Training Platform - no prefix, router has its own
+    ('knowledge_base_router', '', True),  # Knowledge Base - no prefix, router has its own
     ('memory', '/api/v1/memory', False),
     ('system', '/api/v1/system', False),
     ('agent', '/api/v1', False),
@@ -303,6 +316,138 @@ for router_name, prefix, force_include in ROUTER_CONFIG:
                 continue
             except Exception as e:
                 logger.warning(f"⚠️ Direct LLM router import failed: {e}")
+
+        # Force include Enhanced Master Agent router
+        if force_include and router_name == 'enhanced_master_agent_router':
+            try:
+                from routers.enhanced_master_agent_router import router as enhanced_master_router
+                app.include_router(enhanced_master_router, tags=["Enhanced Master Agent"])  # No prefix since router has /api/v1/master
+                routers_loaded += 1
+                logger.info(f"✅ Enhanced Master Agent Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Enhanced Master Agent router import failed: {e}")
+
+        # Force include PAI Hub router
+        if force_include and router_name == 'pai_hub_router':
+            try:
+                from routers.pai_hub_router import router as pai_hub_router
+                app.include_router(pai_hub_router, tags=["PAI Hub"])  # No prefix since router has /api/v1/pai-hub
+                routers_loaded += 1
+                logger.info(f"✅ PAI Hub Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ PAI Hub router import failed: {e}")
+
+        # Force include Predictive Analytics router
+        if force_include and router_name == 'predictive_analytics_router':
+            try:
+                from routers.predictive_analytics_router import router as predictive_analytics_router
+                app.include_router(predictive_analytics_router, tags=["Predictive Analytics"])
+                routers_loaded += 1
+                logger.info(f"✅ Predictive Analytics Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Predictive Analytics router import failed: {e}")
+
+        # Force include Agent Management Router (Module 4)
+        if force_include and router_name == 'agent_management_router':
+            try:
+                from routers.agent_management_router import router as agent_mgmt_router
+                app.include_router(agent_mgmt_router, tags=["Agent Management"])
+                routers_loaded += 1
+                logger.info(f"✅ Agent Management Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Agent Management router import failed: {e}")
+
+        # Force include Autonomous Operations Router (Module 5)
+        if force_include and router_name == 'autonomous_operations_router':
+            try:
+                from routers.autonomous_operations_router import router as operations_router
+                app.include_router(operations_router, tags=["Autonomous Operations"])
+                routers_loaded += 1
+                logger.info(f"✅ Autonomous Operations Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Autonomous Operations router import failed: {e}")
+
+        # Force include Agent Builder Router (Module 6)
+        if force_include and router_name == 'agent_builder_router':
+            try:
+                from routers.agent_builder_router import router as builder_router
+                app.include_router(builder_router, tags=["Agent Builder"])
+                routers_loaded += 1
+                logger.info(f"✅ Agent Builder Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Agent Builder router import failed: {e}")
+
+        # Force include MCP Hub Router (Module 7)
+        if force_include and router_name == 'mcp_hub_router':
+            try:
+                from routers.mcp_hub_router import router as mcp_router
+                app.include_router(mcp_router, tags=["MCP Hub"])
+                routers_loaded += 1
+                logger.info(f"✅ MCP Hub Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ MCP Hub router import failed: {e}")
+
+        # Force include OSINT Router (Module 8)
+        if force_include and router_name == 'osint_router':
+            try:
+                from routers.osint_router import router as osint_router
+                app.include_router(osint_router, tags=["OSINT"])
+                routers_loaded += 1
+                logger.info(f"✅ OSINT Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ OSINT router import failed: {e}")
+
+        # Force include Multi-Modal Router (Module 9)
+        if force_include and router_name == 'multimodal_router':
+            try:
+                from routers.multimodal_router import router as multimodal_router
+                app.include_router(multimodal_router, tags=["Multi-Modal"])
+                routers_loaded += 1
+                logger.info(f"✅ Multi-Modal Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Multi-Modal router import failed: {e}")
+
+        # Force include Functional Memory Router (Module 10)
+        if force_include and router_name == 'functional_memory_router':
+            try:
+                from routers.functional_memory_router import router as memory_router
+                app.include_router(memory_router, tags=["Functional Memory"])
+                routers_loaded += 1
+                logger.info(f"✅ Functional Memory Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Functional Memory router import failed: {e}")
+
+        # Force include Training Platform Router (Module 11)
+        if force_include and router_name == 'training_platform_router':
+            try:
+                from routers.training_platform_router import router as training_router
+                app.include_router(training_router, tags=["Training Platform"])
+                routers_loaded += 1
+                logger.info(f"✅ Training Platform Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Training Platform router import failed: {e}")
+
+        # Force include Knowledge Base Router (Module 12)
+        if force_include and router_name == 'knowledge_base_router':
+            try:
+                from routers.knowledge_base_router import router as knowledge_router
+                app.include_router(knowledge_router, tags=["Knowledge Base"])
+                routers_loaded += 1
+                logger.info(f"✅ Knowledge Base Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Knowledge Base router import failed: {e}")
 
         # Normal router inclusion
         if router_name in AVAILABLE_ROUTERS:
@@ -336,6 +481,151 @@ if 'web_commands' in AVAILABLE_ROUTERS:
         logger.info("✅ Web Commands API integrated - PAI Web Interface available")
     except Exception as e:
         logger.warning(f"⚠️ Web Commands router error: {e}")
+
+# Add Central Orchestrator Router - Master coordination system
+try:
+    from routers.orchestrator import router as orchestrator_router
+    app.include_router(orchestrator_router, prefix="/api/v1/orchestrator", tags=["Central Orchestrator"])
+    logger.info("✅ Central Orchestrator integrated - Master command routing available")
+except Exception as e:
+    logger.warning(f"⚠️ Central Orchestrator router error: {e}")
+
+# Add basic health check endpoint
+@app.get("/health")
+async def health_check():
+    return {
+        "status": "healthy",
+        "service": "greta-pai",
+        "version": "2.0.0",
+        "timestamp": time.time()
+    }
+
+# Add API status endpoint
+@app.get("/api/v1/status")
+async def api_status():
+    return {
+        "api_status": "active",
+        "available_endpoints": [
+            "/health",
+            "/api/v1/status",
+            "/api/v1/llm/chat",
+            "/api/v1/orchestrator/orchestrate",
+            "/api/v1/system/status"
+        ],
+        "backend_version": "2.0.0"
+    }
+
+# Add system stats endpoint
+@app.get("/api/v1/system/stats")
+async def system_stats():
+    import psutil
+    try:
+        cpu_percent = psutil.cpu_percent(interval=1)
+        memory = psutil.virtual_memory()
+        return {
+            "cpu": round(cpu_percent, 1),
+            "memory": round(memory.percent, 1),
+            "ram": round(memory.percent, 1),  # Same as memory for simplicity
+            "timestamp": time.time()
+        }
+    except Exception as e:
+        # Fallback if psutil not available
+        return {
+            "cpu": 25.0,
+            "memory": 45.0,
+            "ram": 45.0,
+            "timestamp": time.time(),
+            "note": "Using fallback values"
+        }
+
+# Comprehensive GRETA system status
+@app.get("/api/v1/greta/status")
+async def greta_system_status():
+    """Complete GRETA PAI system status"""
+    return {
+        "system": {
+            "name": "GRETA PAI",
+            "version": "2.0.0",
+            "status": "operational",
+            "uptime": "Active since startup"
+        },
+        "capabilities": {
+            "master_agent": {
+                "status": "active",
+                "description": "Central AI coordination and chat interface"
+            },
+            "local_llm": {
+                "status": "configured",
+                "models": ["llama3-8b", "llama3-70b", "codellama-7b", "deepseek-coder-6.7b"],
+                "hierarchical_reasoning": True,
+                "continuous_learning": True
+            },
+            "business_tools": {
+                "crm": "active",
+                "ats": "active",
+                "description": "Customer relationship management and applicant tracking"
+            },
+            "coding_tools": {
+                "status": "available",
+                "languages": ["python", "javascript", "rust", "go"],
+                "frameworks": ["fastapi", "react", "nextjs", "django"],
+                "capabilities": ["code_generation", "analysis", "testing", "deployment"]
+            },
+            "mcp_servers": {
+                "web_browser": "available",
+                "financial": "available",
+                "analytics": "available",
+                "communication": "available",
+                "research_tools": "available"
+            },
+            "voice_synthesis": {
+                "status": "active",
+                "voice": "American English Female",
+                "engine": "Browser Speech Synthesis"
+            }
+        },
+        "routers": {
+            "active": [
+                "/api/v1/llm",
+                "/api/v1/orchestrator",
+                "/api/v1/business",
+                "/api/v1/system"
+            ],
+            "total_count": 4
+        },
+        "features": {
+            "hierarchical_reasoning": True,
+            "multi_agent_coordination": True,
+            "real_time_learning": True,
+            "digital_asset_creation": "planned",
+            "research_automation": "planned",
+            "websocket_support": "planned"
+        }
+    }
+
+# Add WebSocket Router - Real-time communication (simplified for now)
+# try:
+#     from routers.websocket_router import router as websocket_router
+#     app.include_router(websocket_router, prefix="/api/v1", tags=["WebSocket"])
+#     logger.info("✅ WebSocket Router integrated - Real-time updates available")
+# except Exception as e:
+#     logger.warning(f"⚠️ WebSocket router error: {e}")
+
+# Add Business Tools Router (CRM & ATS)
+try:
+    from routers.business_tools import router as business_tools_router
+    app.include_router(business_tools_router, prefix="/api/v1/business", tags=["Business Tools"])
+    logger.info("✅ Business Tools Router integrated - CRM & ATS available")
+except Exception as e:
+    logger.warning(f"⚠️ Business Tools router error: {e}")
+
+# Add Digital Asset Creation Router (simplified for now)
+# try:
+#     from routers.asset_creation import router as asset_creation_router
+#     app.include_router(asset_creation_router, prefix="/api/v1/assets", tags=["Asset Creation"])
+#     logger.info("✅ Asset Creation Router integrated - Digital product generation available")
+# except Exception as e:
+#     logger.warning(f"⚠️ Asset Creation router error: {e}")
 
 logger.info(f"Total routers included in app: {routers_loaded}")
 
