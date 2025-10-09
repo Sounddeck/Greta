@@ -37,6 +37,7 @@ import MasterAgentChat from './pages/MasterAgentChat';
 import MCPHub from './pages/MCPHub';
 import Business from './pages/Business';
 import EnhancedMasterAgent from './pages/EnhancedMasterAgent';
+import CPAS4 from './pages/CPAS4';
 
 // Create a client
 const queryClient = new QueryClient({
@@ -67,6 +68,8 @@ function App() {
               <Route path="/master-agent-enhanced" element={<MasterAgentEnhanced />} />
               <Route path="/reasoning" element={<Reasoning />} />
               <Route path="/predictive" element={<PredictiveAnalyticsEngine />} />
+
+              <Route path="/cpas4" element={<CPAS4 />} />
 
               {/* Agent Routes */}
               <Route path="/agents" element={<AgentManagementFramework />} />

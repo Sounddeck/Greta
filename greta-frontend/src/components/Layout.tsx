@@ -91,6 +91,7 @@ const navigationSections: NavigationSection[] = [
       { name: 'Master Agent', href: '/master-agent', icon: Crown, description: 'Greta master control' },
       { name: 'Reasoning', href: '/reasoning', icon: Zap, description: 'Hierarchical reasoning' },
       { name: 'Predictive', href: '/predictive', icon: TrendingUp, description: 'Analytics & forecasting' },
+      { name: 'CPAS4', href: '/cpas4', icon: Layers, description: 'Cognitive Processing System' },
     ]
   },
   {
