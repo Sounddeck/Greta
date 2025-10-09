@@ -429,8 +429,8 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
       case 'ready': return 'bg-blue-500/20';
       case 'training': return 'bg-yellow-500/20';
       case 'error': return 'bg-red-500/20';
-      case 'idle': return 'bg-gray-500/20';
-      default: return 'bg-gray-500/20';
+      case 'idle': return 'bg-blue-600/20';
+      default: return 'bg-blue-600/20';
     }
   };
 
@@ -488,7 +488,7 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-1 bg-white/5 p-1 rounded-lg">
+      <div className="flex space-x-1 bg-blue-500/10 p-1 rounded-lg">
         {[
           { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
           { id: 'models', label: 'Models', icon: Brain },
@@ -503,7 +503,7 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
             className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
               activeTab === tab.id
                 ? 'bg-blue-600 text-white'
-                : 'text-gray-400 hover:text-white hover:bg-white/10'
+                : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -576,7 +576,7 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
               </h3>
               <div className="space-y-4">
                 {dashboard.model_performance.map((model, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className="flex items-center space-x-2">
                         {model.trend === 'up' ? (
@@ -584,7 +584,7 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
                         ) : model.trend === 'down' ? (
                           <ArrowDown className="w-4 h-4 text-red-400" />
                         ) : (
-                          <div className="w-4 h-4 bg-gray-400 rounded-full"></div>
+                          <div className="w-4 h-4 bg-blue-400 rounded-full"></div>
                         )}
                         <span className="text-white text-sm">{model.model_name}</span>
                       </div>
@@ -605,7 +605,7 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
               </h3>
               <div className="space-y-4">
                 {dashboard.revenue_forecast.map((forecast, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg">
                     <div>
                       <p className="text-white font-medium">{forecast.period}</p>
                       <p className="text-gray-400 text-sm">Confidence: {forecast.confidence}%</p>
@@ -707,13 +707,13 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
                   placeholder="Search models..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="pl-10 pr-4 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                 />
               </div>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="all">All Status</option>
                 <option value="deployed">Deployed</option>
@@ -828,14 +828,14 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
                   <div className="flex items-center space-x-1">
                     <button
                       onClick={() => setSelectedModel(model.id)}
-                      className="p-1 hover:bg-white/10 rounded"
+                      className="p-1 hover:bg-blue-500/15 rounded"
                     >
                       <Eye className="w-4 h-4 text-gray-400" />
                     </button>
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-blue-500/15 rounded">
                       <Edit className="w-4 h-4 text-gray-400" />
                     </button>
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-blue-500/15 rounded">
                       <Settings className="w-4 h-4 text-gray-400" />
                     </button>
                   </div>
@@ -855,7 +855,7 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
               <select
                 value={dateRange}
                 onChange={(e) => setDateRange(e.target.value as any)}
-                className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="1d">Last 24 Hours</option>
                 <option value="7d">Last 7 Days</option>
@@ -960,7 +960,7 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
                       source.status === 'connected' ? 'bg-green-500/20 text-green-400' :
                       source.status === 'syncing' ? 'bg-yellow-500/20 text-yellow-400' :
                       source.status === 'error' ? 'bg-red-500/20 text-red-400' :
-                      'bg-gray-500/20 text-gray-400'
+                      'bg-blue-600/20 text-gray-400'
                     }`}>
                       <Database className="w-4 h-4" />
                     </div>
@@ -973,7 +973,7 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
                     source.status === 'connected' ? 'bg-green-500/20 text-green-400' :
                     source.status === 'syncing' ? 'bg-yellow-500/20 text-yellow-400' :
                     source.status === 'error' ? 'bg-red-500/20 text-red-400' :
-                    'bg-gray-500/20 text-gray-400'
+                    'bg-blue-600/20 text-gray-400'
                   }`}>
                     {source.status}
                   </span>
@@ -992,12 +992,12 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
                     <p className="text-gray-400 mb-2">Schema Fields</p>
                     <div className="flex flex-wrap gap-1">
                       {Object.entries(source.schema).slice(0, 4).map(([field, type]) => (
-                        <span key={field} className="text-xs px-2 py-1 bg-white/10 rounded">
+                        <span key={field} className="text-xs px-2 py-1 bg-blue-500/15 rounded">
                           {field}: {type}
                         </span>
                       ))}
                       {Object.keys(source.schema).length > 4 && (
-                        <span className="text-xs px-2 py-1 bg-white/10 rounded">
+                        <span className="text-xs px-2 py-1 bg-blue-500/15 rounded">
                           +{Object.keys(source.schema).length - 4} more
                         </span>
                       )}
@@ -1017,13 +1017,13 @@ export const PredictiveAnalyticsEngine: React.FC = () => {
                     </button>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-blue-500/15 rounded">
                       <Eye className="w-4 h-4 text-gray-400" />
                     </button>
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-blue-500/15 rounded">
                       <Edit className="w-4 h-4 text-gray-400" />
                     </button>
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-blue-500/15 rounded">
                       <Settings className="w-4 h-4 text-gray-400" />
                     </button>
                   </div>

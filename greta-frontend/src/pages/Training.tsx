@@ -162,7 +162,7 @@ export const Training: React.FC = () => {
       case 'beginner': return 'text-green-400 bg-green-400/20';
       case 'intermediate': return 'text-yellow-400 bg-yellow-400/20';
       case 'advanced': return 'text-red-400 bg-red-400/20';
-      default: return 'text-gray-400 bg-gray-400/20';
+      default: return 'text-blue-400 bg-blue-400/20';
     }
   };
 
@@ -257,7 +257,7 @@ export const Training: React.FC = () => {
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex space-x-1 bg-white/5 p-1 rounded-lg">
+      <div className="flex space-x-1 bg-blue-500/10 p-1 rounded-lg">
         {[
           { id: 'curriculum', label: 'Curriculum', icon: BookOpen },
           { id: 'progress', label: 'Progress', icon: BarChart3 },
@@ -269,7 +269,7 @@ export const Training: React.FC = () => {
             className={`flex-1 flex items-center justify-center space-x-2 py-2 px-4 rounded-lg transition-all ${
               activeTab === tab.id 
                 ? 'bg-purple-500 text-white' 
-                : 'text-gray-400 hover:text-white hover:bg-white/5'
+                : 'text-gray-400 hover:text-white hover:bg-blue-500/10'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -287,7 +287,7 @@ export const Training: React.FC = () => {
             {curriculum?.available_lessons.map((lesson) => (
               <div 
                 key={lesson.id}
-                className={`glass p-6 rounded-xl cursor-pointer transition-all hover:bg-white/10 ${
+                className={`glass p-6 rounded-xl cursor-pointer transition-all hover:bg-blue-500/15 ${
                   selectedLesson?.id === lesson.id ? 'ring-2 ring-purple-500' : ''
                 }`}
                 onClick={() => setSelectedLesson(lesson)}
@@ -434,13 +434,13 @@ export const Training: React.FC = () => {
               <div 
                 key={entry.user_id}
                 className={`flex items-center justify-between p-4 rounded-lg ${
-                  entry.user_id === userId ? 'bg-purple-500/20 border border-purple-500' : 'bg-white/5'
+                  entry.user_id === userId ? 'bg-purple-500/20 border border-purple-500' : 'bg-blue-500/10'
                 }`}
               >
                 <div className="flex items-center space-x-4">
                   <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
                     index === 0 ? 'bg-yellow-500 text-black' :
-                    index === 1 ? 'bg-gray-400 text-black' :
+                    index === 1 ? 'bg-blue-400 text-black' :
                     index === 2 ? 'bg-orange-600 text-white' :
                     'bg-blue-700 hover:bg-blue-800 text-white'
                   }`}>

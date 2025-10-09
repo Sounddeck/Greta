@@ -285,6 +285,47 @@ Generate clean, efficient, and well-documented {language} code:"""
         logger.error(f"Code generation error: {e}")
         raise HTTPException(status_code=500, detail="Code generation failed")
 
+class ChatRequest(BaseModel):
+    """Request model for chat"""
+    message: str = Field(..., min_length=1)
+    model: Optional[str] = Field("gpt-3.5-turbo", description="Model to use")
+    temperature: Optional[float] = Field(0.7, ge=0.0, le=2.0)
+    conversation_history: Optional[List[Dict[str, str]]] = Field(default_factory=list)
+
+class ChatResponse(BaseModel):
+    """Response model for chat"""
+    response: str
+    model: str
+    timestamp: datetime
+
+@router.post("/chat", response_model=ChatResponse)
+async def chat(request: ChatRequest):
+    """Simple chat endpoint for Master Agent"""
+    try:
+        # Build conversation context
+        messages = request.conversation_history + [{"role": "user", "content": request.message}]
+
+        # For now, return a helpful response
+        # In production, this would call the actual LLM
+        response_text = f"I received your message: '{request.message}'. I'm GRETA, your Personal AI assistant. I can help you with:\n\n" \
+                       "• Creating and managing AI agents\n" \
+                       "• Automating workflows\n" \
+                       "• Analyzing data with ML models\n" \
+                       "• Gathering intelligence (OSINT)\n" \
+                       "• Managing knowledge and documents\n" \
+                       "• Processing images, audio, and video\n" \
+                       "• Training courses and certifications\n\n" \
+                       "What would you like to do?"
+
+        return ChatResponse(
+            response=response_text,
+            model=request.model,
+            timestamp=datetime.now()
+        )
+    except Exception as e:
+        logger.error(f"Chat error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
 @router.post("/chat/{model_name}")
 async def interactive_chat(model_name: str, messages: List[Dict[str, str]]):
     """Interactive chat using LLM with conversation context"""

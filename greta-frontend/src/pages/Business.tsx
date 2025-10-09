@@ -257,7 +257,7 @@ export const Business: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-1 bg-white/10 rounded-lg p-1">
+      <div className="flex space-x-1 bg-blue-500/15 rounded-lg p-1">
         {[
           { id: 'overview', label: 'Overview', icon: BarChart3 },
           { id: 'crm', label: 'CRM', icon: Users },
@@ -270,7 +270,7 @@ export const Business: React.FC = () => {
             className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
               activeTab === tab.id
                 ? 'bg-blue-600 text-white'
-                : 'text-gray-300 hover:text-white hover:bg-white/10'
+                : 'text-gray-300 hover:text-white hover:bg-blue-500/15'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -290,7 +290,7 @@ export const Business: React.FC = () => {
             </h3>
             <div className="space-y-4">
               {(businessMetrics?.recent_activities || []).map((activity) => (
-                <div key={activity.id} className="flex items-start space-x-3 p-3 bg-white/5 rounded-lg">
+                <div key={activity.id} className="flex items-start space-x-3 p-3 bg-blue-500/10 rounded-lg">
                   <div className="text-gray-400 mt-1">
                     {getActivityIcon(activity.type)}
                   </div>
@@ -404,7 +404,7 @@ export const Business: React.FC = () => {
       {/* Connect Modal */}
       {showConnectModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-slate-800 hover:bg-slate-900 p-6 rounded-xl max-w-md w-full mx-4">
+          <div className="bg-blue-900/40 hover:bg-blue-900/60 p-6 rounded-xl max-w-md w-full mx-4">
             <h3 className="text-xl font-semibold text-white mb-4">Connect Google Workspace</h3>
             <p className="text-gray-400 mb-6">
               You'll be redirected to Google to authorize GRETA to access your workspace.

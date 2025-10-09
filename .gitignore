@@ -12,3 +12,11 @@ venv/
 *.pyc
 Greta PAI System.app/
 CPAS*/
+
+# Dynaconf secrets (Phase 4 Integration)
+.secrets.toml
+*.secrets.toml
+.secrets.yaml
+*.secrets.yaml
+.secrets.json
+*.secrets.json

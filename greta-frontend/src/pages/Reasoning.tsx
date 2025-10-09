@@ -153,7 +153,7 @@ export const Reasoning: React.FC = () => {
       case 'fast': return 'bg-green-500/20 text-green-400 border-green-500/30';
       case 'medium': return 'bg-yellow-500/20 text-yellow-400 border-yellow-500/30';
       case 'deep': return 'bg-red-500/20 text-red-400 border-red-500/30';
-      default: return 'bg-gray-500/20 text-gray-400 border-gray-500/30';
+      default: return 'bg-blue-600/20 text-gray-400 border-gray-500/30';
     }
   };
 
@@ -290,7 +290,7 @@ export const Reasoning: React.FC = () => {
           </h3>
           <div className="space-y-4">
             {metrics?.recent_tasks.map((task) => (
-              <div key={task.id} className="p-4 bg-white/5 rounded-lg">
+              <div key={task.id} className="p-4 bg-blue-500/10 rounded-lg">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center space-x-3 mb-2">
@@ -332,7 +332,7 @@ export const Reasoning: React.FC = () => {
               <select
                 value={selectedLevel}
                 onChange={(e) => setSelectedLevel(e.target.value)}
-                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none"
+                className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none"
               >
                 <option value="fast">Fast Reasoning (&lt; 1s)</option>
                 <option value="medium">Medium Reasoning (1-5s)</option>
@@ -346,7 +346,7 @@ export const Reasoning: React.FC = () => {
                 value={testPrompt}
                 onChange={(e) => setTestPrompt(e.target.value)}
                 placeholder="Enter a reasoning task to test the engine..."
-                className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none resize-none"
+                className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none resize-none"
                 rows={4}
               />
             </div>

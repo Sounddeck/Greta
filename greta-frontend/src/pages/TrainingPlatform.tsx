@@ -404,8 +404,8 @@ export const TrainingPlatform: React.FC = () => {
       case 'ai_fundamentals': return 'text-purple-400 bg-purple-400/20';
       case 'business_intelligence': return 'text-green-400 bg-green-400/20';
       case 'technical_skills': return 'text-orange-400 bg-orange-400/20';
-      case 'custom': return 'text-gray-400 bg-gray-400/20';
-      default: return 'text-gray-400 bg-gray-400/20';
+      case 'custom': return 'text-blue-400 bg-blue-400/20';
+      default: return 'text-blue-400 bg-blue-400/20';
     }
   };
 
@@ -415,7 +415,7 @@ export const TrainingPlatform: React.FC = () => {
       case 'intermediate': return 'text-yellow-400 bg-yellow-400/20';
       case 'advanced': return 'text-orange-400 bg-orange-400/20';
       case 'expert': return 'text-red-400 bg-red-400/20';
-      default: return 'text-gray-400 bg-gray-400/20';
+      default: return 'text-blue-400 bg-blue-400/20';
     }
   };
 
@@ -527,7 +527,7 @@ export const TrainingPlatform: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-1 bg-white/5 p-1 rounded-lg">
+      <div className="flex space-x-1 bg-blue-500/10 p-1 rounded-lg">
         {[
           { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
           { id: 'programs', label: 'Programs', icon: BookOpen },
@@ -541,7 +541,7 @@ export const TrainingPlatform: React.FC = () => {
             className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
               activeTab === tab.id
                 ? 'bg-blue-600 text-white'
-                : 'text-gray-400 hover:text-white hover:bg-white/10'
+                : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -565,7 +565,7 @@ export const TrainingPlatform: React.FC = () => {
                 if (!program) return null;
 
                 return (
-                  <div key={progress.program_id} className="bg-white/5 p-4 rounded-lg hover:bg-white/10 transition-all cursor-pointer">
+                  <div key={progress.program_id} className="bg-blue-500/10 p-4 rounded-lg hover:bg-blue-500/15 transition-all cursor-pointer">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center space-x-3">
                         <div className={`p-2 rounded-lg ${getCategoryColor(program.category)}`}>
@@ -609,7 +609,7 @@ export const TrainingPlatform: React.FC = () => {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {(programs || []).filter(p => !(userProgress || []).some(up => up.program_id === p.id)).slice(0, 3).map((program) => (
-                <div key={program.id} className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
+                <div key={program.id} className="bg-blue-500/10 p-6 rounded-xl hover:bg-blue-500/15 transition-all">
                   <div className="flex items-start justify-between mb-4">
                     <div className={`p-2 rounded-lg ${getCategoryColor(program.category)}`}>
                       {getCategoryIcon(program.category)}
@@ -663,7 +663,7 @@ export const TrainingPlatform: React.FC = () => {
                     type="text"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    className="w-full pl-10 pr-4 py-2 bg-blue-500/15 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                     placeholder="Search programs..."
                   />
                 </div>
@@ -671,7 +671,7 @@ export const TrainingPlatform: React.FC = () => {
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="px-4 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="px-4 py-2 bg-blue-500/15 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="all">All Categories</option>
                 <option value="greta_mastery">GRETA Mastery</option>
@@ -689,7 +689,7 @@ export const TrainingPlatform: React.FC = () => {
               const userProg = (userProgress || []).find(p => p.program_id === program.id);
 
               return (
-                <div key={program.id} className="glass p-6 rounded-xl hover:bg-white/10 transition-all">
+                <div key={program.id} className="glass p-6 rounded-xl hover:bg-blue-500/15 transition-all">
                   <div className="flex items-start justify-between mb-4">
                     <div className={`p-2 rounded-lg ${getCategoryColor(program.category)}`}>
                       {getCategoryIcon(program.category)}
@@ -760,7 +760,7 @@ export const TrainingPlatform: React.FC = () => {
             <h3 className="text-xl font-semibold text-white mb-4">Structured Learning Paths</h3>
             <div className="space-y-6">
               {(learningPaths || []).map((path) => (
-                <div key={path.id} className="bg-white/5 p-6 rounded-xl">
+                <div key={path.id} className="bg-blue-500/10 p-6 rounded-xl">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h4 className="text-white font-semibold text-lg mb-2">{path.title}</h4>
@@ -794,7 +794,7 @@ export const TrainingPlatform: React.FC = () => {
 
                         return (
                           <React.Fragment key={programId}>
-                            <div className="flex-shrink-0 bg-white/10 p-3 rounded-lg min-w-[200px]">
+                            <div className="flex-shrink-0 bg-blue-500/15 p-3 rounded-lg min-w-[200px]">
                               <div className="flex items-center space-x-2 mb-2">
                                 <div className={`p-1 rounded ${getCategoryColor(program.category)}`}>
                                   {getCategoryIcon(program.category)}

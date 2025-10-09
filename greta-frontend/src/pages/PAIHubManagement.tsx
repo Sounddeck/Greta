@@ -354,10 +354,10 @@ export const PAIHubManagement: React.FC = () => {
       case 'active': return 'bg-green-500/20';
       case 'building': return 'bg-yellow-500/20';
       case 'deploying': return 'bg-blue-500/20';
-      case 'idle': return 'bg-gray-500/20';
+      case 'idle': return 'bg-blue-600/20';
       case 'error': return 'bg-red-500/20';
       case 'offline': return 'bg-blue-700 hover:bg-blue-800/20';
-      default: return 'bg-gray-500/20';
+      default: return 'bg-blue-600/20';
     }
   };
 
@@ -418,7 +418,7 @@ export const PAIHubManagement: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-1 bg-white/5 p-1 rounded-lg">
+      <div className="flex space-x-1 bg-blue-500/10 p-1 rounded-lg">
         {[
           { id: 'overview', label: 'Overview', icon: BarChart3 },
           { id: 'agents', label: 'Agents', icon: Users },
@@ -433,7 +433,7 @@ export const PAIHubManagement: React.FC = () => {
             className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
               activeTab === tab.id
                 ? 'bg-blue-600 text-white'
-                : 'text-gray-400 hover:text-white hover:bg-white/10'
+                : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -530,12 +530,12 @@ export const PAIHubManagement: React.FC = () => {
               </h3>
               <div className="space-y-3">
                 {pipelines.slice(0, 5).map((pipeline) => (
-                  <div key={pipeline.id} className="flex items-center justify-between p-3 bg-white/5 rounded-lg">
+                  <div key={pipeline.id} className="flex items-center justify-between p-3 bg-blue-500/10 rounded-lg">
                     <div className="flex items-center space-x-3">
                       <div className={`w-2 h-2 rounded-full ${
                         pipeline.status === 'success' ? 'bg-green-400' :
                         pipeline.status === 'running' ? 'bg-yellow-400 animate-pulse' :
-                        pipeline.status === 'failed' ? 'bg-red-400' : 'bg-gray-400'
+                        pipeline.status === 'failed' ? 'bg-red-400' : 'bg-blue-400'
                       }`}></div>
                       <div>
                         <p className="text-sm text-white">{pipeline.name}</p>
@@ -548,7 +548,7 @@ export const PAIHubManagement: React.FC = () => {
                       pipeline.status === 'success' ? 'bg-green-500/20 text-green-400' :
                       pipeline.status === 'running' ? 'bg-yellow-500/20 text-yellow-400' :
                       pipeline.status === 'failed' ? 'bg-red-500/20 text-red-400' :
-                      'bg-gray-500/20 text-gray-400'
+                      'bg-blue-600/20 text-gray-400'
                     }`}>
                       {pipeline.status}
                     </span>
@@ -572,13 +572,13 @@ export const PAIHubManagement: React.FC = () => {
                   placeholder="Search agents..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10 pr-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="pl-10 pr-4 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                 />
               </div>
               <select
                 value={filterStatus}
                 onChange={(e) => setFilterStatus(e.target.value)}
-                className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="all">All Status</option>
                 <option value="active">Active</option>
@@ -591,7 +591,7 @@ export const PAIHubManagement: React.FC = () => {
               <select
                 value={filterEnvironment}
                 onChange={(e) => setFilterEnvironment(e.target.value)}
-                className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
               >
                 <option value="all">All Environments</option>
                 <option value="development">Development</option>
@@ -689,13 +689,13 @@ export const PAIHubManagement: React.FC = () => {
                     </button>
                   </div>
                   <div className="flex items-center space-x-1">
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-blue-500/15 rounded">
                       <Eye className="w-4 h-4 text-gray-400" />
                     </button>
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-blue-500/15 rounded">
                       <Edit className="w-4 h-4 text-gray-400" />
                     </button>
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-blue-500/15 rounded">
                       <Settings className="w-4 h-4 text-gray-400" />
                     </button>
                   </div>
@@ -731,7 +731,7 @@ export const PAIHubManagement: React.FC = () => {
                     pipeline.status === 'success' ? 'bg-green-500/20 text-green-400' :
                     pipeline.status === 'running' ? 'bg-yellow-500/20 text-yellow-400' :
                     pipeline.status === 'failed' ? 'bg-red-500/20 text-red-400' :
-                    'bg-gray-500/20 text-gray-400'
+                    'bg-blue-600/20 text-gray-400'
                   }`}>
                     {pipeline.status}
                   </span>
@@ -744,7 +744,7 @@ export const PAIHubManagement: React.FC = () => {
                         stage.status === 'success' ? 'bg-green-500/20 text-green-400' :
                         stage.status === 'running' ? 'bg-yellow-500/20 text-yellow-400' :
                         stage.status === 'failed' ? 'bg-red-500/20 text-red-400' :
-                        'bg-gray-500/20 text-gray-400'
+                        'bg-blue-600/20 text-gray-400'
                       }`}>
                         {stage.status === 'success' ? <CheckCircle className="w-4 h-4" /> :
                          stage.status === 'running' ? <Clock className="w-4 h-4 animate-spin" /> :
@@ -857,10 +857,10 @@ export const PAIHubManagement: React.FC = () => {
                     <span>Rebuild</span>
                   </button>
                   <div className="flex items-center space-x-1">
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-blue-500/15 rounded">
                       <FileText className="w-4 h-4 text-gray-400" />
                     </button>
-                    <button className="p-1 hover:bg-white/10 rounded">
+                    <button className="p-1 hover:bg-blue-500/15 rounded">
                       <Download className="w-4 h-4 text-gray-400" />
                     </button>
                   </div>
@@ -940,7 +940,7 @@ export const PAIHubManagement: React.FC = () => {
                   <input
                     type="number"
                     defaultValue="300"
-                    className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>
@@ -959,7 +959,7 @@ export const PAIHubManagement: React.FC = () => {
               <div className="space-y-4">
                 <div>
                   <label className="block text-sm text-gray-400 mb-2">Default Environment</label>
-                  <select className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
+                  <select className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
                     <option value="staging">Staging</option>
                     <option value="production">Production</option>
                   </select>
@@ -969,7 +969,7 @@ export const PAIHubManagement: React.FC = () => {
                   <input
                     type="number"
                     defaultValue="60"
-                    className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                    className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <div>

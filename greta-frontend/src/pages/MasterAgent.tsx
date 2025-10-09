@@ -249,8 +249,8 @@ export const MasterAgent: React.FC = () => {
             {masterStatus?.active_agents.map((agent) => (
               <div 
                 key={agent.id}
-                className={`p-4 bg-white/5 rounded-lg border-l-4 cursor-pointer transition-all hover:bg-white/10 ${
-                  selectedAgent?.id === agent.id ? 'border-purple-500 bg-white/10' : 'border-gray-600'
+                className={`p-4 bg-blue-500/10 rounded-lg border-l-4 cursor-pointer transition-all hover:bg-blue-500/15 ${
+                  selectedAgent?.id === agent.id ? 'border-purple-500 bg-blue-500/15' : 'border-gray-600'
                 }`}
                 onClick={() => setSelectedAgent(agent)}
               >
@@ -301,7 +301,7 @@ export const MasterAgent: React.FC = () => {
                     </span>
                   ))}
                   {agent.capabilities.length > 3 && (
-                    <span className="px-2 py-1 bg-gray-500/20 text-gray-400 text-xs rounded-full">
+                    <span className="px-2 py-1 bg-blue-600/20 text-gray-400 text-xs rounded-full">
                       +{agent.capabilities.length - 3} more
                     </span>
                   )}
@@ -392,7 +392,7 @@ export const MasterAgent: React.FC = () => {
                   type="text"
                   value={newAgentConfig.name}
                   onChange={(e) => setNewAgentConfig({ ...newAgentConfig, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none"
+                  className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none"
                   placeholder="Enter agent name"
                 />
               </div>
@@ -401,7 +401,7 @@ export const MasterAgent: React.FC = () => {
                 <select
                   value={newAgentConfig.type}
                   onChange={(e) => setNewAgentConfig({ ...newAgentConfig, type: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none"
+                  className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none"
                 >
                   <option value="general">General Assistant</option>
                   <option value="research">Research Specialist</option>

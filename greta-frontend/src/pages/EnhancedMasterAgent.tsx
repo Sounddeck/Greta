@@ -280,7 +280,7 @@ const EnhancedMasterAgent: React.FC = () => {
         <div className="bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl p-8 shadow-2xl">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <div className="bg-white/20 p-4 rounded-xl backdrop-blur-sm">
+              <div className="bg-blue-500/20 p-4 rounded-xl backdrop-blur-sm">
                 <Crown className="w-12 h-12 text-white" />
               </div>
               <div>
@@ -302,7 +302,7 @@ const EnhancedMasterAgent: React.FC = () => {
 
         {/* System Resources */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          <div className="bg-slate-800 hover:bg-slate-900 rounded-xl p-6 border border-gray-700">
+          <div className="bg-blue-900/40 hover:bg-blue-900/60 rounded-xl p-6 border border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <Cpu className="w-8 h-8 text-blue-400" />
               <span className="text-2xl font-bold text-white">
@@ -312,7 +312,7 @@ const EnhancedMasterAgent: React.FC = () => {
             <p className="text-gray-400">CPU Usage</p>
           </div>
 
-          <div className="bg-slate-800 hover:bg-slate-900 rounded-xl p-6 border border-gray-700">
+          <div className="bg-blue-900/40 hover:bg-blue-900/60 rounded-xl p-6 border border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <HardDrive className="w-8 h-8 text-green-400" />
               <span className="text-2xl font-bold text-white">
@@ -322,7 +322,7 @@ const EnhancedMasterAgent: React.FC = () => {
             <p className="text-gray-400">Memory Usage</p>
           </div>
 
-          <div className="bg-slate-800 hover:bg-slate-900 rounded-xl p-6 border border-gray-700">
+          <div className="bg-blue-900/40 hover:bg-blue-900/60 rounded-xl p-6 border border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <Users className="w-8 h-8 text-purple-400" />
               <span className="text-2xl font-bold text-white">
@@ -332,7 +332,7 @@ const EnhancedMasterAgent: React.FC = () => {
             <p className="text-gray-400">Total Agents</p>
           </div>
 
-          <div className="bg-slate-800 hover:bg-slate-900 rounded-xl p-6 border border-gray-700">
+          <div className="bg-blue-900/40 hover:bg-blue-900/60 rounded-xl p-6 border border-gray-700">
             <div className="flex items-center justify-between mb-4">
               <Workflow className="w-8 h-8 text-pink-400" />
               <span className="text-2xl font-bold text-white">
@@ -344,7 +344,7 @@ const EnhancedMasterAgent: React.FC = () => {
         </div>
 
         {/* System Metrics */}
-        <div className="bg-slate-800 hover:bg-slate-900 rounded-xl p-6 border border-gray-700">
+        <div className="bg-blue-900/40 hover:bg-blue-900/60 rounded-xl p-6 border border-gray-700">
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
             <BarChart3 className="w-6 h-6 mr-2 text-blue-400" />
             System Metrics
@@ -374,7 +374,7 @@ const EnhancedMasterAgent: React.FC = () => {
         </div>
 
         {/* Agents Management */}
-        <div className="bg-slate-800 hover:bg-slate-900 rounded-xl p-6 border border-gray-700">
+        <div className="bg-blue-900/40 hover:bg-blue-900/60 rounded-xl p-6 border border-gray-700">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-2xl font-bold text-white flex items-center">
               <Users className="w-6 h-6 mr-2 text-purple-400" />
@@ -414,7 +414,7 @@ const EnhancedMasterAgent: React.FC = () => {
                     <div className={`px-2 py-1 rounded text-xs font-semibold ${
                       agent.status === 'running' ? 'bg-green-500 text-white' :
                       agent.status === 'deployed' ? 'bg-blue-500 text-white' :
-                      agent.status === 'stopped' ? 'bg-gray-500 text-white' :
+                      agent.status === 'stopped' ? 'bg-blue-600 text-white' :
                       'bg-yellow-500 text-white'
                     }`}>
                       {agent.status}
@@ -468,7 +468,7 @@ const EnhancedMasterAgent: React.FC = () => {
         </div>
 
         {/* LLM Query Interface */}
-        <div className="bg-slate-800 hover:bg-slate-900 rounded-xl p-6 border border-gray-700">
+        <div className="bg-blue-900/40 hover:bg-blue-900/60 rounded-xl p-6 border border-gray-700">
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
             <Brain className="w-6 h-6 mr-2 text-pink-400" />
             Query Local LLM
@@ -496,7 +496,7 @@ const EnhancedMasterAgent: React.FC = () => {
         </div>
 
         {/* System Optimization */}
-        <div className="bg-slate-800 hover:bg-slate-900 rounded-xl p-6 border border-gray-700">
+        <div className="bg-blue-900/40 hover:bg-blue-900/60 rounded-xl p-6 border border-gray-700">
           <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
             <TrendingUp className="w-6 h-6 mr-2 text-green-400" />
             System Optimization
@@ -536,7 +536,7 @@ const EnhancedMasterAgent: React.FC = () => {
         {/* Create Agent Modal */}
         {showCreateAgent && (
           <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-slate-800 hover:bg-slate-900 rounded-xl p-8 max-w-md w-full border border-gray-700">
+            <div className="bg-blue-900/40 hover:bg-blue-900/60 rounded-xl p-8 max-w-md w-full border border-gray-700">
               <h3 className="text-2xl font-bold text-white mb-6">Create New Agent</h3>
               <div className="space-y-4">
                 <div>

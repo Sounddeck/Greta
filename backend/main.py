@@ -247,6 +247,23 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Add Rate Limiting middleware - Enforce rate limits (BEFORE other middlewares)
+try:
+    from middleware.rate_limit_middleware import RateLimitMiddleware
+    app.add_middleware(RateLimitMiddleware)
+    logger.info("✅ Rate Limiting middleware added - Request rate limiting enabled")
+except Exception as e:
+    logger.warning(f"⚠️ Rate limiting middleware error: {e}")
+
+# Add Audit middleware - Automatic audit logging
+try:
+    from middleware.audit_middleware import AuditMiddleware
+    app.add_middleware(AuditMiddleware)
+    logger.info("✅ Audit middleware added - Automatic API logging enabled")
+except Exception as e:
+    logger.warning(f"⚠️ Audit middleware error: {e}")
+
+
 # Add Security middleware - Phase 1 Security Hardening
 if SECURITY_AVAILABLE:
     # Add security headers middleware
@@ -626,6 +643,196 @@ except Exception as e:
 #     logger.info("✅ Asset Creation Router integrated - Digital product generation available")
 # except Exception as e:
 #     logger.warning(f"⚠️ Asset Creation router error: {e}")
+
+# Add CPAS4 UI Routers - Tasks, Prompts, Knowledge
+try:
+    from routers.tasks_router import router as tasks_router
+    app.include_router(tasks_router, tags=["Tasks"])
+    routers_loaded += 1
+    logger.info("✅ Tasks Router integrated - CPAS4 UI task execution available")
+except Exception as e:
+    logger.warning(f"⚠️ Tasks router error: {e}")
+
+try:
+    from routers.prompts_router import router as prompts_router
+    app.include_router(prompts_router, tags=["Prompts"])
+    routers_loaded += 1
+    logger.info("✅ Prompts Router integrated - CPAS4 UI prompt enhancement available")
+except Exception as e:
+    logger.warning(f"⚠️ Prompts router error: {e}")
+
+try:
+    from routers.knowledge_router import router as knowledge_router
+    app.include_router(knowledge_router, tags=["Knowledge"])
+    routers_loaded += 1
+    logger.info("✅ Knowledge Router integrated - CPAS4 UI file upload available")
+except Exception as e:
+    logger.warning(f"⚠️ Knowledge router error: {e}")
+
+try:
+    from routers.task_management_router import router as task_management_router
+    app.include_router(task_management_router, tags=["Task Management"])
+    routers_loaded += 1
+    logger.info("✅ Task Management Router integrated - Task persistence and lifecycle management available")
+except Exception as e:
+    logger.warning(f"⚠️ Task Management router error: {e}")
+
+try:
+    from routers.crm_router import router as crm_router
+    app.include_router(crm_router, tags=["CRM"])
+    routers_loaded += 1
+    logger.info("✅ CRM Router integrated - Full CRM with AI-powered features available")
+except Exception as e:
+    logger.warning(f"⚠️ CRM router error: {e}")
+
+try:
+    from routers.ats_router import router as ats_router
+    app.include_router(ats_router, tags=["ATS"])
+    routers_loaded += 1
+    logger.info("✅ ATS Router integrated - Full ATS with AI-powered features available")
+except Exception as e:
+    logger.warning(f"⚠️ ATS router error: {e}")
+
+try:
+    from routers.agent_builder_router import router as agent_builder_router
+    app.include_router(agent_builder_router, tags=["Agent Builder"])
+    routers_loaded += 1
+    logger.info("✅ Agent Builder Router integrated - Custom agent creation and management available")
+except Exception as e:
+    logger.warning(f"⚠️ Agent Builder router error: {e}")
+
+try:
+    from routers.finance_router import router as finance_router
+    app.include_router(finance_router, tags=["Finance"])
+    routers_loaded += 1
+    logger.info("✅ Finance Router integrated - Complete financial management available")
+except Exception as e:
+    logger.warning(f"⚠️ Finance router error: {e}")
+
+try:
+    from routers.projects_router import router as projects_router
+    app.include_router(projects_router, tags=["Projects"])
+    routers_loaded += 1
+    logger.info("✅ Projects Router integrated - Complete project management available")
+except Exception as e:
+    logger.warning(f"⚠️ Projects router error: {e}")
+
+# Priority 3 Module 3: Inventory Management
+try:
+    from routers.inventory_router import router as inventory_router
+    app.include_router(inventory_router, tags=["Inventory"])
+    routers_loaded += 1
+    logger.info("✅ Inventory Router integrated - Complete inventory management available")
+except Exception as e:
+    logger.warning(f"⚠️ Inventory router error: {e}")
+
+# Priority 3 Module 4: Advanced Analytics & Reporting
+try:
+    from routers.analytics_router import router as analytics_router
+    app.include_router(analytics_router, tags=["Analytics"])
+    routers_loaded += 1
+    logger.info("✅ Analytics Router integrated - Advanced analytics and reporting available")
+except Exception as e:
+    logger.warning(f"⚠️ Analytics router error: {e}")
+
+# Priority 3 Module 5: MCP Hub - Intelligent MCP Server Discovery
+try:
+    from routers.mcp_router import router as mcp_router
+    app.include_router(mcp_router, tags=["MCP Hub"])
+    routers_loaded += 1
+    logger.info("✅ MCP Hub Router integrated - Intelligent MCP server discovery and monitoring available")
+except Exception as e:
+    logger.warning(f"⚠️ MCP Hub router error: {e}")
+
+# Priority 3 Optional Enhancement 1: Third-Party Integrations
+try:
+    from routers.integrations_router import router as integrations_router
+    app.include_router(integrations_router, tags=["Integrations"])
+    routers_loaded += 1
+    logger.info("✅ Integrations Router integrated - Third-party service integrations (Slack, Stripe, Zapier) available")
+except Exception as e:
+    logger.warning(f"⚠️ Integrations router error: {e}")
+
+# Add RBAC Router - Role-Based Access Control
+try:
+    from routers.rbac_router import router as rbac_router
+    app.include_router(rbac_router, tags=["RBAC"])
+    routers_loaded += 1
+    logger.info("✅ RBAC Router integrated - Role-Based Access Control available")
+except Exception as e:
+    logger.warning(f"⚠️ RBAC router error: {e}")
+
+# Add Audit Router - Audit Logging
+try:
+    from routers.audit_router import router as audit_router
+    app.include_router(audit_router, tags=["Audit"])
+    routers_loaded += 1
+    logger.info("✅ Audit Router integrated - Comprehensive audit logging available")
+except Exception as e:
+    logger.warning(f"⚠️ Audit router error: {e}")
+
+# Add MFA Router - Multi-Factor Authentication
+try:
+    from routers.mfa_router import router as mfa_router
+    app.include_router(mfa_router, tags=["MFA"])
+    routers_loaded += 1
+    logger.info("✅ MFA Router integrated - Two-Factor Authentication (TOTP, Backup Codes) available")
+except Exception as e:
+    logger.warning(f"⚠️ MFA router error: {e}")
+
+# Add Rate Limiting Router - Rate Limit Management
+try:
+    from routers.rate_limit_router import router as rate_limit_router
+    app.include_router(rate_limit_router, tags=["Rate Limiting"])
+    routers_loaded += 1
+    logger.info("✅ Rate Limiting Router integrated - Rate limit rules and monitoring available")
+except Exception as e:
+    logger.warning(f"⚠️ Rate limiting router error: {e}")
+
+# Add API Key Router - API Key Management
+try:
+    from routers.api_key_router import router as api_key_router
+    app.include_router(api_key_router, tags=["API Keys"])
+    routers_loaded += 1
+    logger.info("✅ API Key Router integrated - API key generation and management available")
+except Exception as e:
+    logger.warning(f"⚠️ API key router error: {e}")
+
+# Add OAuth Router - Google Workspace OAuth 2.0
+try:
+    from routers.oauth_router import router as oauth_router
+    app.include_router(oauth_router, tags=["OAuth 2.0"])
+    routers_loaded += 1
+    logger.info("✅ OAuth Router integrated - Google Workspace OAuth 2.0 authentication available")
+except Exception as e:
+    logger.warning(f"⚠️ OAuth router error: {e}")
+
+# Add Gmail Router - Gmail API Integration
+try:
+    from routers.gmail_router import router as gmail_router
+    app.include_router(gmail_router, tags=["Gmail"])
+    routers_loaded += 1
+    logger.info("✅ Gmail Router integrated - Gmail API operations available")
+except Exception as e:
+    logger.warning(f"⚠️ Gmail router error: {e}")
+
+# Add Calendar Router - Google Calendar Integration
+try:
+    from routers.calendar_router import router as calendar_router
+    app.include_router(calendar_router, tags=["Google Calendar"])
+    routers_loaded += 1
+    logger.info("✅ Calendar Router integrated - Google Calendar API operations available")
+except Exception as e:
+    logger.warning(f"⚠️ Calendar router error: {e}")
+
+# Add Drive Router - Google Drive Integration
+try:
+    from routers.drive_router import router as drive_router
+    app.include_router(drive_router, tags=["Google Drive"])
+    routers_loaded += 1
+    logger.info("✅ Drive Router integrated - Google Drive API operations available")
+except Exception as e:
+    logger.warning(f"⚠️ Drive router error: {e}")
 
 logger.info(f"Total routers included in app: {routers_loaded}")
 

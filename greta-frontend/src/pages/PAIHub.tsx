@@ -202,7 +202,7 @@ export const PAIHub: React.FC = () => {
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {(paiStatus?.capabilities || []).map((capability, index) => (
-              <div key={index} className="flex items-center space-x-3 p-3 bg-white/5 rounded-lg">
+              <div key={index} className="flex items-center space-x-3 p-3 bg-blue-500/10 rounded-lg">
                 <CheckCircle className="w-5 h-5 text-green-400" />
                 <span className="text-gray-300">{capability}</span>
               </div>
@@ -218,7 +218,7 @@ export const PAIHub: React.FC = () => {
           </h3>
           <div className="space-y-4">
             {(paiStatus?.recent_activities || []).map((activity, index) => (
-              <div key={index} className="flex items-start space-x-3 p-3 bg-white/5 rounded-lg">
+              <div key={index} className="flex items-start space-x-3 p-3 bg-blue-500/10 rounded-lg">
                 <div className="text-gray-400 mt-1">
                   {getActivityIcon(activity.type)}
                 </div>

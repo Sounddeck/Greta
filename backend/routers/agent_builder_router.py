@@ -1,361 +1,140 @@
 """
-GRETA Agent Builder Router
-Complete API endpoints for agent development environment
+Agent Builder Router for CPAS4
+REST API endpoints for Agent Builder
 """
-
-from fastapi import APIRouter, HTTPException, Depends
-from pydantic import BaseModel, Field
-from typing import Dict, Any, Optional, List
-from datetime import datetime
+from fastapi import APIRouter, HTTPException, Depends, Query
+from typing import List, Optional
 import logging
-import sys
-import os
-
-# Add backend directory to path
-backend_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if backend_dir not in sys.path:
-    sys.path.insert(0, backend_dir)
-
-import database
-from services.llm_service import get_llm_service
-from services.learning_service import LearningService
 from services.agent_builder_service import AgentBuilderService
+from models.agent_builder_models import *
+from database import Database
 
 logger = logging.getLogger(__name__)
+router = APIRouter(prefix="/api/v1/agent-builder", tags=["Agent Builder"])
 
-router = APIRouter(prefix="/api/v1/builder", tags=["Agent Builder"])
+async def get_service() -> AgentBuilderService:
+    db = Database()
+    await db.connect()
+    return AgentBuilderService(db)
 
-# Global instance
-builder_instance: Optional[AgentBuilderService] = None
+# Templates
+@router.post("/templates", response_model=AgentTemplate, status_code=201)
+async def create_template(t: AgentTemplateCreate, svc: AgentBuilderService = Depends(get_service)):
+    return await svc.create_template(t)
 
-# Pydantic models
-class ProjectCreateRequest(BaseModel):
-    """Project creation request"""
-    name: str = Field(..., description="Project name")
-    description: Optional[str] = Field("", description="Project description")
-    template: str = Field(..., description="Project template (basic, advanced, ml_agent, langchain)")
-    created_by: Optional[str] = Field("system", description="Creator")
+@router.get("/templates/{tid}", response_model=AgentTemplate)
+async def get_template(tid: str, svc: AgentBuilderService = Depends(get_service)):
+    t = await svc.get_template(tid)
+    if not t: raise HTTPException(404, "Template not found")
+    return t
 
-class FileUpdateRequest(BaseModel):
-    """File update request"""
-    filename: str = Field(..., description="Filename")
-    content: str = Field(..., description="File content")
+@router.patch("/templates/{tid}", response_model=AgentTemplate)
+async def update_template(tid: str, tu: AgentTemplateUpdate, svc: AgentBuilderService = Depends(get_service)):
+    t = await svc.update_template(tid, tu)
+    if not t: raise HTTPException(404, "Template not found")
+    return t
 
-class FileAddRequest(BaseModel):
-    """File add request"""
-    filename: str = Field(..., description="Filename")
-    content: Optional[str] = Field("", description="File content")
+@router.delete("/templates/{tid}", status_code=204)
+async def delete_template(tid: str, svc: AgentBuilderService = Depends(get_service)):
+    if not await svc.delete_template(tid): raise HTTPException(404, "Template not found")
 
-class BuildRequest(BaseModel):
-    """Build request"""
-    config: Optional[Dict[str, Any]] = Field(None, description="Build configuration")
+@router.get("/templates", response_model=List[AgentTemplate])
+async def list_templates(agent_type: Optional[AgentType] = None, tags: Optional[List[str]] = Query(None), limit: int = Query(100, le=1000), svc: AgentBuilderService = Depends(get_service)):
+    return await svc.list_templates(agent_type, tags, limit)
 
-class TestRequest(BaseModel):
-    """Test request"""
-    config: Optional[Dict[str, Any]] = Field(None, description="Test configuration")
+# Agents
+@router.post("/agents", response_model=CustomAgent, status_code=201)
+async def create_agent(ac: CustomAgentCreate, svc: AgentBuilderService = Depends(get_service)):
+    return await svc.create_agent(ac)
 
-class DeployRequest(BaseModel):
-    """Deploy request"""
-    environment: Optional[str] = Field("production", description="Deployment environment")
+@router.get("/agents/{aid}", response_model=CustomAgent)
+async def get_agent(aid: str, svc: AgentBuilderService = Depends(get_service)):
+    a = await svc.get_agent(aid)
+    if not a: raise HTTPException(404, "Agent not found")
+    return a
 
-async def get_builder() -> AgentBuilderService:
-    """Get or initialize Agent Builder instance"""
-    global builder_instance
-    
-    if builder_instance is None:
-        db = database.database
-        llm_service = await get_llm_service()
-        learning_service = LearningService(db.client if hasattr(db, 'client') else None)
-        await learning_service.initialize()
-        
-        builder_instance = AgentBuilderService(db, llm_service, learning_service)
-        await builder_instance.initialize()
-    
-    return builder_instance
+@router.patch("/agents/{aid}", response_model=CustomAgent)
+async def update_agent(aid: str, au: CustomAgentUpdate, svc: AgentBuilderService = Depends(get_service)):
+    a = await svc.update_agent(aid, au)
+    if not a: raise HTTPException(404, "Agent not found")
+    return a
 
+@router.delete("/agents/{aid}", status_code=204)
+async def delete_agent(aid: str, svc: AgentBuilderService = Depends(get_service)):
+    if not await svc.delete_agent(aid): raise HTTPException(404, "Agent not found")
+
+@router.get("/agents", response_model=List[CustomAgent])
+async def list_agents(status: Optional[AgentStatus] = None, agent_type: Optional[AgentType] = None, tags: Optional[List[str]] = Query(None), limit: int = Query(100, le=1000), svc: AgentBuilderService = Depends(get_service)):
+    return await svc.list_agents(status, agent_type, tags, limit)
+
+@router.post("/agents/{aid}/clone", response_model=CustomAgent)
+async def clone_agent(aid: str, new_name: str = Query(...), svc: AgentBuilderService = Depends(get_service)):
+    a = await svc.clone_agent(aid, new_name)
+    if not a: raise HTTPException(404, "Agent not found")
+    return a
+
+# Versions
+@router.post("/versions", response_model=AgentVersion, status_code=201)
+async def create_version(vc: AgentVersionCreate, svc: AgentBuilderService = Depends(get_service)):
+    return await svc.create_version(vc)
+
+@router.get("/agents/{aid}/versions", response_model=List[AgentVersion])
+async def list_versions(aid: str, limit: int = Query(50, le=100), svc: AgentBuilderService = Depends(get_service)):
+    return await svc.list_versions(aid, limit)
+
+@router.post("/agents/{aid}/rollback", response_model=CustomAgent)
+async def rollback_version(aid: str, version_id: str = Query(...), svc: AgentBuilderService = Depends(get_service)):
+    a = await svc.rollback_version(aid, version_id)
+    if not a: raise HTTPException(404, "Version not found")
+    return a
+
+# Deployment
+@router.post("/deployments", response_model=Deployment, status_code=201)
+async def deploy_agent(dc: DeploymentCreate, svc: AgentBuilderService = Depends(get_service)):
+    return await svc.deploy_agent(dc)
+
+@router.get("/deployments/{did}", response_model=Deployment)
+async def get_deployment(did: str, svc: AgentBuilderService = Depends(get_service)):
+    d = await svc.get_deployment(did)
+    if not d: raise HTTPException(404, "Deployment not found")
+    return d
+
+@router.get("/deployments", response_model=List[Deployment])
+async def list_deployments(agent_id: Optional[str] = None, status: Optional[DeploymentStatus] = None, limit: int = Query(100, le=1000), svc: AgentBuilderService = Depends(get_service)):
+    return await svc.list_deployments(agent_id, status, limit)
+
+# Execution
+@router.post("/executions", response_model=AgentExecution, status_code=201)
+async def execute_agent(ec: AgentExecutionCreate, svc: AgentBuilderService = Depends(get_service)):
+    return await svc.execute_agent(ec)
+
+@router.get("/executions/{eid}", response_model=AgentExecution)
+async def get_execution(eid: str, svc: AgentBuilderService = Depends(get_service)):
+    e = await svc.get_execution(eid)
+    if not e: raise HTTPException(404, "Execution not found")
+    return e
+
+@router.get("/executions", response_model=List[AgentExecution])
+async def list_executions(agent_id: Optional[str] = None, status: Optional[ExecutionStatus] = None, limit: int = Query(100, le=1000), svc: AgentBuilderService = Depends(get_service)):
+    return await svc.list_executions(agent_id, status, limit)
+
+# Code Generation
+@router.post("/agents/{aid}/generate-code", response_model=CodeGenerationResult)
+async def generate_code(aid: str, include_tools: bool = True, include_tests: bool = False, svc: AgentBuilderService = Depends(get_service)):
+    req = CodeGenerationRequest(agent_id=aid, include_tools=include_tools, include_tests=include_tests)
+    return await svc.generate_code(req)
+
+# Validation
+@router.post("/agents/{aid}/validate", response_model=ValidationResult)
+async def validate_agent(aid: str, svc: AgentBuilderService = Depends(get_service)):
+    return await svc.validate_agent(aid)
+
+# Statistics
+@router.get("/stats", response_model=AgentBuilderStats)
+async def get_stats(svc: AgentBuilderService = Depends(get_service)):
+    return await svc.get_stats()
+
+# Health
 @router.get("/health")
 async def health_check():
-    """Health check endpoint"""
-    return {
-        "status": "healthy",
-        "service": "agent_builder",
-        "timestamp": datetime.utcnow().isoformat()
-    }
-
-@router.get("/metrics")
-async def get_metrics(service: AgentBuilderService = Depends(get_builder)):
-    """Get service metrics"""
-    return await service.get_metrics()
-
-# ==================== PROJECTS ====================
-
-@router.post("/projects")
-async def create_project(
-    request: ProjectCreateRequest,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Create a new agent project"""
-    try:
-        result = await service.create_project(request.dict())
-
-        if not result.get("success"):
-            raise HTTPException(status_code=400, detail=result.get("error"))
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error creating project: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.get("/projects")
-async def list_projects(
-    status: Optional[str] = None,
-    framework: Optional[str] = None,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """List all projects"""
-    try:
-        filters = {}
-        if status:
-            filters["status"] = status
-        if framework:
-            filters["framework"] = framework
-
-        result = await service.list_projects(filters)
-        return result
-    except Exception as e:
-        logger.error(f"Error listing projects: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.get("/projects/{project_id}")
-async def get_project(
-    project_id: str,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Get project details"""
-    try:
-        result = await service.get_project(project_id)
-
-        if not result.get("success"):
-            raise HTTPException(status_code=404, detail=result.get("error"))
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting project: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.delete("/projects/{project_id}")
-async def delete_project(
-    project_id: str,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Delete a project"""
-    try:
-        result = await service.delete_project(project_id)
-
-        if not result.get("success"):
-            raise HTTPException(status_code=404, detail=result.get("error"))
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error deleting project: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-# ==================== FILES ====================
-
-@router.put("/projects/{project_id}/files")
-async def update_file(
-    project_id: str,
-    request: FileUpdateRequest,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Update a file in the project"""
-    try:
-        result = await service.update_file(project_id, request.filename, request.content)
-
-        if not result.get("success"):
-            raise HTTPException(status_code=400, detail=result.get("error"))
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error updating file: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.post("/projects/{project_id}/files")
-async def add_file(
-    project_id: str,
-    request: FileAddRequest,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Add a new file to the project"""
-    try:
-        result = await service.add_file(project_id, request.filename, request.content)
-
-        if not result.get("success"):
-            raise HTTPException(status_code=400, detail=result.get("error"))
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error adding file: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.delete("/projects/{project_id}/files/{filename}")
-async def delete_file(
-    project_id: str,
-    filename: str,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Delete a file from the project"""
-    try:
-        result = await service.delete_file(project_id, filename)
-
-        if not result.get("success"):
-            raise HTTPException(status_code=400, detail=result.get("error"))
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error deleting file: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-# ==================== BUILD ====================
-
-@router.post("/projects/{project_id}/build")
-async def build_project(
-    project_id: str,
-    request: BuildRequest,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Build an agent project"""
-    try:
-        result = await service.build_project(project_id, request.config)
-
-        if not result.get("success"):
-            raise HTTPException(status_code=400, detail=result.get("error"))
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error building project: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.get("/builds/{build_id}")
-async def get_build(
-    build_id: str,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Get build details"""
-    try:
-        result = await service.get_build(build_id)
-
-        if not result.get("success"):
-            raise HTTPException(status_code=404, detail=result.get("error"))
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting build: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-# ==================== TESTING ====================
-
-@router.post("/projects/{project_id}/test")
-async def run_tests(
-    project_id: str,
-    request: TestRequest,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Run tests for the project"""
-    try:
-        result = await service.run_tests(project_id, request.config)
-
-        if not result.get("success"):
-            raise HTTPException(status_code=400, detail=result.get("error"))
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error running tests: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.get("/tests/{test_id}")
-async def get_test(
-    test_id: str,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Get test details"""
-    try:
-        result = await service.get_test(test_id)
-
-        if not result.get("success"):
-            raise HTTPException(status_code=404, detail=result.get("error"))
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error getting test: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-# ==================== DEPLOYMENT ====================
-
-@router.post("/projects/{project_id}/deploy")
-async def deploy_project(
-    project_id: str,
-    request: DeployRequest,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Deploy the project"""
-    try:
-        result = await service.deploy_project(project_id, request.dict())
-
-        if not result.get("success"):
-            raise HTTPException(status_code=400, detail=result.get("error"))
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Error deploying project: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-# ==================== TEMPLATES ====================
-
-@router.get("/templates")
-async def get_templates(service: AgentBuilderService = Depends(get_builder)):
-    """Get available project templates"""
-    try:
-        result = await service.get_templates()
-        return result
-    except Exception as e:
-        logger.error(f"Error getting templates: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-# ==================== ACTIVITY ====================
-
-@router.get("/activity-log")
-async def get_activity_log(
-    limit: int = 100,
-    service: AgentBuilderService = Depends(get_builder)
-):
-    """Get activity log"""
-    try:
-        result = await service.get_activity_log(limit)
-        return result
-    except Exception as e:
-        logger.error(f"Error getting activity log: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
+    return {"status": "healthy", "module": "Agent Builder", "features": ["Custom Agent Creation", "Template Management", "Tool Assignment", "Deployment Management", "Version Control", "Code Generation", "Execution Tracking", "Statistics"], "endpoints": 27, "database": "MongoDB/File Storage"}

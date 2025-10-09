@@ -465,7 +465,7 @@ const MultiModalProcessing: React.FC = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex space-x-1 bg-white/5 p-1 rounded-lg">
+        <div className="flex space-x-1 bg-blue-500/10 p-1 rounded-lg">
           {[
             { id: 'media', label: 'Media Library', icon: Database },
             { id: 'processing', label: 'Processing', icon: Workflow },
@@ -480,7 +480,7 @@ const MultiModalProcessing: React.FC = () => {
               className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
                 activeTab === tab.id
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -502,13 +502,13 @@ const MultiModalProcessing: React.FC = () => {
                     placeholder="Search media files..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
+                    className="pl-10 pr-4 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                   />
                 </div>
                 <select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
-                  className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                 >
                   <option value="all">All Types</option>
                   <option value="audio">Audio</option>
@@ -519,7 +519,7 @@ const MultiModalProcessing: React.FC = () => {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                 >
                   <option value="all">All Status</option>
                   <option value="pending">Pending</option>
@@ -549,7 +549,7 @@ const MultiModalProcessing: React.FC = () => {
                         file.type === 'audio' ? 'bg-green-500/20 text-green-400' :
                         file.type === 'video' ? 'bg-blue-500/20 text-blue-400' :
                         file.type === 'image' ? 'bg-yellow-500/20 text-yellow-400' :
-                        'bg-gray-500/20 text-gray-400'
+                        'bg-blue-600/20 text-gray-400'
                       }`}>
                         {getFileIcon(file.type)}
                       </div>
@@ -641,7 +641,7 @@ const MultiModalProcessing: React.FC = () => {
                           </span>
                         ))}
                         {file.tags.length > 3 && (
-                          <span className="text-xs px-2 py-1 bg-gray-500/20 text-gray-400 rounded">
+                          <span className="text-xs px-2 py-1 bg-blue-600/20 text-gray-400 rounded">
                             +{file.tags.length - 3} more
                           </span>
                         )}
@@ -671,14 +671,14 @@ const MultiModalProcessing: React.FC = () => {
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => setSelectedFile(file.id)}
-                        className="p-1 hover:bg-white/10 rounded"
+                        className="p-1 hover:bg-blue-500/15 rounded"
                       >
                         <Eye className="w-4 h-4 text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Edit className="w-4 h-4 text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Trash2 className="w-4 h-4 text-gray-400" />
                       </button>
                     </div>
@@ -712,7 +712,7 @@ const MultiModalProcessing: React.FC = () => {
                     </div>
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       pipeline.status === 'active' ? 'bg-green-500/20 text-green-400' :
-                      pipeline.status === 'inactive' ? 'bg-gray-500/20 text-gray-400' :
+                      pipeline.status === 'inactive' ? 'bg-blue-600/20 text-gray-400' :
                       'bg-red-500/20 text-red-400'
                     }`}>
                       {pipeline.status}
@@ -740,7 +740,7 @@ const MultiModalProcessing: React.FC = () => {
                     <p className="text-gray-400 text-sm mb-2">Pipeline Stages</p>
                     <div className="space-y-2">
                       {pipeline.stages.map((stage, index) => (
-                        <div key={stage.id} className="flex items-center justify-between p-2 bg-white/5 rounded">
+                        <div key={stage.id} className="flex items-center justify-between p-2 bg-blue-500/10 rounded">
                           <div className="flex items-center space-x-2">
                             <span className="text-xs bg-purple-500/20 text-purple-400 px-2 py-1 rounded">
                               {index + 1}
@@ -750,7 +750,7 @@ const MultiModalProcessing: React.FC = () => {
                           <div className="flex items-center space-x-2">
                             <span className="text-xs text-gray-400">{stage.estimated_time}s</span>
                             <div className={`w-2 h-2 rounded-full ${
-                              stage.enabled ? 'bg-green-400' : 'bg-gray-400'
+                              stage.enabled ? 'bg-green-400' : 'bg-blue-400'
                             }`}></div>
                           </div>
                         </div>
@@ -770,10 +770,10 @@ const MultiModalProcessing: React.FC = () => {
                       </button>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Edit className="w-4 h-4 text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Settings className="w-4 h-4 text-gray-400" />
                       </button>
                     </div>
@@ -793,7 +793,7 @@ const MultiModalProcessing: React.FC = () => {
                 <select
                   value={recordingType}
                   onChange={(e) => setRecordingType(e.target.value as any)}
-                  className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                 >
                   <option value="audio">Audio Only</option>
                   <option value="video">Video Call</option>
@@ -822,21 +822,21 @@ const MultiModalProcessing: React.FC = () => {
                 <div className="space-y-4">
                   <h4 className="text-lg font-medium text-white">Audio</h4>
                   <div className="space-y-3">
-                    <button className="flex items-center justify-between w-full p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <button className="flex items-center justify-between w-full p-3 bg-blue-500/10 rounded-lg hover:bg-blue-500/15 transition-colors">
                       <div className="flex items-center space-x-3">
                         <Mic className="w-5 h-5 text-green-400" />
                         <span className="text-white">Microphone</span>
                       </div>
                       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                     </button>
-                    <button className="flex items-center justify-between w-full p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <button className="flex items-center justify-between w-full p-3 bg-blue-500/10 rounded-lg hover:bg-blue-500/15 transition-colors">
                       <div className="flex items-center space-x-3">
                         <Volume2 className="w-5 h-5 text-blue-400" />
                         <span className="text-white">Speaker</span>
                       </div>
                       <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                     </button>
-                    <button className="flex items-center justify-between w-full p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <button className="flex items-center justify-between w-full p-3 bg-blue-500/10 rounded-lg hover:bg-blue-500/15 transition-colors">
                       <div className="flex items-center space-x-3">
                         <Brain className="w-5 h-5 text-purple-400" />
                         <span className="text-white">Live Transcription</span>
@@ -850,21 +850,21 @@ const MultiModalProcessing: React.FC = () => {
                 <div className="space-y-4">
                   <h4 className="text-lg font-medium text-white">Video</h4>
                   <div className="space-y-3">
-                    <button className="flex items-center justify-between w-full p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <button className="flex items-center justify-between w-full p-3 bg-blue-500/10 rounded-lg hover:bg-blue-500/15 transition-colors">
                       <div className="flex items-center space-x-3">
                         <Camera className="w-5 h-5 text-green-400" />
                         <span className="text-white">Camera</span>
                       </div>
                       <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                     </button>
-                    <button className="flex items-center justify-between w-full p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <button className="flex items-center justify-between w-full p-3 bg-blue-500/10 rounded-lg hover:bg-blue-500/15 transition-colors">
                       <div className="flex items-center space-x-3">
                         <Monitor className="w-5 h-5 text-blue-400" />
                         <span className="text-white">Screen Share</span>
                       </div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                     </button>
-                    <button className="flex items-center justify-between w-full p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <button className="flex items-center justify-between w-full p-3 bg-blue-500/10 rounded-lg hover:bg-blue-500/15 transition-colors">
                       <div className="flex items-center space-x-3">
                         <Eye className="w-5 h-5 text-purple-400" />
                         <span className="text-white">Object Detection</span>
@@ -878,21 +878,21 @@ const MultiModalProcessing: React.FC = () => {
                 <div className="space-y-4">
                   <h4 className="text-lg font-medium text-white">Processing</h4>
                   <div className="space-y-3">
-                    <button className="flex items-center justify-between w-full p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <button className="flex items-center justify-between w-full p-3 bg-blue-500/10 rounded-lg hover:bg-blue-500/15 transition-colors">
                       <div className="flex items-center space-x-3">
                         <Zap className="w-5 h-5 text-yellow-400" />
                         <span className="text-white">Real-time Analysis</span>
                       </div>
                       <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
                     </button>
-                    <button className="flex items-center justify-between w-full p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <button className="flex items-center justify-between w-full p-3 bg-blue-500/10 rounded-lg hover:bg-blue-500/15 transition-colors">
                       <div className="flex items-center space-x-3">
                         <Globe className="w-5 h-5 text-green-400" />
                         <span className="text-white">Translation</span>
                       </div>
-                      <div className="w-2 h-2 bg-gray-400 rounded-full"></div>
+                      <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                     </button>
-                    <button className="flex items-center justify-between w-full p-3 bg-white/5 rounded-lg hover:bg-white/10 transition-colors">
+                    <button className="flex items-center justify-between w-full p-3 bg-blue-500/10 rounded-lg hover:bg-blue-500/15 transition-colors">
                       <div className="flex items-center space-x-3">
                         <Archive className="w-5 h-5 text-blue-400" />
                         <span className="text-white">Recording</span>

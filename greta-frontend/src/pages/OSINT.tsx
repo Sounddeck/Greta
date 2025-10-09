@@ -176,7 +176,7 @@ export const OSINT: React.FC = () => {
       case 'academic': return 'text-yellow-400 bg-yellow-400/20';
       case 'government': return 'text-red-400 bg-red-400/20';
       case 'commercial': return 'text-orange-400 bg-orange-400/20';
-      default: return 'text-gray-400 bg-gray-400/20';
+      default: return 'text-blue-400 bg-blue-400/20';
     }
   };
 
@@ -294,7 +294,7 @@ export const OSINT: React.FC = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Enter search query for intelligence gathering..."
-              className="w-full px-4 py-3 bg-white/10 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none"
               onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
             />
           </div>
@@ -302,7 +302,7 @@ export const OSINT: React.FC = () => {
             <select
               value={searchType}
               onChange={(e) => setSearchType(e.target.value)}
-              className="w-full px-4 py-3 bg-white/10 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none"
+              className="w-full px-4 py-3 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:border-purple-500 focus:outline-none"
             >
               <option value="comprehensive">Comprehensive Search</option>
               <option value="news">News & Media</option>
@@ -344,7 +344,7 @@ export const OSINT: React.FC = () => {
           </h3>
           <div className="space-y-4">
             {metrics?.sources.map((source) => (
-              <div key={source.id} className="p-4 bg-white/5 rounded-lg">
+              <div key={source.id} className="p-4 bg-blue-500/10 rounded-lg">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="font-medium text-white">{source.name}</h4>
                   <div className={`w-2 h-2 rounded-full ${getStatusColor(source.status)}`}></div>
@@ -381,7 +381,7 @@ export const OSINT: React.FC = () => {
             {metrics?.recent_queries.map((query) => (
               <div 
                 key={query.id}
-                className={`p-4 bg-white/5 rounded-lg cursor-pointer transition-all hover:bg-white/10 ${
+                className={`p-4 bg-blue-500/10 rounded-lg cursor-pointer transition-all hover:bg-blue-500/15 ${
                   selectedQuery?.id === query.id ? 'ring-2 ring-purple-500' : ''
                 }`}
                 onClick={() => setSelectedQuery(query)}
@@ -416,7 +416,7 @@ export const OSINT: React.FC = () => {
           {results.length > 0 ? (
             <div className="space-y-4">
               {results.slice(0, 5).map((result, index) => (
-                <div key={result.id || index} className="p-4 bg-white/5 rounded-lg">
+                <div key={result.id || index} className="p-4 bg-blue-500/10 rounded-lg">
                   <div className="flex items-start justify-between mb-2">
                     <h4 className="font-medium text-white text-sm">{result.title}</h4>
                     <div className="flex items-center space-x-1">

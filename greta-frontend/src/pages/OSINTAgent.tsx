@@ -328,7 +328,7 @@ export const OSINTAgent: React.FC = () => {
       case 'technical_intel': return 'text-orange-400 bg-orange-400/20';
       case 'market_intel': return 'text-yellow-400 bg-yellow-400/20';
       case 'geographic_intel': return 'text-red-400 bg-red-400/20';
-      default: return 'text-gray-400 bg-gray-400/20';
+      default: return 'text-blue-400 bg-blue-400/20';
     }
   };
 
@@ -390,7 +390,7 @@ export const OSINTAgent: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-1 bg-white/5 p-1 rounded-lg">
+      <div className="flex space-x-1 bg-blue-500/10 p-1 rounded-lg">
         {[
           { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
           { id: 'programs', label: 'Programs', icon: Zap },
@@ -404,7 +404,7 @@ export const OSINTAgent: React.FC = () => {
             className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
               activeTab === tab.id
                 ? 'bg-blue-600 text-white'
-                : 'text-gray-400 hover:text-white hover:bg-white/10'
+                : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -472,7 +472,7 @@ export const OSINTAgent: React.FC = () => {
             </h3>
             <div className="space-y-4">
               {(programs || []).slice(0, 3).map((program) => (
-                <div key={program.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                <div key={program.id} className="flex items-center justify-between p-4 bg-blue-500/10 rounded-lg">
                   <div className="flex items-center space-x-4">
                     <div className={`p-2 rounded-lg ${getCategoryColor(program.category)}`}>
                       {getCategoryIcon(program.category)}
@@ -507,7 +507,7 @@ export const OSINTAgent: React.FC = () => {
             </h3>
             <div className="space-y-4">
               {(leads || []).slice(0, 5).map((lead) => (
-                <div key={lead.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg">
+                <div key={lead.id} className="flex items-center justify-between p-4 bg-blue-500/10 rounded-lg">
                   <div className="flex items-center space-x-4">
                     <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
                       <User className="w-5 h-5 text-white" />
@@ -549,7 +549,7 @@ export const OSINTAgent: React.FC = () => {
             <h3 className="text-xl font-semibold text-white mb-4">OSINT Programs</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {(programs || []).map((program) => (
-                <div key={program.id} className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
+                <div key={program.id} className="bg-blue-500/10 p-6 rounded-xl hover:bg-blue-500/15 transition-all">
                   <div className="flex items-start justify-between mb-4">
                     <div className={`p-2 rounded-lg ${getCategoryColor(program.category)}`}>
                       {getCategoryIcon(program.category)}
@@ -640,7 +640,7 @@ export const OSINTAgent: React.FC = () => {
 
             <div className="space-y-4">
               {(leads || []).map((lead) => (
-                <div key={lead.id} className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
+                <div key={lead.id} className="bg-blue-500/10 p-6 rounded-xl hover:bg-blue-500/15 transition-all">
                   <div className="flex items-start justify-between">
                     <div className="flex items-start space-x-4">
                       <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center">
@@ -686,7 +686,7 @@ export const OSINTAgent: React.FC = () => {
                         lead.status === 'qualified' ? 'bg-green-500/20 text-green-400' :
                         lead.status === 'contacted' ? 'bg-blue-500/20 text-blue-400' :
                         lead.status === 'converted' ? 'bg-purple-500/20 text-purple-400' :
-                        'bg-gray-500/20 text-gray-400'
+                        'bg-blue-600/20 text-gray-400'
                       }`}>
                         {lead.status}
                       </span>
@@ -723,7 +723,7 @@ export const OSINTAgent: React.FC = () => {
             {/* Active Contexts */}
             <div className="space-y-4 mb-6">
               {(contexts || []).map((context) => (
-                <div key={context.id} className="bg-white/5 p-6 rounded-xl">
+                <div key={context.id} className="bg-blue-500/10 p-6 rounded-xl">
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h4 className="text-white font-semibold text-lg">{context.title}</h4>
@@ -736,15 +736,15 @@ export const OSINTAgent: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                    <div className="bg-white/5 p-4 rounded-lg">
+                    <div className="bg-blue-500/10 p-4 rounded-lg">
                       <p className="text-gray-400 text-sm">Active Programs</p>
                       <p className="text-white text-xl font-bold">{context.active_programs.length}</p>
                     </div>
-                    <div className="bg-white/5 p-4 rounded-lg">
+                    <div className="bg-blue-500/10 p-4 rounded-lg">
                       <p className="text-gray-400 text-sm">Total Leads</p>
                       <p className="text-white text-xl font-bold">{context.total_leads}</p>
                     </div>
-                    <div className="bg-white/5 p-4 rounded-lg">
+                    <div className="bg-blue-500/10 p-4 rounded-lg">
                       <p className="text-gray-400 text-sm">Last Activity</p>
                       <p className="text-white text-sm">{new Date(context.last_activity).toLocaleDateString()}</p>
                     </div>
@@ -765,12 +765,12 @@ export const OSINTAgent: React.FC = () => {
             </div>
 
             {/* Context Input */}
-            <div className="bg-white/5 p-6 rounded-xl">
+            <div className="bg-blue-500/10 p-6 rounded-xl">
               <h4 className="text-white font-medium mb-4">Context Window Input</h4>
               <textarea
                 value={contextWindow}
                 onChange={(e) => setContextWindow(e.target.value)}
-                className="w-full h-32 px-4 py-3 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none"
+                className="w-full h-32 px-4 py-3 bg-blue-500/15 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 resize-none"
                 placeholder="Enter context for OSINT operations... (e.g., 'Find decision makers at Series A startups in fintech space, focusing on companies with 10-100 employees in San Francisco Bay Area')"
               />
               <div className="flex justify-between items-center mt-4">
@@ -849,7 +849,7 @@ export const OSINTAgent: React.FC = () => {
       {/* Create Program Modal */}
       {showCreateProgram && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-slate-800 hover:bg-slate-900 p-6 rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-blue-900/40 hover:bg-blue-900/60 p-6 rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <div className="flex items-center justify-between mb-6">
               <h3 className="text-xl font-semibold text-white">Create OSINT Program</h3>
               <button
@@ -867,7 +867,7 @@ export const OSINTAgent: React.FC = () => {
                   type="text"
                   value={newProgram.name}
                   onChange={(e) => setNewProgram({ ...newProgram, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-blue-500/15 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   placeholder="e.g., Tech Startup Lead Generation"
                 />
               </div>
@@ -877,7 +877,7 @@ export const OSINTAgent: React.FC = () => {
                 <textarea
                   value={newProgram.description}
                   onChange={(e) => setNewProgram({ ...newProgram, description: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 h-20"
+                  className="w-full px-3 py-2 bg-blue-500/15 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 h-20"
                   placeholder="Describe the purpose and scope of this OSINT program..."
                 />
               </div>
@@ -887,7 +887,7 @@ export const OSINTAgent: React.FC = () => {
                 <select
                   value={newProgram.category}
                   onChange={(e) => setNewProgram({ ...newProgram, category: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-blue-500/15 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="company_intel">Company Intelligence</option>
                   <option value="people_intel">People Intelligence</option>
@@ -903,7 +903,7 @@ export const OSINTAgent: React.FC = () => {
                 <textarea
                   value={newProgram.target}
                   onChange={(e) => setNewProgram({ ...newProgram, target: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 h-24"
+                  className="w-full px-3 py-2 bg-blue-500/15 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 h-24"
                   placeholder="Define your target (companies, people, technologies, etc.)..."
                 />
               </div>
@@ -913,7 +913,7 @@ export const OSINTAgent: React.FC = () => {
                 <select
                   value={newProgram.depth}
                   onChange={(e) => setNewProgram({ ...newProgram, depth: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-blue-500/15 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="surface">Surface - Basic information gathering</option>
                   <option value="deep">Deep - Comprehensive analysis</option>

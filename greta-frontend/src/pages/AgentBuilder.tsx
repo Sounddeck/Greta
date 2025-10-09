@@ -59,10 +59,15 @@ interface AgentTemplate {
 const AgentBuilder: React.FC = () => {
   const [selectedTemplate, setSelectedTemplate] = useState<string>('');
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [newAgent, setNewAgent] = useState({
+  const [newAgent, setNewAgent] = useState<{
+    name: string;
+    description: string;
+    type: 'research' | 'analysis' | 'communication' | 'automation' | 'custom';
+    prompt_template: string;
+  }>({
     name: '',
     description: '',
-    type: 'custom' as const,
+    type: 'custom',
     prompt_template: ''
   });
   const queryClient = useQueryClient();
@@ -224,7 +229,7 @@ const AgentBuilder: React.FC = () => {
       case 'analysis': return 'text-green-400 bg-green-400/20';
       case 'communication': return 'text-purple-400 bg-purple-400/20';
       case 'automation': return 'text-orange-400 bg-orange-400/20';
-      default: return 'text-gray-400 bg-gray-400/20';
+      default: return 'text-blue-400 bg-blue-400/20';
     }
   };
 
@@ -350,7 +355,7 @@ const AgentBuilder: React.FC = () => {
               className={`p-4 rounded-lg border cursor-pointer transition-all ${
                 selectedTemplate === template.id
                   ? 'border-blue-500 bg-blue-500/20'
-                  : 'border-white/20 bg-white/5 hover:bg-white/10'
+                  : 'border-white/20 bg-blue-500/10 hover:bg-blue-500/15'
               }`}
             >
               <div className="flex items-center space-x-3 mb-3">
@@ -373,7 +378,7 @@ const AgentBuilder: React.FC = () => {
                   </span>
                 ))}
                 {template.capabilities.length > 2 && (
-                  <span className="px-2 py-1 bg-gray-500/20 text-gray-300 text-xs rounded-full">
+                  <span className="px-2 py-1 bg-blue-600/20 text-gray-300 text-xs rounded-full">
                     +{template.capabilities.length - 2}
                   </span>
                 )}
@@ -391,7 +396,7 @@ const AgentBuilder: React.FC = () => {
         </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {(agents || []).map((agent) => (
-            <div key={agent.id} className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
+            <div key={agent.id} className="bg-blue-500/10 p-6 rounded-xl hover:bg-blue-500/15 transition-all">
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center space-x-3">
                   <div className={`p-2 rounded-lg ${getAgentTypeColor(agent.type)}`}>
@@ -475,7 +480,7 @@ const AgentBuilder: React.FC = () => {
       {/* Create Agent Modal */}
       {showCreateModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-          <div className="bg-slate-800 hover:bg-slate-900 p-6 rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="bg-blue-900/40 hover:bg-blue-900/60 p-6 rounded-xl max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl font-semibold text-white mb-6">Create New Agent</h3>
 
             <div className="space-y-4">
@@ -485,7 +490,7 @@ const AgentBuilder: React.FC = () => {
                   type="text"
                   value={newAgent.name}
                   onChange={(e) => setNewAgent({ ...newAgent, name: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-blue-500/15 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   placeholder="Enter agent name..."
                 />
               </div>
@@ -495,7 +500,7 @@ const AgentBuilder: React.FC = () => {
                 <textarea
                   value={newAgent.description}
                   onChange={(e) => setNewAgent({ ...newAgent, description: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 h-20"
+                  className="w-full px-3 py-2 bg-blue-500/15 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 h-20"
                   placeholder="Describe what this agent will do..."
                 />
               </div>
@@ -505,7 +510,7 @@ const AgentBuilder: React.FC = () => {
                 <select
                   value={newAgent.type}
                   onChange={(e) => setNewAgent({ ...newAgent, type: e.target.value as any })}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="w-full px-3 py-2 bg-blue-500/15 border border-white/20 rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="custom">Custom</option>
                   <option value="research">Research</option>
@@ -520,7 +525,7 @@ const AgentBuilder: React.FC = () => {
                 <textarea
                   value={newAgent.prompt_template}
                   onChange={(e) => setNewAgent({ ...newAgent, prompt_template: e.target.value })}
-                  className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 h-32"
+                  className="w-full px-3 py-2 bg-blue-500/15 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500 h-32"
                   placeholder="Enter the system prompt for this agent..."
                 />
               </div>

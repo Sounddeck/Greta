@@ -96,9 +96,9 @@ const AgentCard: React.FC<{ agent: Agent }> = ({ agent }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'active': return 'text-green-400 bg-green-400/20';
-      case 'inactive': return 'text-gray-400 bg-gray-400/20';
+      case 'inactive': return 'text-blue-400 bg-blue-400/20';
       case 'error': return 'text-red-400 bg-red-400/20';
-      default: return 'text-gray-400 bg-gray-400/20';
+      default: return 'text-blue-400 bg-blue-400/20';
     }
   };
 
@@ -148,7 +148,7 @@ const AgentCard: React.FC<{ agent: Agent }> = ({ agent }) => {
           {agent.capabilities.map((capability, index) => (
             <span
               key={index}
-              className="px-2 py-1 bg-white/10 text-xs text-gray-300 rounded-md"
+              className="px-2 py-1 bg-blue-500/15 text-xs text-gray-300 rounded-md"
             >
               {capability}
             </span>
@@ -190,7 +190,7 @@ const AgentCard: React.FC<{ agent: Agent }> = ({ agent }) => {
             {agent.status === 'active' ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
           </button>
           
-          <button className="p-2 bg-white/10 text-gray-400 hover:text-white hover:bg-white/20 rounded-lg transition-colors">
+          <button className="p-2 bg-blue-500/15 text-gray-400 hover:text-white hover:bg-blue-500/20 rounded-lg transition-colors">
             <Settings className="w-4 h-4" />
           </button>
         </div>

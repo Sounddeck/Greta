@@ -1,0 +1,23 @@
+{
+  "state": "7QTBp2NYLDCxKLylD9CbeHnzFDww3kDz8vM4PLDZdZk",
+  "user_id": "test_oauth_user",
+  "provider": "google",
+  "redirect_uri": "http://localhost:8000/api/v1/oauth/callback",
+  "scopes": [
+    "https://www.googleapis.com/auth/gmail.modify",
+    "https://www.googleapis.com/auth/gmail.send",
+    "https://www.googleapis.com/auth/calendar",
+    "https://www.googleapis.com/auth/drive",
+    "https://www.googleapis.com/auth/spreadsheets",
+    "https://www.googleapis.com/auth/documents",
+    "https://www.googleapis.com/auth/userinfo.email",
+    "https://www.googleapis.com/auth/userinfo.profile"
+  ],
+  "state_id": "state_1tGzYHc4tpTX9OyasHMcLQ",
+  "created_at": "2025-10-09T14:24:07.907598",
+  "expires_at": "2025-10-09T14:34:07.907604",
+  "used": false,
+  "used_at": null,
+  "_id": "75fa90b1-2fc9-4716-98d7-bd33dea72565",
+  "timestamp": "2025-10-09T14:24:07.907691"
+}

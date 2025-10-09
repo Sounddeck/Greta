@@ -375,7 +375,7 @@ const TrainingPlatformManagement: React.FC = () => {
       case 'intermediate': return 'bg-blue-500/20 text-blue-400';
       case 'advanced': return 'bg-orange-500/20 text-orange-400';
       case 'expert': return 'bg-red-500/20 text-red-400';
-      default: return 'bg-gray-500/20 text-gray-400';
+      default: return 'bg-blue-600/20 text-gray-400';
     }
   };
 
@@ -383,8 +383,8 @@ const TrainingPlatformManagement: React.FC = () => {
     switch (status) {
       case 'published': return 'bg-green-500/20 text-green-400';
       case 'draft': return 'bg-yellow-500/20 text-yellow-400';
-      case 'archived': return 'bg-gray-500/20 text-gray-400';
-      default: return 'bg-gray-500/20 text-gray-400';
+      case 'archived': return 'bg-blue-600/20 text-gray-400';
+      default: return 'bg-blue-600/20 text-gray-400';
     }
   };
 
@@ -419,7 +419,7 @@ const TrainingPlatformManagement: React.FC = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex space-x-1 bg-white/5 p-1 rounded-lg">
+        <div className="flex space-x-1 bg-blue-500/10 p-1 rounded-lg">
           {[
             { id: 'courses', label: 'Courses', icon: BookOpen },
             { id: 'builder', label: 'Course Builder', icon: Code },
@@ -434,7 +434,7 @@ const TrainingPlatformManagement: React.FC = () => {
               className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
                 activeTab === tab.id
                   ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -456,13 +456,13 @@ const TrainingPlatformManagement: React.FC = () => {
                     placeholder="Search courses..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                    className="pl-10 pr-4 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                   />
                 </div>
                 <select
                   value={filterSubject}
                   onChange={(e) => setFilterSubject(e.target.value)}
-                  className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="all">All Subjects</option>
                   <option value="ai">Artificial Intelligence</option>
@@ -474,7 +474,7 @@ const TrainingPlatformManagement: React.FC = () => {
                 <select
                   value={filterDifficulty}
                   onChange={(e) => setFilterDifficulty(e.target.value)}
-                  className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
                 >
                   <option value="all">All Levels</option>
                   <option value="beginner">Beginner</option>
@@ -651,14 +651,14 @@ const TrainingPlatformManagement: React.FC = () => {
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => setSelectedCourse(course.id)}
-                        className="p-1 hover:bg-white/10 rounded"
+                        className="p-1 hover:bg-blue-500/15 rounded"
                       >
                         <BarChart3 className="w-4 h-4 text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Share className="w-4 h-4 text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Trash2 className="w-4 h-4 text-gray-400" />
                       </button>
                     </div>
@@ -698,7 +698,7 @@ const TrainingPlatformManagement: React.FC = () => {
                     <input
                       type="text"
                       placeholder="Enter course title..."
-                      className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                     />
                   </div>
 
@@ -707,14 +707,14 @@ const TrainingPlatformManagement: React.FC = () => {
                     <textarea
                       rows={4}
                       placeholder="Describe your course..."
-                      className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                      className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                     />
                   </div>
 
                   <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Subject</label>
-                      <select className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
+                      <select className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
                         <option value="">Select subject...</option>
                         <option value="ai">Artificial Intelligence</option>
                         <option value="programming">Programming</option>
@@ -726,7 +726,7 @@ const TrainingPlatformManagement: React.FC = () => {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-300 mb-2">Difficulty</label>
-                      <select className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
+                      <select className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-blue-500">
                         <option value="">Select difficulty...</option>
                         <option value="beginner">Beginner</option>
                         <option value="intermediate">Intermediate</option>
@@ -742,7 +742,7 @@ const TrainingPlatformManagement: React.FC = () => {
                       <input
                         type="text"
                         placeholder="Add learning objective..."
-                        className="w-full px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
+                        className="w-full px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-blue-500"
                       />
                       <button className="flex items-center space-x-1 px-3 py-1 bg-blue-600 hover:bg-blue-700 rounded text-xs transition-colors">
                         <Plus className="w-3 h-3" />
@@ -757,14 +757,14 @@ const TrainingPlatformManagement: React.FC = () => {
                   <h4 className="text-lg font-medium text-white">Course Structure</h4>
 
                   <div className="space-y-3">
-                    <div className="p-4 bg-white/5 rounded-lg border-l-4 border-blue-500">
+                    <div className="p-4 bg-blue-500/10 rounded-lg border-l-4 border-blue-500">
                       <div className="flex items-center justify-between mb-2">
                         <h5 className="text-white font-medium">Module 1: Introduction</h5>
                         <div className="flex items-center space-x-2">
-                          <button className="p-1 hover:bg-white/10 rounded">
+                          <button className="p-1 hover:bg-blue-500/15 rounded">
                             <Edit className="w-4 h-4 text-gray-400" />
                           </button>
-                          <button className="p-1 hover:bg-white/10 rounded">
+                          <button className="p-1 hover:bg-blue-500/15 rounded">
                             <Trash2 className="w-4 h-4 text-gray-400" />
                           </button>
                         </div>
@@ -777,14 +777,14 @@ const TrainingPlatformManagement: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="p-4 bg-white/5 rounded-lg border-l-4 border-green-500">
+                    <div className="p-4 bg-blue-500/10 rounded-lg border-l-4 border-green-500">
                       <div className="flex items-center justify-between mb-2">
                         <h5 className="text-white font-medium">Module 2: Fundamentals</h5>
                         <div className="flex items-center space-x-2">
-                          <button className="p-1 hover:bg-white/10 rounded">
+                          <button className="p-1 hover:bg-blue-500/15 rounded">
                             <Edit className="w-4 h-4 text-gray-400" />
                           </button>
-                          <button className="p-1 hover:bg-white/10 rounded">
+                          <button className="p-1 hover:bg-blue-500/15 rounded">
                             <Trash2 className="w-4 h-4 text-gray-400" />
                           </button>
                         </div>

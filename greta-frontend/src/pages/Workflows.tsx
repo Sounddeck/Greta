@@ -84,9 +84,9 @@ const WorkflowCard: React.FC<{ workflow: WorkflowItem }> = ({ workflow }) => {
     switch (status) {
       case 'active': return 'text-green-400 bg-green-400/20';
       case 'running': return 'text-blue-400 bg-blue-400/20';
-      case 'inactive': return 'text-gray-400 bg-gray-400/20';
+      case 'inactive': return 'text-blue-400 bg-blue-400/20';
       case 'error': return 'text-red-400 bg-red-400/20';
-      default: return 'text-gray-400 bg-gray-400/20';
+      default: return 'text-blue-400 bg-blue-400/20';
     }
   };
 

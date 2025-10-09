@@ -376,12 +376,41 @@ Current Context:
             return await self._generate_mock_response(request)
     
     async def _generate_with_llama_cpp(self, request: Dict[str, Any]) -> str:
-        """Generate using local Llama.cpp model"""
-        # Mock implementation - would use actual llama.cpp
-        await asyncio.sleep(0.5)  # Simulate processing
-        
-        message = request.get("message", "")
-        return f"[Local Llama.cpp] Processing '{message[:50]}...' with German precision and PAI intelligence. This response is generated locally for maximum privacy and performance."
+        """Generate using Ollama (local LLM)"""
+        try:
+            import httpx
+
+            message = request.get("message", "")
+            max_tokens = request.get("max_tokens", 2000)
+            temperature = request.get("temperature", 0.7)
+
+            # Use Ollama API
+            ollama_url = self.settings.ollama_url
+
+            async with httpx.AsyncClient(timeout=60.0) as client:
+                response = await client.post(
+                    f"{ollama_url}/api/generate",
+                    json={
+                        "model": "llama3:latest",  # Use llama3 model
+                        "prompt": message,
+                        "stream": False,
+                        "options": {
+                            "temperature": temperature,
+                            "num_predict": max_tokens,
+                        }
+                    }
+                )
+
+                if response.status_code == 200:
+                    result = response.json()
+                    return result.get("response", "No response generated")
+                else:
+                    logger.error(f"Ollama API error: {response.status_code}")
+                    return await self._generate_fallback_response(request)
+
+        except Exception as e:
+            logger.error(f"Ollama generation failed: {e}")
+            return await self._generate_fallback_response(request)
     
     async def _generate_with_mlx(self, request: Dict[str, Any]) -> str:
         """Generate using MLX (Apple Silicon)"""

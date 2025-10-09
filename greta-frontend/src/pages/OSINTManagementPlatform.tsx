@@ -257,7 +257,7 @@ const OSINTManagementPlatform: React.FC = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex space-x-1 bg-white/5 p-1 rounded-lg">
+        <div className="flex space-x-1 bg-blue-500/10 p-1 rounded-lg">
           {[
             { id: 'programs', label: 'Programs', icon: Eye },
             { id: 'templates', label: 'Templates', icon: Package },
@@ -272,7 +272,7 @@ const OSINTManagementPlatform: React.FC = () => {
               className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
                 activeTab === tab.id
                   ? 'bg-red-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -294,13 +294,13 @@ const OSINTManagementPlatform: React.FC = () => {
                     placeholder="Search programs..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
+                    className="pl-10 pr-4 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
                   />
                 </div>
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500"
                 >
                   <option value="all">All Status</option>
                   <option value="active">Active</option>
@@ -312,7 +312,7 @@ const OSINTManagementPlatform: React.FC = () => {
                 <select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
-                  className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500"
                 >
                   <option value="all">All Types</option>
                   <option value="person_intel">Person Intel</option>
@@ -347,7 +347,7 @@ const OSINTManagementPlatform: React.FC = () => {
                         program.status === 'completed' ? 'bg-blue-500/20 text-blue-400' :
                         program.status === 'paused' ? 'bg-yellow-500/20 text-yellow-400' :
                         program.status === 'error' ? 'bg-red-500/20 text-red-400' :
-                        'bg-gray-500/20 text-gray-400'
+                        'bg-blue-600/20 text-gray-400'
                       }`}>
                         <Eye className="w-4 h-4" />
                       </div>
@@ -361,7 +361,7 @@ const OSINTManagementPlatform: React.FC = () => {
                       program.status === 'completed' ? 'bg-blue-500/20 text-blue-400' :
                       program.status === 'paused' ? 'bg-yellow-500/20 text-yellow-400' :
                       program.status === 'error' ? 'bg-red-500/20 text-red-400' :
-                      'bg-gray-500/20 text-gray-400'
+                      'bg-blue-600/20 text-gray-400'
                     }`}>
                       {program.status}
                     </span>
@@ -437,14 +437,14 @@ const OSINTManagementPlatform: React.FC = () => {
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => setSelectedProgram(program.id)}
-                        className="p-1 hover:bg-white/10 rounded"
+                        className="p-1 hover:bg-blue-500/15 rounded"
                       >
                         <Eye className="w-4 h-4 text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Edit className="w-4 h-4 text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Settings className="w-4 h-4 text-gray-400" />
                       </button>
                     </div>
@@ -466,10 +466,10 @@ const OSINTManagementPlatform: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Search templates..."
-                    className="pl-10 pr-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
+                    className="pl-10 pr-4 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-red-500"
                   />
                 </div>
-                <select className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500">
+                <select className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500">
                   <option value="all">All Categories</option>
                   <option value="person_intel">Person Intel</option>
                   <option value="company_intel">Company Intel</option>
@@ -542,7 +542,7 @@ const OSINTManagementPlatform: React.FC = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-white">OSINT Analytics & Performance</h2>
               <div className="flex items-center space-x-2">
-                <select className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500">
+                <select className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500">
                   <option value="7d">Last 7 Days</option>
                   <option value="30d">Last 30 Days</option>
                   <option value="90d">Last 90 Days</option>

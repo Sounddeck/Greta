@@ -86,7 +86,7 @@ const MessageBubble: React.FC<{ message: Message }> = ({ message }) => {
         <div className={`glass-strong p-4 rounded-2xl ${
           isUser 
             ? 'bg-gradient-to-r from-blue-600/20 to-purple-600/20 border-blue-500/30' 
-            : 'bg-white/10 border-white/20'
+            : 'bg-blue-500/15 border-white/20'
         }`}>
           {message.isTyping ? (
             <div className="flex items-center space-x-2">
@@ -252,7 +252,7 @@ export const Chat: React.FC = () => {
             className="input-field text-sm"
           >
             {models?.map((model) => (
-              <option key={model.name} value={model.name} className="bg-slate-800">
+              <option key={model.name} value={model.name} className="bg-blue-900/40">
                 {model.displayName}
               </option>
             ))}
@@ -305,7 +305,7 @@ export const Chat: React.FC = () => {
               className={`p-2 rounded-lg transition-colors ${
                 isListening
                   ? 'bg-red-600 hover:bg-red-700'
-                  : 'bg-white/10 hover:bg-white/20'
+                  : 'bg-blue-500/15 hover:bg-blue-500/20'
               } ${!voiceSupported ? 'opacity-50 cursor-not-allowed' : ''}`}
               title={voiceSupported ? (isListening ? 'Stop recording' : 'Start voice recording') : 'Voice not supported'}
             >

@@ -72,7 +72,7 @@ class Database:
     
     async def _initialize_collections(self):
         """Initialize MongoDB collections with PAI intelligence"""
-        if not self.db:
+        if self.db is None:
             return
             
         collections = [
@@ -101,7 +101,7 @@ class Database:
     
     async def _create_indexes(self, collection_name: str):
         """Create intelligent indexes for collections"""
-        if not self.db:
+        if self.db is None:
             return
             
         collection = self.db[collection_name]
@@ -143,7 +143,7 @@ class Database:
     
     async def health_check(self) -> Dict[str, Any]:
         """Comprehensive health check"""
-        if self.connected and self.db:
+        if self.connected and self.db is not None:
             try:
                 # Test database connection
                 await self.db.command('ping')
@@ -199,13 +199,13 @@ class Database:
     # Collection access methods
     def get_collection(self, name: str):
         """Get collection by name"""
-        if self.db and self.connected:
+        if self.db is not None and self.connected:
             return self.db[name]
         return None
     
     async def insert_one(self, collection_name: str, document: Dict[str, Any]) -> Optional[str]:
         """Insert document into collection"""
-        if self.connected and self.db:
+        if self.connected and self.db is not None:
             try:
                 collection = self.db[collection_name]
                 result = await collection.insert_one(document)
@@ -219,7 +219,7 @@ class Database:
     
     async def find_one(self, collection_name: str, query: Dict[str, Any]) -> Optional[Dict[str, Any]]:
         """Find one document in collection"""
-        if self.connected and self.db:
+        if self.connected and self.db is not None:
             try:
                 collection = self.db[collection_name]
                 document = await collection.find_one(query)
@@ -235,7 +235,7 @@ class Database:
     
     async def find_many(self, collection_name: str, query: Dict[str, Any], limit: int = 100) -> List[Dict[str, Any]]:
         """Find multiple documents in collection"""
-        if self.connected and self.db:
+        if self.connected and self.db is not None:
             try:
                 collection = self.db[collection_name]
                 cursor = collection.find(query).limit(limit)
@@ -253,7 +253,7 @@ class Database:
     
     async def update_one(self, collection_name: str, query: Dict[str, Any], update: Dict[str, Any]) -> bool:
         """Update one document in collection"""
-        if self.connected and self.db:
+        if self.connected and self.db is not None:
             try:
                 collection = self.db[collection_name]
                 result = await collection.update_one(query, update)
@@ -267,7 +267,7 @@ class Database:
     
     async def delete_one(self, collection_name: str, query: Dict[str, Any]) -> bool:
         """Delete one document from collection"""
-        if self.connected and self.db:
+        if self.connected and self.db is not None:
             try:
                 collection = self.db[collection_name]
                 result = await collection.delete_one(query)

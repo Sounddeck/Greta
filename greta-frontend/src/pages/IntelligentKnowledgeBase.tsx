@@ -388,7 +388,7 @@ const IntelligentKnowledgeBase: React.FC = () => {
             <p className="text-gray-300">Centralized knowledge management and intelligent content discovery</p>
           </div>
           <div className="flex space-x-4">
-            <button className="glass px-4 py-2 rounded-lg text-white hover:bg-white/10 transition-colors flex items-center">
+            <button className="glass px-4 py-2 rounded-lg text-white hover:bg-blue-500/15 transition-colors flex items-center">
               <RefreshCw className="w-4 h-4 mr-2" />
               Refresh
             </button>
@@ -417,7 +417,7 @@ const IntelligentKnowledgeBase: React.FC = () => {
                 className={`px-4 py-2 rounded-lg flex items-center transition-colors ${
                   activeTab === tab.id
                     ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-white/10'
+                    : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
                 }`}
               >
                 <tab.icon className="w-4 h-4 mr-2" />

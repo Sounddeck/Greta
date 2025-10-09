@@ -493,7 +493,7 @@ const AutonomousOperationsCenter: React.FC = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex space-x-1 bg-white/5 p-1 rounded-lg">
+        <div className="flex space-x-1 bg-blue-500/10 p-1 rounded-lg">
           {[
             { id: 'dashboard', label: 'Dashboard', icon: BarChart3 },
             { id: 'workflows', label: 'Workflows', icon: Workflow },
@@ -508,7 +508,7 @@ const AutonomousOperationsCenter: React.FC = () => {
               className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
                 activeTab === tab.id
                   ? 'bg-purple-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -669,7 +669,7 @@ const AutonomousOperationsCenter: React.FC = () => {
                       status: 'pending'
                     }
                   ].map((activity) => (
-                    <div key={activity.id} className="flex items-start space-x-3 p-3 bg-white/5 rounded-lg">
+                    <div key={activity.id} className="flex items-start space-x-3 p-3 bg-blue-500/10 rounded-lg">
                       <div className={`w-2 h-2 rounded-full mt-2 ${
                         activity.status === 'success' ? 'bg-green-400' :
                         activity.status === 'running' ? 'bg-blue-400' :
@@ -702,13 +702,13 @@ const AutonomousOperationsCenter: React.FC = () => {
                     placeholder="Search workflows..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
+                    className="pl-10 pr-4 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-purple-500"
                   />
                 </div>
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
                 >
                   <option value="all">All Status</option>
                   <option value="active">Active</option>
@@ -740,7 +740,7 @@ const AutonomousOperationsCenter: React.FC = () => {
                         workflow.status === 'paused' ? 'bg-yellow-500/20 text-yellow-400' :
                         workflow.status === 'completed' ? 'bg-blue-500/20 text-blue-400' :
                         workflow.status === 'error' ? 'bg-red-500/20 text-red-400' :
-                        'bg-gray-500/20 text-gray-400'
+                        'bg-blue-600/20 text-gray-400'
                       }`}>
                         <Workflow className="w-4 h-4" />
                       </div>
@@ -754,7 +754,7 @@ const AutonomousOperationsCenter: React.FC = () => {
                       workflow.status === 'paused' ? 'bg-yellow-500/20 text-yellow-400' :
                       workflow.status === 'completed' ? 'bg-blue-500/20 text-blue-400' :
                       workflow.status === 'error' ? 'bg-red-500/20 text-red-400' :
-                      'bg-gray-500/20 text-gray-400'
+                      'bg-blue-600/20 text-gray-400'
                     }`}>
                       {workflow.status}
                     </span>
@@ -808,14 +808,14 @@ const AutonomousOperationsCenter: React.FC = () => {
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => setSelectedWorkflow(workflow.id)}
-                        className="p-1 hover:bg-white/10 rounded"
+                        className="p-1 hover:bg-blue-500/15 rounded"
                       >
                         <Edit className="w-4 h-4 text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Copy className="w-4 h-4 text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Settings className="w-4 h-4 text-gray-400" />
                       </button>
                     </div>

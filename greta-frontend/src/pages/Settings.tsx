@@ -79,12 +79,12 @@ const SettingCard: React.FC<{ section: SettingSection; isActive: boolean; onClic
       className={`p-4 rounded-lg cursor-pointer transition-all ${
         isActive
           ? 'bg-gradient-to-r from-purple-600/20 to-blue-600/20 border border-purple-500/30'
-          : 'glass hover:bg-white/10'
+          : 'glass hover:bg-blue-500/15'
       }`}
     >
       <div className="flex items-center space-x-3">
         <div className={`p-2 rounded-lg ${
-          isActive ? 'bg-purple-600' : 'bg-white/10'
+          isActive ? 'bg-purple-600' : 'bg-blue-500/15'
         }`}>
           <Icon className="w-5 h-5 text-white" />
         </div>

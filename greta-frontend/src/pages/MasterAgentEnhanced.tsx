@@ -438,7 +438,7 @@ export const MasterAgentEnhanced: React.FC = () => {
       case 'high': return 'text-orange-400 bg-orange-400/20';
       case 'medium': return 'text-yellow-400 bg-yellow-400/20';
       case 'low': return 'text-green-400 bg-green-400/20';
-      default: return 'text-gray-400 bg-gray-400/20';
+      default: return 'text-blue-400 bg-blue-400/20';
     }
   };
 
@@ -559,7 +559,7 @@ export const MasterAgentEnhanced: React.FC = () => {
       </div>
 
       {/* Navigation Tabs */}
-      <div className="flex space-x-1 bg-white/5 p-1 rounded-lg">
+      <div className="flex space-x-1 bg-blue-500/10 p-1 rounded-lg">
         {[
           { id: 'command', label: 'Command Center', icon: Terminal },
           { id: 'agents', label: 'Agent Fleet', icon: Users },
@@ -574,7 +574,7 @@ export const MasterAgentEnhanced: React.FC = () => {
             className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
               activeTab === tab.id
                 ? 'bg-blue-600 text-white'
-                : 'text-gray-400 hover:text-white hover:bg-white/10'
+                : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
             }`}
           >
             <tab.icon className="w-4 h-4" />
@@ -635,7 +635,7 @@ export const MasterAgentEnhanced: React.FC = () => {
                   <button
                     key={cmd}
                     onClick={() => setCommandInput(cmd)}
-                    className="px-3 py-1 bg-white/10 hover:bg-white/20 text-gray-300 text-sm rounded-lg transition-colors"
+                    className="px-3 py-1 bg-blue-500/15 hover:bg-blue-500/20 text-gray-300 text-sm rounded-lg transition-colors"
                   >
                     {cmd}
                   </button>
@@ -656,7 +656,7 @@ export const MasterAgentEnhanced: React.FC = () => {
                 <p className="text-gray-400 text-center py-8">No commands executed yet</p>
               ) : (
                 commandHistory.map((entry) => (
-                  <div key={entry.id} className="bg-white/5 p-4 rounded-lg">
+                  <div key={entry.id} className="bg-blue-500/10 p-4 rounded-lg">
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center space-x-2">
                         {entry.status === 'success' ? (
@@ -702,7 +702,7 @@ export const MasterAgentEnhanced: React.FC = () => {
                 <select
                   value={selectedEnvironment}
                   onChange={(e) => setSelectedEnvironment(e.target.value as any)}
-                  className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white text-sm focus:outline-none focus:border-blue-500"
                 >
                   <option value="development">Development</option>
                   <option value="staging">Staging</option>
@@ -720,7 +720,7 @@ export const MasterAgentEnhanced: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {(agents || []).map((agent) => (
-                <div key={agent.id} className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
+                <div key={agent.id} className="bg-blue-500/10 p-6 rounded-xl hover:bg-blue-500/15 transition-all">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center space-x-3">
                       <div className={`p-2 rounded-lg ${
@@ -728,7 +728,7 @@ export const MasterAgentEnhanced: React.FC = () => {
                         agent.type === 'research' ? 'text-green-400 bg-green-400/20' :
                         agent.type === 'communication' ? 'text-purple-400 bg-purple-400/20' :
                         agent.type === 'monitoring' ? 'text-yellow-400 bg-yellow-400/20' :
-                        'text-gray-400 bg-gray-400/20'
+                        'text-blue-400 bg-blue-400/20'
                       }`}>
                         {getAgentTypeIcon(agent.type)}
                       </div>
@@ -741,7 +741,7 @@ export const MasterAgentEnhanced: React.FC = () => {
                   </div>
 
                   {agent.current_task && (
-                    <div className="mb-4 p-3 bg-white/5 rounded-lg">
+                    <div className="mb-4 p-3 bg-blue-500/10 rounded-lg">
                       <p className="text-gray-400 text-xs mb-1">Current Task</p>
                       <p className="text-white text-sm">{agent.current_task}</p>
                     </div>
@@ -767,15 +767,15 @@ export const MasterAgentEnhanced: React.FC = () => {
                   </div>
 
                   <div className="grid grid-cols-3 gap-2 mb-4 text-xs">
-                    <div className="bg-white/5 p-2 rounded">
+                    <div className="bg-blue-500/10 p-2 rounded">
                       <p className="text-gray-400">CPU</p>
                       <p className="text-white">{agent.resource_usage.cpu}%</p>
                     </div>
-                    <div className="bg-white/5 p-2 rounded">
+                    <div className="bg-blue-500/10 p-2 rounded">
                       <p className="text-gray-400">Memory</p>
                       <p className="text-white">{agent.resource_usage.memory}%</p>
                     </div>
-                    <div className="bg-white/5 p-2 rounded">
+                    <div className="bg-blue-500/10 p-2 rounded">
                       <p className="text-gray-400">Network</p>
                       <p className="text-white">{agent.resource_usage.network}%</p>
                     </div>
@@ -836,7 +836,7 @@ export const MasterAgentEnhanced: React.FC = () => {
                             }
                           }}
                           disabled={scaleAgentMutation.isPending || (agentScaling[agent.id] || 1) <= 1}
-                          className="w-6 h-6 bg-blue-700 hover:bg-blue-800 disabled:bg-slate-800 hover:bg-slate-900 text-white rounded text-xs flex items-center justify-center"
+                          className="w-6 h-6 bg-blue-700 hover:bg-blue-800 disabled:bg-blue-900/40 hover:bg-blue-900/60 text-white rounded text-xs flex items-center justify-center"
                         >
                           -
                         </button>
@@ -849,7 +849,7 @@ export const MasterAgentEnhanced: React.FC = () => {
                             scaleAgentMutation.mutate({ agentId: agent.id, replicas: newReplicas });
                           }}
                           disabled={scaleAgentMutation.isPending || (agentScaling[agent.id] || 1) >= 10}
-                          className="w-6 h-6 bg-blue-700 hover:bg-blue-800 disabled:bg-slate-800 hover:bg-slate-900 text-white rounded text-xs flex items-center justify-center"
+                          className="w-6 h-6 bg-blue-700 hover:bg-blue-800 disabled:bg-blue-900/40 hover:bg-blue-900/60 text-white rounded text-xs flex items-center justify-center"
                         >
                           +
                         </button>
@@ -890,7 +890,7 @@ export const MasterAgentEnhanced: React.FC = () => {
 
             <div className="space-y-4">
               {(tasks || []).map((task) => (
-                <div key={task.id} className="bg-white/5 p-6 rounded-xl hover:bg-white/10 transition-all">
+                <div key={task.id} className="bg-blue-500/10 p-6 rounded-xl hover:bg-blue-500/15 transition-all">
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex-1">
                       <div className="flex items-center space-x-3 mb-2">
@@ -902,7 +902,7 @@ export const MasterAgentEnhanced: React.FC = () => {
                           task.status === 'completed' ? 'bg-green-500/20 text-green-400' :
                           task.status === 'in_progress' ? 'bg-blue-500/20 text-blue-400' :
                           task.status === 'failed' ? 'bg-red-500/20 text-red-400' :
-                          'bg-gray-500/20 text-gray-400'
+                          'bg-blue-600/20 text-gray-400'
                         }`}>
                           {task.status.replace('_', ' ')}
                         </span>

@@ -502,7 +502,7 @@ const MCPHubManagementSystem: React.FC = () => {
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex space-x-1 bg-white/5 p-1 rounded-lg">
+        <div className="flex space-x-1 bg-blue-500/10 p-1 rounded-lg">
           {[
             { id: 'servers', label: 'Servers', icon: Server },
             { id: 'marketplace', label: 'Marketplace', icon: Package },
@@ -517,7 +517,7 @@ const MCPHubManagementSystem: React.FC = () => {
               className={`flex items-center space-x-2 px-4 py-2 rounded-md transition-colors ${
                 activeTab === tab.id
                   ? 'bg-orange-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -539,13 +539,13 @@ const MCPHubManagementSystem: React.FC = () => {
                     placeholder="Search servers..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-500"
+                    className="pl-10 pr-4 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-500"
                   />
                 </div>
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-orange-500"
                 >
                   <option value="all">All Status</option>
                   <option value="active">Active</option>
@@ -558,7 +558,7 @@ const MCPHubManagementSystem: React.FC = () => {
                 <select
                   value={filterCategory}
                   onChange={(e) => setFilterCategory(e.target.value)}
-                  className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-orange-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-orange-500"
                 >
                   <option value="all">All Categories</option>
                   <option value="search">Search</option>
@@ -590,7 +590,7 @@ const MCPHubManagementSystem: React.FC = () => {
                     <div className="flex items-center space-x-3">
                       <div className={`p-2 rounded-lg ${
                         server.status === 'active' ? 'bg-green-500/20 text-green-400' :
-                        server.status === 'inactive' ? 'bg-gray-500/20 text-gray-400' :
+                        server.status === 'inactive' ? 'bg-blue-600/20 text-gray-400' :
                         server.status === 'error' ? 'bg-red-500/20 text-red-400' :
                         server.status === 'connecting' ? 'bg-yellow-500/20 text-yellow-400' :
                         server.status === 'deploying' ? 'bg-blue-500/20 text-blue-400' :
@@ -605,7 +605,7 @@ const MCPHubManagementSystem: React.FC = () => {
                     </div>
                     <span className={`text-xs px-2 py-1 rounded-full ${
                       server.status === 'active' ? 'bg-green-500/20 text-green-400' :
-                      server.status === 'inactive' ? 'bg-gray-500/20 text-gray-400' :
+                      server.status === 'inactive' ? 'bg-blue-600/20 text-gray-400' :
                       server.status === 'error' ? 'bg-red-500/20 text-red-400' :
                       server.status === 'connecting' ? 'bg-yellow-500/20 text-yellow-400' :
                       server.status === 'deploying' ? 'bg-blue-500/20 text-blue-400' :
@@ -648,7 +648,7 @@ const MCPHubManagementSystem: React.FC = () => {
                           </span>
                         ))}
                         {server.capabilities.length > 3 && (
-                          <span className="text-xs px-2 py-1 bg-gray-500/20 text-gray-400 rounded">
+                          <span className="text-xs px-2 py-1 bg-blue-600/20 text-gray-400 rounded">
                             +{server.capabilities.length - 3} more
                           </span>
                         )}
@@ -682,14 +682,14 @@ const MCPHubManagementSystem: React.FC = () => {
                     <div className="flex items-center space-x-1">
                       <button
                         onClick={() => setSelectedServer(server.id)}
-                        className="p-1 hover:bg-white/10 rounded"
+                        className="p-1 hover:bg-blue-500/15 rounded"
                       >
                         <Eye className="w-4 h-4 text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Edit className="w-4 h-4 text-gray-400" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Settings className="w-4 h-4 text-gray-400" />
                       </button>
                     </div>
@@ -711,10 +711,10 @@ const MCPHubManagementSystem: React.FC = () => {
                   <input
                     type="text"
                     placeholder="Search marketplace..."
-                    className="pl-10 pr-4 py-2 bg-white/10 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-500"
+                    className="pl-10 pr-4 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:border-orange-500"
                   />
                 </div>
-                <select className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-orange-500">
+                <select className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-orange-500">
                   <option value="all">All Categories</option>
                   <option value="featured">Featured</option>
                   <option value="free">Free</option>
@@ -787,7 +787,7 @@ const MCPHubManagementSystem: React.FC = () => {
             <div className="flex items-center justify-between">
               <h2 className="text-xl font-semibold text-white">Server Monitoring</h2>
               <div className="flex items-center space-x-2">
-                <select className="px-3 py-2 bg-white/10 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-orange-500">
+                <select className="px-3 py-2 bg-blue-500/15 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-orange-500">
                   <option value="1h">Last Hour</option>
                   <option value="24h">Last 24 Hours</option>
                   <option value="7d">Last 7 Days</option>

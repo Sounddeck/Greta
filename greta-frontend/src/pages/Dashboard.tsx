@@ -124,8 +124,8 @@ const ActivityItem: React.FC<{
   const Icon = getIcon();
 
   return (
-    <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-white/5 transition-colors">
-      <div className={`p-2 rounded-lg bg-white/10 ${getColor()}`}>
+    <div className="flex items-start space-x-3 p-3 rounded-lg hover:bg-blue-500/10 transition-colors">
+      <div className={`p-2 rounded-lg bg-blue-500/15 ${getColor()}`}>
         <Icon className="w-4 h-4" />
       </div>
       <div className="flex-1 min-w-0">

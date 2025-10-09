@@ -225,7 +225,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                         className={`flex items-center px-8 py-2 text-sm font-medium transition-colors ${
                           isActive
                             ? 'text-white bg-blue-600/20 border-r-2 border-blue-500'
-                            : 'text-gray-300 hover:text-white hover:bg-white/5'
+                            : 'text-gray-300 hover:text-white hover:bg-blue-500/10'
                         }`}
                       >
                         <Icon className="w-4 h-4 mr-3" />
@@ -271,7 +271,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <div key={section.name} className="mb-6">
                   <button
                     onClick={() => toggleSection(section.name)}
-                    className="flex items-center justify-between w-full px-3 py-2 text-sm font-semibold text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                    className="flex items-center justify-between w-full px-3 py-2 text-sm font-semibold text-gray-400 hover:text-white transition-colors rounded-lg hover:bg-blue-500/10"
                   >
                     <div className="flex items-center">
                       <section.icon className="w-4 h-4 mr-2" />
@@ -300,7 +300,7 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
                             className={`group flex items-center px-6 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                               isActive
                                 ? 'text-white bg-gradient-to-r from-blue-600/20 to-blue-800/20 border border-blue-500/30'
-                                : 'text-gray-300 hover:text-white hover:bg-white/10'
+                                : 'text-gray-300 hover:text-white hover:bg-blue-500/15'
                             }`}
                           >
                             <Icon className={`w-4 h-4 mr-3 transition-colors ${

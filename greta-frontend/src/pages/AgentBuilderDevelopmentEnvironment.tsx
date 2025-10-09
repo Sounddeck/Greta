@@ -347,14 +347,14 @@ const AgentBuilderDevelopmentEnvironment: React.FC = () => {
               <Plus className="w-4 h-4" />
               <span>New Project</span>
             </button>
-            <button className="p-2 hover:bg-white/10 rounded-lg transition-colors">
+            <button className="p-2 hover:bg-blue-500/15 rounded-lg transition-colors">
               <Settings className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex space-x-1 mb-8 bg-white/5 rounded-xl p-1">
+        <div className="flex space-x-1 mb-8 bg-blue-500/10 rounded-xl p-1">
           {[
             { id: 'projects', label: 'Projects', icon: Folder },
             { id: 'templates', label: 'Templates', icon: Package },
@@ -368,7 +368,7 @@ const AgentBuilderDevelopmentEnvironment: React.FC = () => {
               className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                 activeTab === tab.id
                   ? 'bg-blue-600 text-white'
-                  : 'text-gray-400 hover:text-white hover:bg-white/10'
+                  : 'text-gray-400 hover:text-white hover:bg-blue-500/15'
               }`}
             >
               <tab.icon className="w-4 h-4" />
@@ -390,13 +390,13 @@ const AgentBuilderDevelopmentEnvironment: React.FC = () => {
                     placeholder="Search projects..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 pr-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="pl-10 pr-4 py-2 bg-blue-500/15 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
-                  className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="all">All Types</option>
                   <option value="Conversational AI">Conversational AI</option>
@@ -406,7 +406,7 @@ const AgentBuilderDevelopmentEnvironment: React.FC = () => {
                 <select
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="px-3 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="px-3 py-2 bg-blue-500/15 border border-white/20 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
                   <option value="all">All Status</option>
                   <option value="active">Active</option>
@@ -472,13 +472,13 @@ const AgentBuilderDevelopmentEnvironment: React.FC = () => {
                       <span>{project.tests} tests</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Edit className="w-4 h-4" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Copy className="w-4 h-4" />
                       </button>
-                      <button className="p-1 hover:bg-white/10 rounded">
+                      <button className="p-1 hover:bg-blue-500/15 rounded">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
