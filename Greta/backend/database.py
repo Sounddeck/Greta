@@ -41,3 +41,15 @@ class Database:
             return {"status": "connected", "database": self.db.name}
         except Exception as e:
             return {"status": "error", "error": str(e)}
+
+
+# Global database instance
+_database_instance = None
+
+def get_database() -> Database:
+    """Get or create the global database instance"""
+    global _database_instance
+    if _database_instance is None:
+        from config import get_settings
+        _database_instance = Database()
+    return _database_instance

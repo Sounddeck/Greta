@@ -1,361 +1,401 @@
-# GRETA Implementation Roadmap - Real Functionality
-
-## Current Status (Honest Assessment)
-
-**What Exists:**
-- ✅ 12 backend router files with basic endpoints
-- ✅ 12 backend service files with minimal logic
-- ✅ 12 frontend pages (UI mockups, not connected)
-- ✅ Database connection (file-based fallback)
-- ✅ 11 of 12 routers loading successfully
-
-**What's Missing:**
-- ❌ Real business logic in services
-- ❌ Frontend-backend integration
-- ❌ Actual AI/ML capabilities
-- ❌ User control mechanisms
-- ❌ PAI system integration
-- ❌ MCP server integration
-- ❌ Learning/training pipeline
-- ❌ Useful features users can actually use
+# CPAS4/Greta Implementation Roadmap
+**Updated:** October 11, 2025 at 3:15 PM
 
 ---
 
-## Implementation Strategy
+## 🎯 Current Status
 
-### **Approach: Build One Module Completely, Then Move to Next**
-
-Instead of creating scaffolding for all modules, I will:
-1. Pick one module
-2. Implement ALL functionality for that module
-3. Connect frontend to backend
-4. Test thoroughly
-5. Document usage
-6. Move to next module
-
-This ensures each module is **actually usable** before moving on.
+✅ **Phase 1:** Frontend Integration - COMPLETE  
+✅ **Phase 2:** Critical Security Fixes - COMPLETE  
+🔄 **Phase 3:** High Priority Improvements - 33% COMPLETE (Task 3.1 done)  
+⏸️ **Phase 4:** Desktop App with Tauri - PENDING  
+⏸️ **Phase 5:** Production Deployment - PENDING
 
 ---
 
-## Phase 1: Enhanced Master Agent (STARTING NOW)
+## 📋 Detailed Implementation Plan
 
-### Goal: Create a real command center that controls the entire GRETA system
+### Phase 3: High Priority Improvements (Remaining: 2.5-4.5 hours)
 
-### Features to Implement:
+#### ✅ Task 3.1: Rate Limiting (COMPLETE - 1.5 hours)
+- [x] Install slowapi package
+- [x] Create rate_limit.py middleware
+- [x] Configure rate limits per endpoint type
+- [x] Update main.py with rate limiter integration
+- [x] Update auth_router.py with rate limiting
+- [x] Update voice_router.py with rate limiting
+- [x] Test rate limiting functionality
 
-#### 1. System Dashboard (2 hours)
-**Backend:**
-- Real-time system metrics (CPU, memory, disk, network)
-- Module status monitoring (running, stopped, error)
-- Agent inventory and status
-- Recent activity log
-- System health score
-
-**Frontend:**
-- Live updating dashboard with charts
-- Module status cards with start/stop buttons
-- System metrics visualization
-- Activity timeline
-- Alert notifications
-
-**Files to Modify:**
-- `backend/services/enhanced_master_agent.py` - Add real monitoring logic
-- `greta-frontend/src/pages/EnhancedMasterAgent.tsx` - Connect to backend API
-- `greta-frontend/src/components/SystemDashboard.tsx` - Create new component
-
-#### 2. Agent Orchestration (3 hours)
-**Backend:**
-- Deploy specialized agents (Researcher, Engineer, Designer, Pentester, Architect)
-- Route tasks to appropriate agents based on task type
-- Aggregate results from multiple agents
-- Handle agent failures and automatic retries
-- Agent communication protocol
-
-**Frontend:**
-- Agent deployment wizard
-- Task routing configuration
-- Agent status monitoring
-- Result aggregation view
-- Error handling and retry controls
-
-**Files to Modify:**
-- `backend/services/enhanced_master_agent.py` - Add orchestration logic
-- `backend/services/agent_templates.py` - Create agent templates (NEW FILE)
-- `greta-frontend/src/pages/EnhancedMasterAgent.tsx` - Add orchestration UI
-
-#### 3. Learning Coordination (2 hours)
-**Backend:**
-- Collect training data from all modules
-- Format data for LLM training
-- Feed data to local LLM (llama.cpp integration)
-- Track learning progress and metrics
-- Manage model updates and versioning
-
-**Frontend:**
-- Learning data visualization
-- Training progress monitoring
-- Model performance metrics
-- Data source configuration
-- Manual training triggers
-
-**Files to Modify:**
-- `backend/services/enhanced_master_agent.py` - Add learning coordination
-- `backend/services/learning_service.py` - Enhance learning service
-- `greta-frontend/src/pages/EnhancedMasterAgent.tsx` - Add learning UI
-
-#### 4. Emergency Controls (1 hour)
-**Backend:**
-- Pause all operations
-- Resume operations
-- Emergency shutdown
-- System restart
-- Rollback to previous state
-
-**Frontend:**
-- Emergency control panel
-- Confirmation dialogs
-- Status indicators
-- Recovery options
-
-**Files to Modify:**
-- `backend/services/enhanced_master_agent.py` - Add emergency controls
-- `greta-frontend/src/pages/EnhancedMasterAgent.tsx` - Add control UI
-
-### Total Time for Phase 1: 8 hours
+**Files Created:** 1 (95 lines)  
+**Files Modified:** 3  
+**Dependencies:** slowapi, limits, deprecated
 
 ---
 
-## Phase 2: PAI Hub Management (12 hours)
+#### 🔄 Task 3.2: Zustand State Management (2-3 hours)
 
-### Features:
-1. Agent Templates Library (3 hours)
-   - Pre-built templates for Researcher, Engineer, Designer, Pentester, Architect
-   - Template customization
-   - Template import/export
+**Step 1: Create Zustand Stores** (1 hour)
+- [ ] Create `Greta/src/stores/voiceStore.ts`
+  - Voice profiles state
+  - Languages state
+  - Voices state
+  - Actions: fetchProfiles, fetchLanguages, fetchVoices, createProfile
+  - Persist to localStorage
 
-2. Agent Builder (4 hours)
-   - Visual agent configuration
-   - Capability selection
-   - Personality and behavior settings
-   - Goal and constraint definition
+- [ ] Create `Greta/src/stores/mcpStore.ts`
+  - MCP servers state
+  - MCP tools state
+  - Actions: fetchServers, fetchTools, createServer, deleteServer, testConnection
+  - Persist to localStorage
 
-3. Agent Deployment (3 hours)
-   - Deploy agents to local environment
-   - Resource allocation
-   - Communication setup
-   - Health monitoring
+- [ ] Create `Greta/src/stores/hookStore.ts`
+  - Hooks state
+  - Plugins state
+  - Event types state
+  - Actions: fetchHooks, fetchPlugins, fetchEvents, registerHook, deleteHook
+  - Persist to localStorage
 
-4. Agent Management (2 hours)
-   - Start/stop/restart agents
-   - View logs and metrics
-   - Update configurations
-   - Delete or archive agents
+**Step 2: Update Components** (1-2 hours)
+- [ ] Update `VoiceControl.tsx`
+  - Replace useState with useVoiceStore
+  - Implement optimistic updates
+  - Remove local API calls (use store actions)
 
----
+- [ ] Update `VoiceSettings.tsx`
+  - Replace useState with useVoiceStore
+  - Implement optimistic updates
+  - Remove local API calls (use store actions)
 
-## Phase 3: Autonomous Operations Center (16 hours)
+- [ ] Update `MCPManager.tsx`
+  - Replace useState with useMCPStore
+  - Implement optimistic updates
+  - Remove local API calls (use store actions)
 
-### Features:
-1. Visual Workflow Builder (6 hours)
-   - Drag-and-drop interface
-   - Node library (actions, conditions, loops)
-   - Connection and flow logic
-   - Workflow validation
+- [ ] Update `HookManager.tsx`
+  - Replace useState with useHookStore
+  - Implement optimistic updates
+  - Remove local API calls (use store actions)
 
-2. Workflow Execution Engine (4 hours)
-   - Execute workflows
-   - Parallel and sequential execution
-   - Real-time progress tracking
-   - Error handling and retries
-
-3. Automation Rules (3 hours)
-   - Trigger-based automation
-   - Rule builder
-   - Rule testing
-   - Priority management
-
-4. Integration Hub (3 hours)
-   - API connectors
-   - Database connectors
-   - File system integration
-   - MCP server integration
+**Expected Files:**
+- Created: 3 store files (~300 lines each)
+- Modified: 4 component files
 
 ---
 
-## Phase 4: Predictive Analytics Engine (16 hours)
+#### ⏸️ Task 3.3: Loading States & Skeletons (1 hour)
 
-### Features:
-1. Data Collection Pipeline (4 hours)
-2. ML Models (6 hours)
-   - User intent prediction
-   - Task completion time estimation
-   - Resource usage forecasting
-   - Agent performance prediction
-   - Anomaly detection
-3. Insights & Recommendations (3 hours)
-4. Visualization Dashboard (3 hours)
+**Step 1: Create Skeleton Components** (30 minutes)
+- [ ] Create `Greta/src/components/skeletons/VoiceProfileSkeleton.tsx`
+- [ ] Create `Greta/src/components/skeletons/MCPServerSkeleton.tsx`
+- [ ] Create `Greta/src/components/skeletons/HookSkeleton.tsx`
+- [ ] Create `Greta/src/components/skeletons/TableSkeleton.tsx`
 
----
+**Step 2: Add Loading Indicators** (30 minutes)
+- [ ] Add skeleton loaders to VoiceSettings during initial load
+- [ ] Add skeleton loaders to MCPManager during initial load
+- [ ] Add skeleton loaders to HookManager during initial load
+- [ ] Add progress bars for long-running operations (STT, TTS)
+- [ ] Add spinner for button actions (save, delete, test)
 
-## Phase 5: Agent Management Framework (10 hours)
-
-### Features:
-1. Agent Lifecycle Management (3 hours)
-2. Agent Configuration System (2 hours)
-3. Real-time Monitoring (3 hours)
-4. Inter-agent Communication (2 hours)
+**Expected Files:**
+- Created: 4 skeleton components (~50 lines each)
+- Modified: 3 main components
 
 ---
 
-## Phase 6: MCP Hub Management (12 hours)
+### Phase 4: Desktop App with Tauri (6-8 hours)
 
-### Features:
-1. MCP Server Discovery (3 hours)
-2. Server Installation & Management (3 hours)
-3. Capability Execution (3 hours)
-4. Agent Integration (3 hours)
+#### Task 4.1: Tauri Setup (2 hours)
 
----
+**Step 1: Install Tauri CLI** (30 minutes)
+```bash
+cd /Users/macone/Desktop/Greta/Greta
+npm install --save-dev @tauri-apps/cli
+npm install @tauri-apps/api
+```
 
-## Phase 7: Functional Memory System (12 hours)
+**Step 2: Initialize Tauri** (30 minutes)
+```bash
+npx tauri init
+```
+- Configure app name: "GRETA PAI"
+- Configure window title: "GRETA Personal AI Assistant"
+- Configure dev URL: http://localhost:5174
+- Configure dist dir: dist
 
-### Features:
-1. Vector Database Integration (4 hours)
-2. Semantic Search & Retrieval (3 hours)
-3. Memory Consolidation (3 hours)
-4. LLM Context Integration (2 hours)
+**Step 3: Configure tauri.conf.json** (1 hour)
+- [ ] Set app identifier: `com.greta.pai`
+- [ ] Configure window properties (size, resizable, decorations)
+- [ ] Set up app icon
+- [ ] Configure permissions (filesystem, network, notifications)
+- [ ] Set up build configuration
 
----
-
-## Phase 8: OSINT Management Platform (14 hours)
-
-### Features:
-1. Investigation Management (3 hours)
-2. Data Gathering Tools (5 hours)
-3. Analysis & Visualization (4 hours)
-4. Reporting (2 hours)
-
----
-
-## Phase 9: Multi-Modal Processing System (16 hours)
-
-### Features:
-1. Audio Processing (4 hours)
-2. Video Processing (4 hours)
-3. Image Processing (4 hours)
-4. Document Processing (4 hours)
+**Expected Files:**
+- Created: `src-tauri/` directory with Rust project
+- Created: `tauri.conf.json`
+- Modified: `package.json` (add tauri scripts)
 
 ---
 
-## Phase 10: Agent Builder Development Environment (14 hours)
+#### Task 4.2: Native Features (2-3 hours)
 
-### Features:
-1. Project Management (3 hours)
-2. Code Editor (4 hours)
-3. Build & Test (4 hours)
-4. Deployment (3 hours)
+**Step 1: System Tray** (1 hour)
+- [ ] Create system tray icon
+- [ ] Add tray menu (Show, Hide, Quit)
+- [ ] Implement tray click handlers
+- [ ] Add minimize to tray functionality
 
----
+**Step 2: Native Notifications** (30 minutes)
+- [ ] Replace browser notifications with Tauri notifications
+- [ ] Add notification permissions
+- [ ] Test notification display
 
-## Phase 11: Training Platform Management (14 hours)
+**Step 3: Auto-Start** (30 minutes)
+- [ ] Add auto-start configuration
+- [ ] Create settings toggle for auto-start
+- [ ] Test auto-start on login
 
-### Features:
-1. Course Management (4 hours)
-2. Learning Experience (4 hours)
-3. Personalization (3 hours)
-4. Certification (3 hours)
+**Step 4: Window Management** (1 hour)
+- [ ] Implement window state persistence (size, position)
+- [ ] Add keyboard shortcuts (Cmd+Q, Cmd+W, Cmd+M)
+- [ ] Implement always-on-top option
+- [ ] Add fullscreen support
 
----
-
-## Phase 12: Intelligent Knowledge Base (14 hours)
-
-### Features:
-1. Document Management (3 hours)
-2. Semantic Search (4 hours)
-3. Knowledge Graph (4 hours)
-4. AI Integration (3 hours)
-
----
-
-## Total Implementation Time
-
-**Total**: ~162 hours (approximately 4 weeks of full-time work)
-
-**Realistic Timeline**: 6-8 weeks with testing, debugging, and documentation
+**Expected Files:**
+- Modified: `src-tauri/src/main.rs` (add native features)
+- Created: `src/utils/tauri.ts` (Tauri API helpers)
+- Modified: Components to use Tauri APIs
 
 ---
 
-## Starting NOW: Enhanced Master Agent Implementation
+#### Task 4.3: Build & Package (2-3 hours)
 
-I will begin implementing the Enhanced Master Agent module immediately with the following steps:
+**Step 1: Development Build** (30 minutes)
+```bash
+npm run tauri dev
+```
+- [ ] Test all features in development mode
+- [ ] Fix any Tauri-specific issues
+- [ ] Verify backend connectivity
 
-### Step 1: Fix Critical Issues (30 minutes)
-- [x] Fix MCP Hub import error
-- [ ] Fix Master Agent health endpoint
-- [ ] Test all module health endpoints
+**Step 2: Production Build** (1 hour)
+```bash
+npm run tauri build
+```
+- [ ] Configure build settings
+- [ ] Build for macOS (Apple Silicon)
+- [ ] Test production build
+- [ ] Verify app bundle structure
 
-### Step 2: Implement System Dashboard (2 hours)
-- [ ] Add real-time system metrics collection
-- [ ] Create module status monitoring
-- [ ] Build agent inventory system
-- [ ] Implement activity logging
-- [ ] Calculate system health score
-- [ ] Connect frontend dashboard to backend
+**Step 3: Create Installer** (1-1.5 hours)
+- [ ] Configure DMG settings
+- [ ] Add custom background image
+- [ ] Set up drag-to-Applications
+- [ ] Test installation process
+- [ ] Verify app launches after installation
 
-### Step 3: Implement Agent Orchestration (3 hours)
-- [ ] Create agent templates (Researcher, Engineer, Designer, Pentester, Architect)
-- [ ] Build agent deployment system
-- [ ] Implement task routing logic
-- [ ] Add result aggregation
-- [ ] Create error handling and retry mechanism
-- [ ] Build frontend orchestration UI
-
-### Step 4: Implement Learning Coordination (2 hours)
-- [ ] Build training data collection pipeline
-- [ ] Format data for LLM training
-- [ ] Integrate with llama.cpp
-- [ ] Track learning metrics
-- [ ] Create frontend learning dashboard
-
-### Step 5: Implement Emergency Controls (1 hour)
-- [ ] Add pause/resume functionality
-- [ ] Implement emergency shutdown
-- [ ] Create system restart
-- [ ] Add rollback capability
-- [ ] Build frontend control panel
-
-### Step 6: Testing & Documentation (1.5 hours)
-- [ ] Test all features
-- [ ] Write user documentation
-- [ ] Create usage examples
-- [ ] Record demo video
-
-**Total for Enhanced Master Agent**: 10 hours
+**Expected Output:**
+- `src-tauri/target/release/bundle/dmg/GRETA PAI_*.dmg`
+- `src-tauri/target/release/bundle/macos/GRETA PAI.app`
 
 ---
 
-## Success Metrics
+### Phase 5: Production Deployment (15+ hours)
 
-A module is complete when:
-1. ✅ All features are implemented and working
-2. ✅ Frontend is connected to backend
-3. ✅ Users can perform all intended actions
-4. ✅ Error handling is robust
-5. ✅ Documentation is complete
-6. ✅ Tests pass
-7. ✅ Demo video is recorded
+#### Task 5.1: Code Signing (4-6 hours)
+
+**Prerequisites:**
+- Apple Developer Account ($99/year)
+- Developer ID Application certificate
+
+**Step 1: Obtain Certificate** (2-3 hours)
+- [ ] Enroll in Apple Developer Program
+- [ ] Create Developer ID Application certificate
+- [ ] Download and install certificate in Keychain
+- [ ] Export certificate for CI/CD (if needed)
+
+**Step 2: Configure Code Signing** (1 hour)
+- [ ] Update `tauri.conf.json` with signing identity
+- [ ] Configure entitlements
+- [ ] Set up provisioning profile (if needed)
+
+**Step 3: Sign Application** (1-2 hours)
+```bash
+codesign --deep --force --verify --verbose \
+  --sign "Developer ID Application: Your Name" \
+  "GRETA PAI.app"
+```
+- [ ] Sign app bundle
+- [ ] Verify signature
+- [ ] Test signed app
 
 ---
 
-## Commitment
+#### Task 5.2: Notarization (3-4 hours)
 
-I will implement this roadmap systematically, starting NOW with the Enhanced Master Agent. I will provide:
-- Real, working functionality
-- Connected frontend and backend
-- Comprehensive testing
-- Clear documentation
-- Usable features
+**Step 1: Prepare for Notarization** (1 hour)
+- [ ] Create app-specific password for Apple ID
+- [ ] Configure notarization credentials
+- [ ] Create ZIP archive of app bundle
 
-**No more scaffolding. Real implementation starts now.**
+**Step 2: Submit for Notarization** (1-2 hours)
+```bash
+xcrun notarytool submit "GRETA PAI.zip" \
+  --apple-id "your@email.com" \
+  --password "app-specific-password" \
+  --team-id "TEAM_ID" \
+  --wait
+```
+- [ ] Submit app to Apple
+- [ ] Wait for notarization (can take 15 minutes to 2 hours)
+- [ ] Check notarization status
 
+**Step 3: Staple Notarization** (30 minutes)
+```bash
+xcrun stapler staple "GRETA PAI.app"
+```
+- [ ] Staple notarization ticket to app
+- [ ] Verify stapling
+- [ ] Test notarized app
+
+**Step 4: Verify Notarization** (30 minutes)
+```bash
+spctl --assess --verbose=4 --type execute "GRETA PAI.app"
+```
+- [ ] Verify Gatekeeper acceptance
+- [ ] Test on fresh macOS system
+- [ ] Confirm no security warnings
+
+---
+
+#### Task 5.3: DMG Installer (2-3 hours)
+
+**Step 1: Create DMG** (1 hour)
+- [ ] Install `create-dmg` tool
+- [ ] Configure DMG settings (size, background, icon positions)
+- [ ] Create custom background image
+- [ ] Set up Applications symlink
+
+**Step 2: Build DMG** (1 hour)
+```bash
+create-dmg \
+  --volname "GRETA PAI" \
+  --background "dmg-background.png" \
+  --window-pos 200 120 \
+  --window-size 800 400 \
+  --icon-size 100 \
+  --icon "GRETA PAI.app" 200 190 \
+  --hide-extension "GRETA PAI.app" \
+  --app-drop-link 600 185 \
+  "GRETA-PAI-Installer.dmg" \
+  "GRETA PAI.app"
+```
+- [ ] Build DMG installer
+- [ ] Test installation process
+- [ ] Verify drag-to-Applications works
+
+**Step 3: Sign and Notarize DMG** (1 hour)
+- [ ] Sign DMG file
+- [ ] Submit DMG for notarization
+- [ ] Staple notarization to DMG
+- [ ] Final testing
+
+---
+
+#### Task 5.4: Production Server Deployment (6-8 hours)
+
+**Step 1: Server Setup** (2-3 hours)
+- [ ] Choose hosting provider (AWS, DigitalOcean, etc.)
+- [ ] Provision server (Ubuntu 22.04 LTS recommended)
+- [ ] Configure firewall (ports 80, 443, 8000)
+- [ ] Set up SSH access
+- [ ] Install dependencies (Python 3.13, MongoDB, nginx)
+
+**Step 2: Application Deployment** (2-3 hours)
+- [ ] Clone repository to server
+- [ ] Set up Python virtual environment
+- [ ] Install Python dependencies
+- [ ] Configure environment variables
+- [ ] Set up MongoDB database
+- [ ] Test backend startup
+
+**Step 3: Web Server Configuration** (1-2 hours)
+- [ ] Install and configure nginx
+- [ ] Set up reverse proxy for backend
+- [ ] Configure SSL/TLS with Let's Encrypt
+- [ ] Set up automatic certificate renewal
+- [ ] Configure CORS for production domain
+
+**Step 4: Process Management** (1 hour)
+- [ ] Set up systemd service for backend
+- [ ] Configure auto-restart on failure
+- [ ] Set up log rotation
+- [ ] Test service start/stop/restart
+
+**Step 5: Monitoring & Logging** (1 hour)
+- [ ] Set up application logging
+- [ ] Configure log aggregation
+- [ ] Set up monitoring (CPU, memory, disk)
+- [ ] Configure alerts for errors
+- [ ] Set up uptime monitoring
+
+---
+
+## 📊 Time Estimates Summary
+
+| Phase | Task | Estimated Time | Status |
+|-------|------|----------------|--------|
+| 3 | Rate Limiting | 1-2 hours | ✅ COMPLETE (1.5h) |
+| 3 | Zustand Stores | 2-3 hours | 🔄 IN PROGRESS |
+| 3 | Loading States | 1 hour | ⏸️ PENDING |
+| **3 Total** | | **4-6 hours** | **33% Complete** |
+| 4 | Tauri Setup | 2 hours | ⏸️ PENDING |
+| 4 | Native Features | 2-3 hours | ⏸️ PENDING |
+| 4 | Build & Package | 2-3 hours | ⏸️ PENDING |
+| **4 Total** | | **6-8 hours** | **0% Complete** |
+| 5 | Code Signing | 4-6 hours | ⏸️ PENDING |
+| 5 | Notarization | 3-4 hours | ⏸️ PENDING |
+| 5 | DMG Installer | 2-3 hours | ⏸️ PENDING |
+| 5 | Server Deployment | 6-8 hours | ⏸️ PENDING |
+| **5 Total** | | **15-21 hours** | **0% Complete** |
+| **GRAND TOTAL** | | **25-35 hours** | **~6% Complete** |
+
+---
+
+## 🚀 Next Steps
+
+### Immediate (Next Session):
+1. Complete Task 3.2: Zustand State Management (2-3 hours)
+2. Complete Task 3.3: Loading States & Skeletons (1 hour)
+3. Commit Phase 3 completion
+
+### Short Term (This Week):
+1. Start Phase 4: Tauri Setup (2 hours)
+2. Implement Native Features (2-3 hours)
+3. Create Development Build (30 minutes)
+
+### Medium Term (Next Week):
+1. Complete Phase 4: Build & Package (2-3 hours)
+2. Start Phase 5: Code Signing (4-6 hours)
+3. Notarization (3-4 hours)
+
+### Long Term (Following Weeks):
+1. DMG Installer Creation (2-3 hours)
+2. Production Server Deployment (6-8 hours)
+3. Final Testing & Launch
+
+---
+
+## 📝 Notes
+
+- **Phase 3** can be completed in one 4-6 hour session
+- **Phase 4** requires macOS for Tauri development
+- **Phase 5** requires Apple Developer Account ($99/year)
+- **Production deployment** can be done in parallel with desktop app work
+- Consider breaking Phase 5 into multiple sessions due to waiting times (notarization)
+
+---
+
+**Last Updated:** October 11, 2025 at 3:15 PM  
+**Next Update:** After completing Phase 3
 

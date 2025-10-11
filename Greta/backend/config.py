@@ -1,6 +1,8 @@
 """Enhanced GRETA Configuration"""
 from pydantic_settings import BaseSettings
 from typing import Optional
+from functools import lru_cache
+
 class Settings(BaseSettings):
     # Database
     mongodb_url: str = "mongodb://localhost:27017"
@@ -32,3 +34,9 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+
+
+@lru_cache()
+def get_settings() -> Settings:
+    """Get cached settings instance"""
+    return Settings()

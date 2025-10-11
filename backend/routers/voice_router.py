@@ -35,6 +35,9 @@ except ImportError as e:
     VOICE_SERVICE_AVAILABLE = False
 
 logger = logging.getLogger(__name__)
+from middleware.rate_limit import limiter, get_rate_limit
+
+
 router = APIRouter(prefix="/api/v1/voice", tags=["Voice"])
 
 # Request/Response Models
@@ -68,7 +71,9 @@ class ConversationStart(BaseModel):
 # Speech-to-Text Endpoints
 # ============================================================================
 
-@router.post("/stt", response_model=Dict[str, Any])
+@router.post("/stt")
+@limiter.limit(get_rate_limit("voice_stt")))
+@limiter.limit(get_rate_limit("voice_stt")), response_model=Dict[str, Any])
 async def speech_to_text(
     audio: UploadFile = File(...),
     language: Optional[str] = Form(None),
@@ -131,6 +136,8 @@ async def speech_to_text(
 # ============================================================================
 
 @router.post("/tts")
+@limiter.limit(get_rate_limit("voice_tts")))
+@limiter.limit(get_rate_limit("voice_tts")))
 async def text_to_speech(request: TTSRequest):
     """
     Convert text to speech
@@ -336,7 +343,9 @@ async def get_voice_profile(profile_id: str):
         logger.error(f"Profile retrieval error: {e}")
         raise HTTPException(500, f"Profile retrieval failed: {str(e)}")
 
-@router.get("/profiles", response_model=List[Dict[str, Any]])
+@router.get("/profiles")
+@limiter.limit(get_rate_limit("voice_profiles")))
+@limiter.limit(get_rate_limit("voice_profiles")), response_model=List[Dict[str, Any]])
 async def list_voice_profiles():
     """List all voice profiles"""
     if not VOICE_SERVICE_AVAILABLE:

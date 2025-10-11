@@ -18,6 +18,9 @@ from middleware.auth import (
     ACCESS_TOKEN_EXPIRE_MINUTES
 )
 
+from middleware.rate_limit import limiter, get_rate_limit
+
+
 router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
 
 
@@ -43,7 +46,9 @@ class UserResponse(BaseModel):
     roles: list[str]
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login"
+@limiter.limit(get_rate_limit("auth_login"))
+@limiter.limit(get_rate_limit("auth_login")), response_model=Token)
 async def login(request: LoginRequest):
     """
     Login endpoint - authenticate user and return JWT token
@@ -85,7 +90,9 @@ async def login(request: LoginRequest):
     )
 
 
-@router.post("/register", response_model=UserResponse)
+@router.post("/register"
+@limiter.limit(get_rate_limit("auth_register"))
+@limiter.limit(get_rate_limit("auth_register")), response_model=UserResponse)
 async def register(request: RegisterRequest):
     """
     Register a new user
@@ -182,7 +189,9 @@ async def logout(current_user: Dict[str, Any] = Depends(get_current_user)):
     }
 
 
-@router.post("/refresh", response_model=Token)
+@router.post("/refresh"
+@limiter.limit(get_rate_limit("auth_refresh"))
+@limiter.limit(get_rate_limit("auth_refresh")), response_model=Token)
 async def refresh_token(current_user: Dict[str, Any] = Depends(get_current_user)):
     """
     Refresh access token

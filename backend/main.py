@@ -307,6 +307,12 @@ app = FastAPI(
     lifespan=lifespan
 )
 
+# Add rate limiter to app state (Phase 3 Task 3.1)
+if RATE_LIMIT_AVAILABLE and limiter:
+    app.state.limiter = limiter
+    app.add_exception_handler(RateLimitExceeded, rate_limit_exceeded_handler)
+    logger.info("✅ Rate limiting enabled - API endpoints protected from abuse")
+
 # Register centralized error handlers (Phase 2 Task 2.4)
 try:
     from utils.errors import register_error_handlers
