@@ -1,0 +1,162 @@
+{
+  "id": "template_research_team",
+  "name": "Research Team",
+  "description": "Multi-agent research team with web search, fact checking, and summarization capabilities",
+  "category": "research",
+  "tags": ["research", "web-search", "fact-checking", "multi-agent"],
+  "is_public": true,
+  "agent_configs": [
+    {
+      "name": "Research Agent",
+      "agent_type": "assistant",
+      "system_message": "You are a research agent specialized in finding and analyzing information from various sources. Use web search tools to gather comprehensive data on the given topic.",
+      "llm_config": {
+        "model": "gpt-4",
+        "temperature": 0.7,
+        "max_tokens": 2000
+      },
+      "human_input_mode": "NEVER",
+      "max_consecutive_auto_reply": 5,
+      "tools": [
+        {
+          "name": "web_search",
+          "description": "Search the web for information",
+          "parameters": {
+            "type": "object",
+            "properties": {
+              "query": {"type": "string", "description": "Search query"}
+            },
+            "required": ["query"]
+          },
+          "enabled": true
+        }
+      ],
+      "description": "Primary research agent with web search capabilities"
+    },
+    {
+      "name": "Fact Checker Agent",
+      "agent_type": "assistant",
+      "system_message": "You are a fact-checking agent. Verify the accuracy of information provided by cross-referencing multiple sources and identifying potential biases or inaccuracies.",
+      "llm_config": {
+        "model": "gpt-4",
+        "temperature": 0.3,
+        "max_tokens": 1500
+      },
+      "human_input_mode": "NEVER",
+      "max_consecutive_auto_reply": 3,
+      "tools": [],
+      "description": "Verifies accuracy of research findings"
+    },
+    {
+      "name": "Summarizer Agent",
+      "agent_type": "assistant",
+      "system_message": "You are a summarization agent. Synthesize information from multiple sources into clear, concise, and well-structured summaries.",
+      "llm_config": {
+        "model": "gpt-4",
+        "temperature": 0.5,
+        "max_tokens": 2000
+      },
+      "human_input_mode": "NEVER",
+      "max_consecutive_auto_reply": 2,
+      "tools": [],
+      "description": "Synthesizes research into summaries"
+    },
+    {
+      "name": "User Proxy",
+      "agent_type": "user_proxy",
+      "system_message": "You are a human reviewer. Review the research findings and provide feedback or approval.",
+      "llm_config": null,
+      "human_input_mode": "TERMINATE",
+      "max_consecutive_auto_reply": 1,
+      "tools": [],
+      "description": "Human review and approval"
+    }
+  ],
+  "workflow_definition": {
+    "id": "workflow_research_team_default",
+    "name": "Research Team Workflow",
+    "description": "Default workflow for research team template",
+    "nodes": [
+      {
+        "id": "node_start",
+        "type": "start",
+        "position": {"x": 100, "y": 200},
+        "data": {"label": "Start"}
+      },
+      {
+        "id": "node_research",
+        "type": "agent",
+        "position": {"x": 300, "y": 200},
+        "data": {
+          "agent_name": "Research Agent",
+          "agent_type": "assistant"
+        }
+      },
+      {
+        "id": "node_fact_check",
+        "type": "agent",
+        "position": {"x": 500, "y": 200},
+        "data": {
+          "agent_name": "Fact Checker Agent",
+          "agent_type": "assistant"
+        }
+      },
+      {
+        "id": "node_summarize",
+        "type": "agent",
+        "position": {"x": 700, "y": 200},
+        "data": {
+          "agent_name": "Summarizer Agent",
+          "agent_type": "assistant"
+        }
+      },
+      {
+        "id": "node_review",
+        "type": "agent",
+        "position": {"x": 900, "y": 200},
+        "data": {
+          "agent_name": "User Proxy",
+          "agent_type": "user_proxy"
+        }
+      },
+      {
+        "id": "node_end",
+        "type": "end",
+        "position": {"x": 1100, "y": 200},
+        "data": {"label": "End"}
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge_1",
+        "source": "node_start",
+        "target": "node_research"
+      },
+      {
+        "id": "edge_2",
+        "source": "node_research",
+        "target": "node_fact_check"
+      },
+      {
+        "id": "edge_3",
+        "source": "node_fact_check",
+        "target": "node_summarize"
+      },
+      {
+        "id": "edge_4",
+        "source": "node_summarize",
+        "target": "node_review"
+      },
+      {
+        "id": "edge_5",
+        "source": "node_review",
+        "target": "node_end"
+      }
+    ],
+    "entry_point": "node_start",
+    "termination_conditions": {},
+    "max_rounds": 20,
+    "timeout": 300,
+    "tags": ["research", "template"]
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "window_id": "test_persist",
+  "items": [
+    {
+      "item_id": "test_persist_item_0",
+      "content": "Persistent content",
+      "content_type": "text",
+      "tokens": 4,
+      "relevance_score": 1.0,
+      "priority": 0,
+      "source": "user",
+      "metadata": {},
+      "created_at": "2025-10-11T10:18:05.567483"
+    }
+  ],
+  "total_tokens": 4,
+  "max_tokens": 1000,
+  "compression_ratio": 1.0,
+  "is_compressed": false,
+  "metadata": {},
+  "created_at": "2025-10-11T10:18:05.567467",
+  "updated_at": "2025-10-11T10:18:05.567486"
+}

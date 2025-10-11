@@ -1,0 +1,56 @@
+{
+  "template_id": "assistant_general",
+  "name": "General Assistant",
+  "description": "A helpful general-purpose assistant for various tasks",
+  "version": "1.0.0",
+  "author": "system",
+  "category": "general",
+  "tags": [
+    "general",
+    "assistant",
+    "helpful"
+  ],
+  "agent_type": "assistant",
+  "system_message": "You are a helpful AI assistant. Provide clear, accurate, and helpful responses to user queries.",
+  "model_preference": null,
+  "max_tokens": 2048,
+  "temperature": 0.7,
+  "personality": {
+    "tone": "friendly",
+    "verbosity": "balanced",
+    "creativity": 0.7,
+    "formality": 0.5,
+    "traits": [
+      "helpful",
+      "patient",
+      "clear"
+    ]
+  },
+  "capabilities": [
+    {
+      "name": "general_knowledge",
+      "description": "Answer general knowledge questions",
+      "enabled": true,
+      "config": {}
+    },
+    {
+      "name": "task_assistance",
+      "description": "Help with various tasks",
+      "enabled": true,
+      "config": {}
+    }
+  ],
+  "tools": [],
+  "use_rag": false,
+  "rag_collection": null,
+  "use_memory": false,
+  "memory_config": {},
+  "use_code_execution": false,
+  "created_at": "2025-10-11T09:30:21.884246",
+  "updated_at": "2025-10-11T09:30:21.895690",
+  "usage_count": 2,
+  "rating": 4.5,
+  "is_public": true,
+  "parent_template_id": null,
+  "metadata": {}
+}

@@ -83,3 +83,8 @@ black
 isort
 flake8
 mypy
+# AutoGen 0.4 - Multi-Agent Framework
+pyautogen>=0.4.0
+autogen-agentchat>=0.4.0
+autogen-core>=0.4.0
+autogen-ext>=0.4.0

@@ -61,6 +61,16 @@ except ImportError as e:
     logger.warning(f"⚠️ Security middleware not available: {e}")
     SECURITY_AVAILABLE = False
 
+    # Define fallback models if security not available
+    class APIResponse(BaseModel):
+        success: bool
+        message: str
+        data: Optional[Dict] = None
+
+    class ErrorResponse(BaseModel):
+        error: str
+        details: Optional[Dict] = None
+
 # Performance imports - Phase 2 Performance Optimization
 try:
     from utils.performance import (
@@ -178,18 +188,52 @@ async def lifespan(app: FastAPI):
     try:
         # Get global service instances
         llm_service = await get_llm_service()
-        
+
         # Initialize LLM service
         await asyncio.wait_for(llm_service.initialize(), timeout=10)
-        
+
         # Store in app state
         app.state.llm_service = llm_service
         app.state.db = db
-        
+
         logger.info("✅ Core services initialized")
-        
+
     except Exception as e:
         logger.error(f"❌ Service initialization failed: {e}")
+
+    # Initialize Voice Service (Week 21-23)
+    try:
+        # Import voice service path fix
+        import sys
+        from pathlib import Path
+        greta_backend_path = Path(__file__).parent.parent / "Greta" / "backend"
+        if str(greta_backend_path) not in sys.path:
+            sys.path.insert(0, str(greta_backend_path))
+
+        from services.voice_service import voice_service
+        await voice_service.initialize()
+        app.state.voice_service = voice_service
+        logger.info("✅ Voice Service initialized (Week 21-23)")
+    except Exception as e:
+        logger.warning(f"⚠️ Voice Service initialization failed: {e}")
+
+    # Initialize Hook Service (Week 19-20)
+    try:
+        from services.hook_service import hook_service
+        await hook_service.initialize()
+        app.state.hook_service = hook_service
+        logger.info("✅ Hook Service initialized (Week 19-20)")
+    except Exception as e:
+        logger.warning(f"⚠️ Hook Service initialization failed: {e}")
+
+    # Initialize MCP Service (Week 17-18)
+    try:
+        from services.mcp_service import mcp_service
+        await mcp_service.initialize()
+        app.state.mcp_service = mcp_service
+        logger.info("✅ MCP Service initialized (Week 17-18)")
+    except Exception as e:
+        logger.warning(f"⚠️ MCP Service initialization failed: {e}")
     
     # Store database in app state
     app.state.db = db
@@ -215,6 +259,30 @@ async def lifespan(app: FastAPI):
 
     # Shutdown
     logger.info("🔄 Shutting down Enhanced GRETA Backend...")
+
+    # Cleanup Voice Service
+    try:
+        if hasattr(app.state, 'voice_service'):
+            await app.state.voice_service.shutdown()
+            logger.info("✅ Voice Service shutdown complete")
+    except Exception as e:
+        logger.error(f"❌ Voice Service shutdown error: {e}")
+
+    # Cleanup Hook Service
+    try:
+        if hasattr(app.state, 'hook_service'):
+            await app.state.hook_service.shutdown()
+            logger.info("✅ Hook Service shutdown complete")
+    except Exception as e:
+        logger.error(f"❌ Hook Service shutdown error: {e}")
+
+    # Cleanup MCP Service
+    try:
+        if hasattr(app.state, 'mcp_service'):
+            await app.state.mcp_service.shutdown()
+            logger.info("✅ MCP Service shutdown complete")
+    except Exception as e:
+        logger.error(f"❌ MCP Service shutdown error: {e}")
 
     # Cleanup performance resources - Phase 2
     if PERFORMANCE_AVAILABLE:
@@ -300,11 +368,14 @@ ROUTER_CONFIG = [
     ('autonomous_operations_router', '', True),  # Autonomous Operations - no prefix, router has its own
     ('agent_builder_router', '', True),  # Agent Builder - no prefix, router has its own
     ('mcp_hub_router', '', True),  # MCP Hub - no prefix, router has its own
+    ('mcp_router', '', True),  # MCP Router (Week 17-18) - no prefix, router has /api/v1/mcp
     ('osint_router', '', True),  # OSINT - no prefix, router has its own
     ('multimodal_router', '', True),  # Multi-Modal - no prefix, router has its own
     ('functional_memory_router', '', True),  # Functional Memory - no prefix, router has its own
     ('training_platform_router', '', True),  # Training Platform - no prefix, router has its own
     ('knowledge_base_router', '', True),  # Knowledge Base - no prefix, router has its own
+    ('voice_router', '', True),  # Voice Integration (Week 21-23) - no prefix, router has /api/v1/voice
+    ('hook_router', '', True),  # Hook System (Week 19-20) - no prefix, router has /api/v1/hooks
     ('memory', '/api/v1/memory', False),
     ('system', '/api/v1/system', False),
     ('agent', '/api/v1', False),
@@ -465,6 +536,39 @@ for router_name, prefix, force_include in ROUTER_CONFIG:
                 continue
             except Exception as e:
                 logger.warning(f"⚠️ Knowledge Base router import failed: {e}")
+
+        # Force include MCP Router (Week 17-18)
+        if force_include and router_name == 'mcp_router':
+            try:
+                from routers.mcp_router import router as mcp_integration_router
+                app.include_router(mcp_integration_router, tags=["MCP Integration"])
+                routers_loaded += 1
+                logger.info(f"✅ MCP Router (Week 17-18) forced inclusion - /api/v1/mcp endpoints available")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ MCP router import failed: {e}")
+
+        # Force include Voice Router (Week 21-23)
+        if force_include and router_name == 'voice_router':
+            try:
+                from routers.voice_router import router as voice_integration_router
+                app.include_router(voice_integration_router, tags=["Voice Integration"])
+                routers_loaded += 1
+                logger.info(f"✅ Voice Router (Week 21-23) forced inclusion - /api/v1/voice endpoints available")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Voice router import failed: {e}")
+
+        # Force include Hook Router (Week 19-20)
+        if force_include and router_name == 'hook_router':
+            try:
+                from routers.hook_router import router as hook_integration_router
+                app.include_router(hook_integration_router, tags=["Hook System"])
+                routers_loaded += 1
+                logger.info(f"✅ Hook Router (Week 19-20) forced inclusion - /api/v1/hooks endpoints available")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Hook router import failed: {e}")
 
         # Normal router inclusion
         if router_name in AVAILABLE_ROUTERS:
@@ -828,6 +932,22 @@ except Exception as e:
 # Add Drive Router - Google Drive Integration
 try:
     from routers.drive_router import router as drive_router
+
+    # Reports Router
+    try:
+        from routers.reports_router import router as reports_router
+        app.include_router(reports_router, tags=["Reports"])
+        logger.info("✅ Reports router registered")
+    except Exception as e:
+        logger.error(f"❌ Failed to register reports router: {e}")
+
+    # Reports Router
+    try:
+        from routers.reports_router import router as reports_router
+        app.include_router(reports_router, tags=["Reports"])
+        logger.info("✅ Reports router registered")
+    except Exception as e:
+        logger.error(f"❌ Failed to register reports router: {e}")
     app.include_router(drive_router, tags=["Google Drive"])
     routers_loaded += 1
     logger.info("✅ Drive Router integrated - Google Drive API operations available")
@@ -1172,3 +1292,13 @@ if __name__ == "__main__":
         reload=True,
         log_level="info"
     )
+
+# AutoGen 0.4 Router
+try:
+    from routers.autogen_router import router as autogen_router
+    app.include_router(autogen_router, tags=["AutoGen 0.4"])
+    logger.info("✓ AutoGen 0.4 router registered")
+except ImportError as e:
+    logger.warning(f"AutoGen router not available: {e}")
+except Exception as e:
+    logger.error(f"Error loading AutoGen router: {e}")
