@@ -1,6 +1,7 @@
 """
 LLM Service - llama.cpp Integration
 Week 1 Implementation
+Week 9-10 Enhancement: LoRA Adapter Support
 """
 
 from typing import Optional, Dict, Any, AsyncIterator
@@ -12,22 +13,26 @@ import os
 
 
 class LLMService:
-    """Service for managing llama.cpp LLM inference"""
-    
+    """Service for managing llama.cpp LLM inference with LoRA adapter support"""
+
     def __init__(self, models_dir: Optional[str] = None):
         """
         Initialize LLM Service
-        
+
         Args:
             models_dir: Directory containing .gguf model files
         """
         self.models_dir = Path(models_dir or os.getenv('CPAS4_MODELS', Path.home() / '.cpas4' / 'models'))
         self.loaded_models: Dict[str, Llama] = {}
         self.current_model: Optional[str] = None
-        
+
+        # Week 9-10: LoRA adapter support
+        self.loaded_adapters: Dict[str, str] = {}  # model_name -> adapter_path
+        self.current_adapter: Optional[str] = None
+
         # Ensure models directory exists
         self.models_dir.mkdir(parents=True, exist_ok=True)
-        
+
         logger.info(f"LLM Service initialized with models directory: {self.models_dir}")
     
     async def load_model(
@@ -254,6 +259,137 @@ class LLMService:
         except Exception as e:
             logger.error(f"Failed to get model info for {model_name}: {e}")
             return None
+
+    # ========================================================================
+    # Week 9-10: LoRA Adapter Support
+    # ========================================================================
+
+    async def load_adapter(
+        self,
+        adapter_path: str,
+        model_name: Optional[str] = None,
+        scale: float = 1.0
+    ) -> bool:
+        """
+        Load LoRA adapter for the current or specified model
+
+        Note: llama.cpp supports LoRA adapters via the --lora parameter
+        This is a placeholder for future llama.cpp LoRA support
+
+        Args:
+            adapter_path: Path to LoRA adapter files
+            model_name: Model to apply adapter to (None = current)
+            scale: Adapter scaling factor
+
+        Returns:
+            True if adapter loaded successfully
+        """
+        try:
+            target_model = model_name or self.current_model
+
+            if not target_model:
+                logger.error("No model loaded to apply adapter")
+                return False
+
+            adapter_path_obj = Path(adapter_path)
+            if not adapter_path_obj.exists():
+                logger.error(f"Adapter path not found: {adapter_path}")
+                return False
+
+            # Store adapter info
+            self.loaded_adapters[target_model] = str(adapter_path)
+            self.current_adapter = str(adapter_path)
+
+            logger.info(f"Adapter loaded for model {target_model}: {adapter_path}")
+            logger.warning("Note: llama.cpp LoRA support requires model reload with --lora parameter")
+
+            # In production, you would:
+            # 1. Unload current model
+            # 2. Reload with LoRA adapter using llama.cpp --lora parameter
+            # 3. Or use llama.cpp Python bindings with adapter support
+
+            return True
+
+        except Exception as e:
+            logger.error(f"Failed to load adapter: {e}")
+            return False
+
+    async def unload_adapter(self, model_name: Optional[str] = None) -> bool:
+        """
+        Unload LoRA adapter from model
+
+        Args:
+            model_name: Model to unload adapter from (None = current)
+
+        Returns:
+            True if adapter unloaded successfully
+        """
+        try:
+            target_model = model_name or self.current_model
+
+            if not target_model:
+                logger.error("No model specified")
+                return False
+
+            if target_model in self.loaded_adapters:
+                del self.loaded_adapters[target_model]
+
+                if self.current_adapter == self.loaded_adapters.get(target_model):
+                    self.current_adapter = None
+
+                logger.info(f"Adapter unloaded from model {target_model}")
+                return True
+            else:
+                logger.warning(f"No adapter loaded for model {target_model}")
+                return False
+
+        except Exception as e:
+            logger.error(f"Failed to unload adapter: {e}")
+            return False
+
+    async def list_loaded_adapters(self) -> Dict[str, str]:
+        """
+        List currently loaded adapters
+
+        Returns:
+            Dict mapping model names to adapter paths
+        """
+        return self.loaded_adapters.copy()
+
+    async def get_adapter_info(self, model_name: Optional[str] = None) -> Optional[Dict[str, Any]]:
+        """
+        Get information about loaded adapter
+
+        Args:
+            model_name: Model name (None = current)
+
+        Returns:
+            Adapter info dict or None
+        """
+        target_model = model_name or self.current_model
+
+        if not target_model or target_model not in self.loaded_adapters:
+            return None
+
+        adapter_path = self.loaded_adapters[target_model]
+        adapter_path_obj = Path(adapter_path)
+
+        # Calculate adapter size
+        adapter_size = 0
+        if adapter_path_obj.exists():
+            if adapter_path_obj.is_dir():
+                adapter_size = sum(
+                    f.stat().st_size for f in adapter_path_obj.rglob("*") if f.is_file()
+                )
+            else:
+                adapter_size = adapter_path_obj.stat().st_size
+
+        return {
+            "model": target_model,
+            "adapter_path": adapter_path,
+            "adapter_size_mb": round(adapter_size / (1024 * 1024), 2),
+            "is_current": adapter_path == self.current_adapter
+        }
 
 
 # Global instance
