@@ -306,10 +306,33 @@ app = FastAPI(
     version="2.2",
     lifespan=lifespan
 )
-# Add CORS middleware
+
+# Register centralized error handlers (Phase 2 Task 2.4)
+try:
+    from utils.errors import register_error_handlers
+    register_error_handlers(app)
+    logger.info("✅ Centralized error handlers registered")
+except Exception as e:
+    logger.warning(f"⚠️ Error handler registration failed: {e}")
+
+
+# Register centralized error handlers (Phase 2 Task 2.4)
+try:
+    from utils.errors import register_error_handlers
+    register_error_handlers(app)
+    logger.info("✅ Centralized error handlers registered")
+except Exception as e:
+    logger.warning(f"⚠️ Error handler registration failed: {e}")
+
+# Add CORS middleware - Environment-based configuration (Phase 2 Task 2.2)
+allowed_origins = os.getenv(
+    "ALLOWED_ORIGINS",
+    "http://localhost:5173,http://localhost:5174,http://localhost:3000"
+).split(",")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,  # Environment-based instead of ["*"]
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -874,6 +897,15 @@ try:
     logger.info("✅ Audit Router integrated - Comprehensive audit logging available")
 except Exception as e:
     logger.warning(f"⚠️ Audit router error: {e}")
+
+# Add Authentication Router - JWT Authentication (Phase 2)
+try:
+    from routers.auth_router import router as auth_router
+    app.include_router(auth_router, tags=["Authentication"])
+    routers_loaded += 1
+    logger.info("✅ Authentication Router integrated - JWT login/logout/register available")
+except Exception as e:
+    logger.warning(f"⚠️ Authentication router error: {e}")
 
 # Add MFA Router - Multi-Factor Authentication
 try:

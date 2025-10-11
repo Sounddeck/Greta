@@ -35,10 +35,14 @@ class Database:
     async def connect(self) -> bool:
         """Connect to MongoDB with intelligent fallback"""
         try:
-            # Attempt MongoDB connection
+            # Attempt MongoDB connection with connection pooling (Phase 2 Task 2.3)
             self.client = AsyncIOMotorClient(
                 self.settings.mongodb_url,
-                serverSelectionTimeoutMS=5000
+                serverSelectionTimeoutMS=5000,
+                maxPoolSize=50,          # Maximum number of connections in the pool
+                minPoolSize=10,          # Minimum number of connections to maintain
+                maxIdleTimeMS=30000,     # Close connections idle for 30 seconds
+                waitQueueTimeoutMS=10000 # Wait up to 10 seconds for a connection
             )
             
             # Test connection
