@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Webhook, Plus, Trash2, TestTube, Loader2, Zap, Package } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useHookStore } from '../../stores/hookStore';
+import { HookSkeletonList, PluginSkeleton, EventTypeSkeleton } from '../skeletons/HookSkeleton';
 
 export function HookManager() {
   // Use Zustand store
@@ -60,17 +61,6 @@ export function HookManager() {
     await testHook(id, { test: true, timestamp: new Date().toISOString() });
   };
 
-  if (isLoading && hooks.length === 0) {
-    return (
-      <div className="flex items-center justify-center h-96">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
-          <p className="text-muted-foreground">Loading hooks...</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="space-y-6 p-6">
       <div>
@@ -80,8 +70,13 @@ export function HookManager() {
         </p>
       </div>
 
-      {/* Registered Hooks */}
-      {hooks.length > 0 && (
+      {/* Registered Hooks - Show skeleton during initial load */}
+      {isLoading && hooks.length === 0 ? (
+        <div className="space-y-3">
+          <h3 className="font-semibold">Registered Hooks</h3>
+          <HookSkeletonList count={3} />
+        </div>
+      ) : hooks.length > 0 ? (
         <div className="space-y-3">
           <h3 className="font-semibold">Registered Hooks</h3>
           <div className="grid gap-2">
@@ -110,7 +105,11 @@ export function HookManager() {
                       onClick={() => handleTestHook(hook.id)}
                       disabled={isExecuting}
                     >
-                      <TestTube className="h-4 w-4" />
+                      {isExecuting ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <TestTube className="h-4 w-4" />
+                      )}
                     </Button>
                     <Button
                       variant="ghost"
@@ -126,10 +125,19 @@ export function HookManager() {
             ))}
           </div>
         </div>
-      )}
+      ) : null}
 
-      {/* Available Plugins */}
-      {plugins.length > 0 && (
+      {/* Available Plugins - Show skeleton during initial load */}
+      {isLoading && plugins.length === 0 ? (
+        <div className="space-y-3">
+          <h3 className="font-semibold">Available Plugins</h3>
+          <div className="grid md:grid-cols-2 gap-2">
+            {[1, 2, 3, 4].map((i) => (
+              <PluginSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      ) : plugins.length > 0 ? (
         <div className="space-y-3">
           <h3 className="font-semibold">Available Plugins</h3>
           <div className="grid md:grid-cols-2 gap-2">
@@ -147,10 +155,19 @@ export function HookManager() {
             ))}
           </div>
         </div>
-      )}
+      ) : null}
 
-      {/* Event Types */}
-      {eventTypes.length > 0 && (
+      {/* Event Types - Show skeleton during initial load */}
+      {isLoading && eventTypes.length === 0 ? (
+        <div className="space-y-3">
+          <h3 className="font-semibold">Available Event Types</h3>
+          <div className="grid md:grid-cols-3 gap-2">
+            {[1, 2, 3, 4, 5, 6].map((i) => (
+              <EventTypeSkeleton key={i} />
+            ))}
+          </div>
+        </div>
+      ) : eventTypes.length > 0 ? (
         <div className="space-y-3">
           <h3 className="font-semibold">Available Event Types</h3>
           <div className="grid md:grid-cols-3 gap-2">
@@ -167,7 +184,7 @@ export function HookManager() {
             ))}
           </div>
         </div>
-      )}
+      ) : null}
 
       {/* Register New Hook */}
       <div className="space-y-4 p-4 border border-border rounded-lg">

@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef } from 'react';
-import { Mic, MicOff, Volume2, VolumeX, Settings, User } from 'lucide-react';
+import { useState, useRef, useEffect } from 'react';
+import { Mic, Volume2, Loader2, Square } from 'lucide-react';
 import { Button } from '../ui/button';
 import { toast } from 'sonner';
 import { useVoiceStore } from '../../stores/voiceStore';
-import { cn } from '../../lib/utils';
 
 interface VoiceControlProps {
   onVoiceInput?: (text: string) => void;
@@ -11,29 +10,23 @@ interface VoiceControlProps {
 }
 
 export function VoiceControl({ onVoiceInput, className }: VoiceControlProps) {
-  const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [conversationMode, setConversationMode] = useState(false);
-  const [transcript, setTranscript] = useState('');
-  const [volume, setVolume] = useState(0);
-  
   // Use Zustand store
   const { isProcessing, speechToText, textToSpeech } = useVoiceStore();
-  
-  const audioContextRef = useRef<AudioContext | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
-  const animationFrameRef = useRef<number>();
+
+  // Local state for UI
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [transcript, setTranscript] = useState('');
+  const [audioLevel, setAudioLevel] = useState(0);
+
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
+  const audioContextRef = useRef<AudioContext | null>(null);
+  const analyserRef = useRef<AnalyserNode | null>(null);
+  const animationFrameRef = useRef<number | null>(null);
 
-  // Initialize audio context for visualization
+  // Cleanup on unmount
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'AudioContext' in window) {
-      audioContextRef.current = new AudioContext();
-      analyserRef.current = audioContextRef.current.createAnalyser();
-      analyserRef.current.fftSize = 256;
-    }
-
     return () => {
       if (animationFrameRef.current) {
         cancelAnimationFrame(animationFrameRef.current);
@@ -44,47 +37,57 @@ export function VoiceControl({ onVoiceInput, className }: VoiceControlProps) {
     };
   }, []);
 
-  // Visualize audio input
-  const visualizeAudio = () => {
-    if (!analyserRef.current) return;
+  // Visualize audio level during recording
+  const visualizeAudio = (stream: MediaStream) => {
+    audioContextRef.current = new AudioContext();
+    analyserRef.current = audioContextRef.current.createAnalyser();
+    const source = audioContextRef.current.createMediaStreamSource(stream);
+    source.connect(analyserRef.current);
+    analyserRef.current.fftSize = 256;
 
-    const dataArray = new Uint8Array(analyserRef.current.frequencyBinCount);
-    analyserRef.current.getByteFrequencyData(dataArray);
+    const bufferLength = analyserRef.current.frequencyBinCount;
+    const dataArray = new Uint8Array(bufferLength);
 
-    const average = dataArray.reduce((a, b) => a + b) / dataArray.length;
-    setVolume(average / 255);
+    const updateLevel = () => {
+      if (analyserRef.current) {
+        analyserRef.current.getByteFrequencyData(dataArray);
+        const average = dataArray.reduce((a, b) => a + b) / bufferLength;
+        setAudioLevel(average / 255); // Normalize to 0-1
+        animationFrameRef.current = requestAnimationFrame(updateLevel);
+      }
+    };
 
-    animationFrameRef.current = requestAnimationFrame(visualizeAudio);
+    updateLevel();
   };
 
-  // Start listening
   const startListening = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-      if (audioContextRef.current && analyserRef.current) {
-        const source = audioContextRef.current.createMediaStreamSource(stream);
-        source.connect(analyserRef.current);
-        visualizeAudio();
-      }
-
-      setIsListening(true);
-      toast.success('Voice input started - speak now');
-
-      // Set up MediaRecorder for audio capture
       const mediaRecorder = new MediaRecorder(stream);
       mediaRecorderRef.current = mediaRecorder;
       audioChunksRef.current = [];
 
+      // Visualize audio
+      visualizeAudio(stream);
+
       mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunksRef.current.push(event.data);
-        }
+        audioChunksRef.current.push(event.data);
       };
 
       mediaRecorder.onstop = async () => {
+        // Stop visualization
+        if (animationFrameRef.current) {
+          cancelAnimationFrame(animationFrameRef.current);
+        }
+        if (audioContextRef.current) {
+          audioContextRef.current.close();
+        }
+        setAudioLevel(0);
+
+        // Stop all tracks
+        stream.getTracks().forEach((track) => track.stop());
+
         try {
-          // Create audio blob from chunks
           const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/webm' });
 
           // Send to backend STT service using Zustand store
@@ -94,233 +97,153 @@ export function VoiceControl({ onVoiceInput, className }: VoiceControlProps) {
           if (text) {
             setTranscript(text);
             toast.success('Speech recognized!');
-
             if (onVoiceInput) {
               onVoiceInput(text);
             }
-          } else {
-            toast.warning('No speech detected');
           }
         } catch (error) {
           // Error handling is done in the store
           console.error('STT error:', error);
-        } finally {
-          audioChunksRef.current = [];
         }
       };
 
-      // Start recording
       mediaRecorder.start();
-
-      // Auto-stop after 5 seconds (or implement manual stop)
-      setTimeout(() => {
-        if (mediaRecorder.state === 'recording') {
-          mediaRecorder.stop();
-          stream.getTracks().forEach(track => track.stop());
-          setIsListening(false);
-        }
-      }, 5000);
-
+      setIsListening(true);
+      toast.success('Listening...');
     } catch (error) {
       console.error('Error accessing microphone:', error);
       toast.error('Failed to access microphone');
+    }
+  };
+
+  const stopListening = () => {
+    if (mediaRecorderRef.current && isListening) {
+      mediaRecorderRef.current.stop();
       setIsListening(false);
     }
   };
 
-  // Stop listening
-  const stopListening = () => {
-    if (animationFrameRef.current) {
-      cancelAnimationFrame(animationFrameRef.current);
-    }
-    setIsListening(false);
-    setVolume(0);
-    toast.info('Voice input stopped');
-  };
-
-  // Toggle conversation mode
-  const toggleConversationMode = () => {
-    setConversationMode(!conversationMode);
-    if (!conversationMode) {
-      toast.success('Conversation mode enabled');
-      startListening();
-    } else {
-      toast.info('Conversation mode disabled');
-      stopListening();
-    }
-  };
-
-  // Speak text (TTS) using Zustand store
   const speak = async (text: string) => {
     if (!text) {
       toast.error('No text to speak');
       return;
     }
 
-    setIsSpeaking(true);
-
     try {
+      setIsSpeaking(true);
       toast.info('Generating speech...');
 
-      // Call backend TTS service using Zustand store
-      const audioBlob = await textToSpeech(text, 'default');
+      // Use Zustand store for TTS
+      const audioBlob = await textToSpeech(text);
 
-      // Play the audio
-      const audioUrl = URL.createObjectURL(audioBlob);
-      const audio = new Audio(audioUrl);
+      if (audioBlob) {
+        const audioUrl = URL.createObjectURL(audioBlob);
+        const audio = new Audio(audioUrl);
 
-      audio.onplay = () => {
-        toast.success('Speaking...');
-      };
+        audio.onended = () => {
+          setIsSpeaking(false);
+          URL.revokeObjectURL(audioUrl);
+          toast.success('Speech complete');
+        };
 
-      audio.onended = () => {
-        setIsSpeaking(false);
-        URL.revokeObjectURL(audioUrl);
-      };
+        audio.onerror = () => {
+          setIsSpeaking(false);
+          URL.revokeObjectURL(audioUrl);
+          toast.error('Failed to play audio');
+        };
 
-      audio.onerror = () => {
-        toast.error('Failed to play audio');
-        setIsSpeaking(false);
-        URL.revokeObjectURL(audioUrl);
-      };
-
-      await audio.play();
-
+        await audio.play();
+      }
     } catch (error) {
+      setIsSpeaking(false);
       // Error handling is done in the store
       console.error('TTS error:', error);
-      setIsSpeaking(false);
-    }
-  };
-
-  // Stop speaking
-  const stopSpeaking = () => {
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      setIsSpeaking(false);
     }
   };
 
   return (
-    <div className={cn('flex flex-col gap-4 p-4 bg-card rounded-lg border border-border', className)}>
-      {/* Voice Controls */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-semibold">Voice Control</h3>
-          {conversationMode && (
-            <span className="text-xs px-2 py-1 bg-primary/20 text-primary rounded-full">
-              Conversation Mode
-            </span>
-          )}
-          {isProcessing && (
-            <span className="text-xs px-2 py-1 bg-yellow-500/20 text-yellow-600 rounded-full animate-pulse">
-              Processing...
-            </span>
-          )}
-        </div>
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => toast.info('Voice settings coming soon')}
-        >
-          <Settings className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Audio Visualization */}
-      {isListening && (
-        <div className="flex items-center gap-2">
-          <div className="flex-1 h-2 bg-muted rounded-full overflow-hidden">
-            <div
-              className="h-full bg-primary transition-all duration-100"
-              style={{ width: `${volume * 100}%` }}
-            />
-          </div>
-          <span className="text-xs text-muted-foreground">{Math.round(volume * 100)}%</span>
-        </div>
-      )}
-
-      {/* Transcript */}
-      {transcript && (
-        <div className="p-3 bg-muted rounded-md">
-          <p className="text-sm text-muted-foreground mb-1">Transcript:</p>
-          <p className="text-sm">{transcript}</p>
-        </div>
-      )}
-
-      {/* Action Buttons */}
-      <div className="flex gap-2">
-        {/* Microphone Button */}
+    <div className={`space-y-4 ${className}`}>
+      <div className="flex items-center gap-3">
+        {/* Voice Input Button */}
         <Button
           variant={isListening ? 'destructive' : 'default'}
-          size="sm"
+          size="lg"
           onClick={isListening ? stopListening : startListening}
+          disabled={isProcessing || isSpeaking}
           className="flex-1"
-          disabled={isProcessing}
         >
           {isListening ? (
             <>
-              <MicOff className="h-4 w-4 mr-2" />
+              <Square className="h-5 w-5 mr-2" />
               Stop Listening
             </>
           ) : (
             <>
-              <Mic className="h-4 w-4 mr-2" />
+              <Mic className="h-5 w-5 mr-2" />
               Start Listening
             </>
           )}
         </Button>
 
-        {/* Speaker Button */}
+        {/* Text to Speech Button */}
         <Button
-          variant={isSpeaking ? 'destructive' : 'outline'}
-          size="sm"
-          onClick={isSpeaking ? stopSpeaking : () => speak('Hello, I am Greta')}
+          variant="outline"
+          size="lg"
+          onClick={() => speak(transcript || 'Hello, this is a test.')}
+          disabled={isProcessing || isListening || isSpeaking}
           className="flex-1"
-          disabled={isProcessing}
         >
-          {isSpeaking ? (
+          {isSpeaking || isProcessing ? (
             <>
-              <VolumeX className="h-4 w-4 mr-2" />
-              Stop Speaking
+              <Loader2 className="h-5 w-5 mr-2 animate-spin" />
+              {isProcessing ? 'Generating...' : 'Speaking...'}
             </>
           ) : (
             <>
-              <Volume2 className="h-4 w-4 mr-2" />
-              Test Voice
+              <Volume2 className="h-5 w-5 mr-2" />
+              Speak
             </>
           )}
         </Button>
       </div>
 
-      {/* Conversation Mode Toggle */}
-      <Button
-        variant={conversationMode ? 'default' : 'outline'}
-        size="sm"
-        onClick={toggleConversationMode}
-        className="w-full"
-        disabled={isProcessing}
-      >
-        <User className="h-4 w-4 mr-2" />
-        {conversationMode ? 'Exit Conversation Mode' : 'Start Conversation Mode'}
-      </Button>
+      {/* Audio Level Visualizer */}
+      {isListening && (
+        <div className="space-y-2">
+          <div className="flex items-center gap-2">
+            <Mic className="h-4 w-4 text-primary animate-pulse" />
+            <span className="text-sm text-muted-foreground">Recording...</span>
+          </div>
+          <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
+            <div
+              className="h-full bg-primary transition-all duration-100"
+              style={{ width: `${audioLevel * 100}%` }}
+            />
+          </div>
+        </div>
+      )}
 
-      {/* Voice Commands Help */}
+      {/* Processing Indicator */}
+      {isProcessing && (
+        <div className="flex items-center gap-2 p-3 bg-muted rounded-md">
+          <Loader2 className="h-4 w-4 animate-spin text-primary" />
+          <span className="text-sm">Processing audio...</span>
+        </div>
+      )}
+
+      {/* Transcript Display */}
+      {transcript && (
+        <div className="p-4 bg-muted rounded-lg">
+          <p className="text-sm font-medium mb-1">Transcript:</p>
+          <p className="text-sm">{transcript}</p>
+        </div>
+      )}
+
+      {/* Usage Instructions */}
       <div className="text-xs text-muted-foreground space-y-1">
-        <p className="font-semibold">Wake Words:</p>
-        <ul className="list-disc list-inside space-y-0.5 ml-2">
-          <li>"Hey Greta"</li>
-          <li>"Greta"</li>
-          <li>"OK Greta"</li>
-        </ul>
-        <p className="font-semibold mt-2">Commands:</p>
-        <ul className="list-disc list-inside space-y-0.5 ml-2">
-          <li>"Generate [content]"</li>
-          <li>"Search for [query]"</li>
-          <li>"Create [item]"</li>
-          <li>"Export [data]"</li>
-          <li>"Stop" / "Help"</li>
-        </ul>
+        <p>• Click "Start Listening" to record your voice</p>
+        <p>• Click "Stop Listening" when done speaking</p>
+        <p>• Click "Speak" to hear the text read aloud</p>
       </div>
     </div>
   );
