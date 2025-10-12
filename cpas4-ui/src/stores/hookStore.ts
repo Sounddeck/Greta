@@ -147,7 +147,7 @@ export const useHookStore = create<HookState>()(
         set({ isLoading: true, error: null });
         try {
           // Optimistic update
-          const previousHooks = get().hooks;
+// //           const previousHooks = get().hooks;
           set((state) => ({
             hooks: state.hooks.map((h) =>
               h.id === id ? { ...h, ...updates, updatedAt: new Date().toISOString() } : h
@@ -166,7 +166,7 @@ export const useHookStore = create<HookState>()(
           toast.success('Hook updated successfully');
         } catch (error: any) {
           // Rollback optimistic update
-          set({ hooks: previousHooks, error: error.response?.data?.message || 'Failed to update hook', isLoading: false });
+          set({ hooks: get().hooks, error: error.response?.data?.message || 'Failed to update hook', isLoading: false });
           toast.error(error.response?.data?.message || 'Failed to update hook');
         }
       },
@@ -175,7 +175,7 @@ export const useHookStore = create<HookState>()(
         set({ isLoading: true, error: null });
         try {
           // Optimistic update
-          const previousHooks = get().hooks;
+// //           const previousHooks = get().hooks;
           set((state) => ({
             hooks: state.hooks.filter((h) => h.id !== id),
           }));
@@ -187,7 +187,7 @@ export const useHookStore = create<HookState>()(
           toast.success('Hook deleted successfully');
         } catch (error: any) {
           // Rollback optimistic update
-          set({ hooks: previousHooks, error: error.response?.data?.message || 'Failed to delete hook', isLoading: false });
+          set({ hooks: get().hooks, error: error.response?.data?.message || 'Failed to delete hook', isLoading: false });
           toast.error(error.response?.data?.message || 'Failed to delete hook');
         }
       },

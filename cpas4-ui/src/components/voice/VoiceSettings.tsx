@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Volume2, Mic, Globe, Save, Loader2, Plus, Trash2 } from 'lucide-react';
+import { Volume2, Globe, Loader2, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useVoiceStore } from '../../stores/voiceStore';
 import { VoiceProfileSkeletonList } from '../skeletons/VoiceProfileSkeleton';
@@ -15,7 +15,6 @@ export function VoiceSettings() {
     fetchLanguages,
     fetchVoices,
     createProfile,
-    updateProfile,
     deleteProfile,
   } = useVoiceStore();
 
@@ -27,19 +26,7 @@ export function VoiceSettings() {
   const [pitch, setPitch] = useState(1.0);
   const [volume, setVolume] = useState(1.0);
 
-  const sttEngines = [
-    { id: 'whisper', name: 'Whisper (Local)' },
-    { id: 'google', name: 'Google Speech' },
-    { id: 'azure', name: 'Azure Speech' },
-    { id: 'mock', name: 'Mock (Testing)' },
-  ];
 
-  const ttsEngines = [
-    { id: 'coqui', name: 'Coqui TTS (Local)' },
-    { id: 'google', name: 'Google TTS' },
-    { id: 'azure', name: 'Azure TTS' },
-    { id: 'mock', name: 'Mock (Testing)' },
-  ];
 
   // Load data on mount
   useEffect(() => {
@@ -93,11 +80,11 @@ export function VoiceSettings() {
           <h3 className="font-semibold">Saved Profiles</h3>
           <div className="grid gap-2">
             {profiles.map((profile) => (
-              <div key={profile.id} className="p-3 border border-border rounded-md">
+              <div key={(profile as any).id} className="p-3 border border-border rounded-md">
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <p className="font-medium">{profile.name}</p>
+                      <p className="font-medium">{(profile as any).name}</p>
                       {profile.isDefault && (
                         <span className="text-xs px-2 py-0.5 bg-primary/20 text-primary rounded-full">
                           Default
@@ -118,7 +105,7 @@ export function VoiceSettings() {
                   <Button
                     variant="ghost"
                     size="icon"
-                    onClick={() => handleDeleteProfile(profile.id)}
+                    onClick={() => handleDeleteProfile((profile as any).id)}
                     disabled={isLoading}
                   >
                     <Trash2 className="h-4 w-4" />
@@ -156,8 +143,8 @@ export function VoiceSettings() {
               disabled={isLoading}
             >
               {languages.map((lang) => (
-                <option key={lang.code} value={lang.code}>
-                  {lang.name}
+                <option key={(lang as any).code} value={(lang as any).code}>
+                  {(lang as any).name}
                 </option>
               ))}
             </select>
@@ -172,8 +159,8 @@ export function VoiceSettings() {
               disabled={isLoading}
             >
               {voices.map((voice) => (
-                <option key={voice.id} value={voice.id}>
-                  {voice.name}
+                <option key={(voice as any).id} value={(voice as any).id}>
+                  {(voice as any).name}
                 </option>
               ))}
             </select>

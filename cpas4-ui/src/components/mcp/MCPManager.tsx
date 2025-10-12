@@ -16,14 +16,13 @@ export function MCPManager() {
     createServer,
     deleteServer,
     testConnection,
-    executeTool,
   } = useMCPStore();
 
   // Local state for form
   const [serverName, setServerName] = useState('');
   const [serverUrl, setServerUrl] = useState('');
   const [serverDescription, setServerDescription] = useState('');
-  const [selectedServerId, setSelectedServerId] = useState<string | null>(null);
+  const [selectedServerId, __setSelectedServerId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchServers();

@@ -133,7 +133,7 @@ export const useVoiceStore = create<VoiceState>()(
         set({ isLoading: true, error: null });
         try {
           // Optimistic update
-          const previousProfiles = get().profiles;
+// //           const previousProfiles = get().profiles;
           set((state) => ({
             profiles: state.profiles.map((p) =>
               p.id === id ? { ...p, ...updates, updatedAt: new Date().toISOString() } : p
@@ -161,7 +161,7 @@ export const useVoiceStore = create<VoiceState>()(
         set({ isLoading: true, error: null });
         try {
           // Optimistic update
-          const previousProfiles = get().profiles;
+// //           const previousProfiles = get().profiles;
           set((state) => ({
             profiles: state.profiles.filter((p) => p.id !== id),
           }));

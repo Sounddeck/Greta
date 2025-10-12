@@ -126,7 +126,7 @@ export const useMCPStore = create<MCPState>()(
         set({ isLoading: true, error: null });
         try {
           // Optimistic update
-          const previousServers = get().servers;
+// //           const previousServers = get().servers;
           set((state) => ({
             servers: state.servers.map((s) =>
               s.id === id ? { ...s, ...updates, updatedAt: new Date().toISOString() } : s
@@ -145,7 +145,7 @@ export const useMCPStore = create<MCPState>()(
           toast.success('MCP server updated successfully');
         } catch (error: any) {
           // Rollback optimistic update
-          set({ servers: previousServers, error: error.response?.data?.message || 'Failed to update server', isLoading: false });
+          set({ servers: get().servers, error: error.response?.data?.message || 'Failed to update server', isLoading: false });
           toast.error(error.response?.data?.message || 'Failed to update server');
         }
       },
@@ -154,7 +154,7 @@ export const useMCPStore = create<MCPState>()(
         set({ isLoading: true, error: null });
         try {
           // Optimistic update
-          const previousServers = get().servers;
+// //           const previousServers = get().servers;
           set((state) => ({
             servers: state.servers.filter((s) => s.id !== id),
           }));
@@ -166,7 +166,7 @@ export const useMCPStore = create<MCPState>()(
           toast.success('MCP server deleted successfully');
         } catch (error: any) {
           // Rollback optimistic update
-          set({ servers: previousServers, error: error.response?.data?.message || 'Failed to delete server', isLoading: false });
+          set({ servers: get().servers, error: error.response?.data?.message || 'Failed to delete server', isLoading: false });
           toast.error(error.response?.data?.message || 'Failed to delete server');
         }
       },
