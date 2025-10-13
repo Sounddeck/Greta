@@ -19,6 +19,7 @@ from middleware.auth import (
 )
 
 from middleware.rate_limit import limiter, get_rate_limit
+from services.password_service import get_password_service
 
 
 router = APIRouter(prefix="/api/v1/auth", tags=["Authentication"])
@@ -44,6 +45,22 @@ class UserResponse(BaseModel):
     username: str
     email: str
     roles: list[str]
+
+
+class PasswordStrengthRequest(BaseModel):
+    """Password strength check request"""
+    password: str
+
+
+class PasswordStrengthResponse(BaseModel):
+    """Password strength check response"""
+    score: int
+    strength: str
+    color: str
+    feedback: list[str]
+    max_score: int
+    is_valid: bool
+    errors: list[str]
 
 
 @router.post("/login"
@@ -96,16 +113,29 @@ async def login(request: LoginRequest):
 async def register(request: RegisterRequest):
     """
     Register a new user
-    
+
     Args:
         request: User registration data
-        
+
     Returns:
         Created user information
-        
+
     Raises:
-        HTTPException: If username/email already exists
+        HTTPException: If username/email already exists or password doesn't meet policy
     """
+    # Validate password against policy (Priority 2 Security)
+    password_service = get_password_service()
+    is_valid, errors = password_service.validate_password(request.password)
+
+    if not is_valid:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail={
+                "message": "Password does not meet security requirements",
+                "errors": errors
+            }
+        )
+
     # TODO: Implement with actual user database
     # Example:
     # existing_user = await db.users.find_one({
@@ -119,7 +149,7 @@ async def register(request: RegisterRequest):
     #         status_code=status.HTTP_400_BAD_REQUEST,
     #         detail="Username or email already registered"
     #     )
-    
+
     # Hash password
     password_hash = get_password_hash(request.password)
     
@@ -238,3 +268,38 @@ async def verify_token_endpoint(current_user: Dict[str, Any] = Depends(get_curre
         "username": current_user["username"]
     }
 
+
+@router.post("/password/check-strength", response_model=PasswordStrengthResponse)
+async def check_password_strength(request: PasswordStrengthRequest):
+    """
+    Check password strength and validate against policy
+
+    This endpoint helps users create strong passwords by providing:
+    - Strength score (0-100)
+    - Strength level (Very Weak to Very Strong)
+    - Detailed feedback on password quality
+    - Policy validation errors (if any)
+
+    Args:
+        request: Password to check
+
+    Returns:
+        Password strength analysis and validation results
+    """
+    password_service = get_password_service()
+
+    # Get strength analysis
+    strength_analysis = password_service.get_password_strength(request.password)
+
+    # Validate against policy
+    is_valid, errors = password_service.validate_password(request.password)
+
+    return PasswordStrengthResponse(
+        score=strength_analysis["score"],
+        strength=strength_analysis["strength"],
+        color=strength_analysis["color"],
+        feedback=strength_analysis["feedback"],
+        max_score=strength_analysis["max_score"],
+        is_valid=is_valid,
+        errors=errors
+    )

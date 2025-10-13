@@ -345,19 +345,30 @@ try:
 except Exception as e:
     logger.warning(f"⚠️ Error handler registration failed: {e}")
 
-# Add CORS middleware - Environment-based configuration (Phase 2 Task 2.2)
-allowed_origins = os.getenv(
-    "ALLOWED_ORIGINS",
-    "http://localhost:5173,http://localhost:5174,http://localhost:3000"
-).split(",")
+# Add CORS middleware - Environment-based configuration with whitelist (Priority 2 Security)
+try:
+    from middleware.security_middleware import CORSMiddleware as CORSConfig
+    cors_config = CORSConfig.get_cors_config()
+    app.add_middleware(
+        CORSMiddleware,
+        **cors_config
+    )
+    logger.info(f"✅ CORS middleware added with {len(cors_config['allow_origins'])} allowed origins")
+except Exception as e:
+    # Fallback to basic CORS if security middleware not available
+    allowed_origins = os.getenv(
+        "ALLOWED_ORIGINS",
+        "http://localhost:5173,http://localhost:5174,http://localhost:3000"
+    ).split(",")
 
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=allowed_origins,  # Environment-based instead of ["*"]
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    app.add_middleware(
+        CORSMiddleware,
+        allow_origins=allowed_origins,
+        allow_credentials=True,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    logger.warning(f"⚠️ Using fallback CORS configuration: {e}")
 
 # Add Rate Limiting middleware - Enforce rate limits (BEFORE other middlewares)
 try:
@@ -374,6 +385,39 @@ try:
     logger.info("✅ Audit middleware added - Automatic API logging enabled")
 except Exception as e:
     logger.warning(f"⚠️ Audit middleware error: {e}")
+
+# Add Priority 1 Security Middleware (CRITICAL)
+try:
+    from middleware.security_middleware import (
+        HTTPSRedirectMiddleware,
+        SecurityHeadersMiddleware as NewSecurityHeadersMiddleware,
+        InputValidationMiddleware
+    )
+    settings = get_settings()
+
+    # Add HTTPS redirect middleware (first in chain)
+    if settings.enable_https_redirect:
+        app.add_middleware(HTTPSRedirectMiddleware, enabled=True)
+        logger.info("✅ HTTPS redirect middleware added - HTTP requests will be redirected to HTTPS")
+    else:
+        logger.info("ℹ️ HTTPS redirect disabled (development mode)")
+
+    # Add input validation middleware (before processing)
+    if settings.enable_input_validation:
+        app.add_middleware(InputValidationMiddleware, enabled=True)
+        logger.info("✅ Input validation middleware added - SQL injection, XSS, command injection protection enabled")
+    else:
+        logger.warning("⚠️ Input validation disabled - NOT RECOMMENDED for production")
+
+    # Add security headers middleware (last in chain)
+    if settings.enable_security_headers:
+        app.add_middleware(NewSecurityHeadersMiddleware)
+        logger.info("✅ Security headers middleware added - Clickjacking, XSS, MIME sniffing protection enabled")
+    else:
+        logger.warning("⚠️ Security headers disabled - NOT RECOMMENDED for production")
+
+except Exception as e:
+    logger.warning(f"⚠️ Priority 1 security middleware error: {e}")
 
 
 # Add Security middleware - Phase 1 Security Hardening
