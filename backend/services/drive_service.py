@@ -35,12 +35,26 @@ class DriveService:
         self.mock_mode = True  # Always in mock mode unless Google credentials configured
         logger.info("✅ Drive Service initialized")
     
-    async def _get_user_access_token(self, user_id: str) -> Optional[str]:
-        """Get user's OAuth access token"""
+    async def _get_user_access_token(
+        self,
+        user_id: str,
+        account_email: Optional[str] = None
+    ) -> Optional[str]:
+        """
+        Get user's OAuth access token for specific account
+
+        Args:
+            user_id: User ID
+            account_email: Optional account email. If not provided, uses primary account.
+        """
         if not self.oauth_service:
             return None
-        
-        token = await self.oauth_service.get_user_token(user_id, OAuthProvider.GOOGLE)
+
+        token = await self.oauth_service.get_user_token(
+            user_id,
+            OAuthProvider.GOOGLE,
+            account_email
+        )
         if token:
             return token.access_token
         return None
@@ -52,10 +66,18 @@ class DriveService:
     async def upload_file(
         self,
         user_id: str,
-        request: DriveFileUpload
+        request: DriveFileUpload,
+        account_email: Optional[str] = None
     ) -> DriveFileUploadResponse:
-        """Upload file to Drive"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        Upload file to Drive in specific account
+
+        Args:
+            user_id: User ID
+            request: File upload request
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             # Mock file upload
@@ -92,10 +114,18 @@ class DriveService:
     async def download_file(
         self,
         user_id: str,
-        file_id: str
+        file_id: str,
+        account_email: Optional[str] = None
     ) -> DriveFileDownloadResponse:
-        """Download file from Drive"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        Download file from Drive in specific account
+
+        Args:
+            user_id: User ID
+            file_id: File ID
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             # Mock file download
@@ -118,10 +148,18 @@ class DriveService:
     async def list_files(
         self,
         user_id: str,
-        request: DriveFileListRequest
+        request: DriveFileListRequest,
+        account_email: Optional[str] = None
     ) -> DriveFileListResponse:
-        """List files from Drive"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        List files from Drive in specific account
+
+        Args:
+            user_id: User ID
+            request: File list request
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             # Mock file list
@@ -158,10 +196,18 @@ class DriveService:
     async def get_file(
         self,
         user_id: str,
-        file_id: str
+        file_id: str,
+        account_email: Optional[str] = None
     ) -> DriveFile:
-        """Get file metadata"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        Get file metadata from specific account
+
+        Args:
+            user_id: User ID
+            file_id: File ID
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             # Mock file metadata
@@ -190,10 +236,18 @@ class DriveService:
     async def delete_file(
         self,
         user_id: str,
-        file_id: str
+        file_id: str,
+        account_email: Optional[str] = None
     ) -> DriveDeleteResponse:
-        """Delete file from Drive"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        Delete file from Drive in specific account
+
+        Args:
+            user_id: User ID
+            file_id: File ID
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             return DriveDeleteResponse(
@@ -213,10 +267,19 @@ class DriveService:
         self,
         user_id: str,
         file_id: str,
-        request: DriveShareRequest
+        request: DriveShareRequest,
+        account_email: Optional[str] = None
     ) -> DriveShareResponse:
-        """Share file with permissions"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        Share file with permissions in specific account
+
+        Args:
+            user_id: User ID
+            file_id: File ID
+            request: Share request
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             # Mock file sharing
@@ -245,10 +308,18 @@ class DriveService:
     async def create_folder(
         self,
         user_id: str,
-        request: DriveFolderCreate
+        request: DriveFolderCreate,
+        account_email: Optional[str] = None
     ) -> DriveFolderCreateResponse:
-        """Create folder in Drive"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        Create folder in Drive in specific account
+
+        Args:
+            user_id: User ID
+            request: Folder create request
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             # Mock folder creation
@@ -285,9 +356,19 @@ class DriveService:
     # Health Check
     # ========================================================================
     
-    async def get_health(self, user_id: str) -> DriveHealthResponse:
-        """Get Drive service health"""
-        access_token = await self._get_user_access_token(user_id)
+    async def get_health(
+        self,
+        user_id: str,
+        account_email: Optional[str] = None
+    ) -> DriveHealthResponse:
+        """
+        Get Drive service health for specific account
+
+        Args:
+            user_id: User ID
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             return DriveHealthResponse(

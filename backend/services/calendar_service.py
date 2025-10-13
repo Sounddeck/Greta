@@ -33,12 +33,26 @@ class CalendarService:
         self.mock_mode = True  # Always in mock mode unless Google credentials configured
         logger.info("✅ Calendar Service initialized")
     
-    async def _get_user_access_token(self, user_id: str) -> Optional[str]:
-        """Get user's OAuth access token"""
+    async def _get_user_access_token(
+        self,
+        user_id: str,
+        account_email: Optional[str] = None
+    ) -> Optional[str]:
+        """
+        Get user's OAuth access token for specific account
+
+        Args:
+            user_id: User ID
+            account_email: Optional account email. If not provided, uses primary account.
+        """
         if not self.oauth_service:
             return None
-        
-        token = await self.oauth_service.get_user_token(user_id, OAuthProvider.GOOGLE)
+
+        token = await self.oauth_service.get_user_token(
+            user_id,
+            OAuthProvider.GOOGLE,
+            account_email
+        )
         if token:
             return token.access_token
         return None
@@ -50,10 +64,18 @@ class CalendarService:
     async def create_event(
         self,
         user_id: str,
-        request: CalendarEventCreate
+        request: CalendarEventCreate,
+        account_email: Optional[str] = None
     ) -> CalendarEventResponse:
-        """Create calendar event"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        Create calendar event in specific account
+
+        Args:
+            user_id: User ID
+            request: Event create request
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             # Mock event creation
@@ -110,10 +132,18 @@ class CalendarService:
     async def list_events(
         self,
         user_id: str,
-        request: CalendarEventListRequest
+        request: CalendarEventListRequest,
+        account_email: Optional[str] = None
     ) -> CalendarEventListResponse:
-        """List calendar events"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        List calendar events from specific account
+
+        Args:
+            user_id: User ID
+            request: Event list request
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             # Mock event list
@@ -155,10 +185,19 @@ class CalendarService:
         self,
         user_id: str,
         event_id: str,
-        calendar_id: str = "primary"
+        calendar_id: str = "primary",
+        account_email: Optional[str] = None
     ) -> CalendarEvent:
-        """Get calendar event by ID"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        Get calendar event by ID from specific account
+
+        Args:
+            user_id: User ID
+            event_id: Event ID
+            calendar_id: Calendar ID (default: "primary")
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             # Mock event retrieval
@@ -195,10 +234,20 @@ class CalendarService:
         user_id: str,
         event_id: str,
         request: CalendarEventUpdate,
-        calendar_id: str = "primary"
+        calendar_id: str = "primary",
+        account_email: Optional[str] = None
     ) -> CalendarEventResponse:
-        """Update calendar event"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        Update calendar event in specific account
+
+        Args:
+            user_id: User ID
+            event_id: Event ID
+            request: Event update request
+            calendar_id: Calendar ID (default: "primary")
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             # Mock event update
@@ -248,10 +297,19 @@ class CalendarService:
         self,
         user_id: str,
         event_id: str,
-        calendar_id: str = "primary"
+        calendar_id: str = "primary",
+        account_email: Optional[str] = None
     ) -> CalendarDeleteResponse:
-        """Delete calendar event"""
-        access_token = await self._get_user_access_token(user_id)
+        """
+        Delete calendar event from specific account
+
+        Args:
+            user_id: User ID
+            event_id: Event ID
+            calendar_id: Calendar ID (default: "primary")
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             return CalendarDeleteResponse(
@@ -267,9 +325,19 @@ class CalendarService:
     # Calendar Management
     # ========================================================================
     
-    async def list_calendars(self, user_id: str) -> CalendarListResponse:
-        """List user's calendars"""
-        access_token = await self._get_user_access_token(user_id)
+    async def list_calendars(
+        self,
+        user_id: str,
+        account_email: Optional[str] = None
+    ) -> CalendarListResponse:
+        """
+        List user's calendars from specific account
+
+        Args:
+            user_id: User ID
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             calendars = [
@@ -303,9 +371,19 @@ class CalendarService:
         # TODO: Implement real Google Calendar API call
         raise NotImplementedError("Real Google Calendar API not yet implemented")
     
-    async def get_health(self, user_id: str) -> CalendarHealthResponse:
-        """Get calendar service health"""
-        access_token = await self._get_user_access_token(user_id)
+    async def get_health(
+        self,
+        user_id: str,
+        account_email: Optional[str] = None
+    ) -> CalendarHealthResponse:
+        """
+        Get calendar service health for specific account
+
+        Args:
+            user_id: User ID
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         
         if self.mock_mode:
             return CalendarHealthResponse(
