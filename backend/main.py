@@ -919,6 +919,15 @@ try:
 except Exception as e:
     logger.warning(f"⚠️ Audit router error: {e}")
 
+# Add System Resources Router - Real-time Resource Monitoring
+try:
+    from routers.system_resources_router import router as system_resources_router
+    app.include_router(system_resources_router, tags=["System Resources"])
+    routers_loaded += 1
+    logger.info("✅ System Resources Router integrated - Real-time system monitoring available")
+except Exception as e:
+    logger.warning(f"⚠️ System Resources router error: {e}")
+
 # Add Authentication Router - JWT Authentication (Phase 2)
 try:
     from routers.auth_router import router as auth_router

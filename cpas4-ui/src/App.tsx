@@ -5,6 +5,7 @@ import { Header } from './components/layout/Header';
 import { LeftSidebar } from './components/layout/LeftSidebar';
 import { RightSidebar } from './components/layout/RightSidebar';
 import { MasterAgentContext } from './components/agents/MasterAgentContext';
+import SystemStatusBar from './components/system/SystemStatusBar';
 import { useUIStore } from './stores/uiStore';
 
 // Lazy load large components for better code splitting
@@ -71,6 +72,9 @@ function App() {
           {/* Right Sidebar */}
           <RightSidebar />
         </div>
+
+        {/* System Status Bar */}
+        <SystemStatusBar />
       </div>
     </BrowserRouter>
   );
