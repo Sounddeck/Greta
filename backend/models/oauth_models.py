@@ -89,6 +89,9 @@ class OAuthToken(OAuthTokenBase):
     token_id: str
     user_id: str
     provider: OAuthProvider
+    account_email: Optional[str] = None  # For multi-account support
+    account_name: Optional[str] = None  # Display name for the account
+    is_primary: bool = False  # Mark primary account
     expires_at: datetime
     created_at: datetime
     refreshed_at: Optional[datetime] = None
@@ -105,6 +108,9 @@ class OAuthTokenCreate(BaseModel):
     expires_in: int
     refresh_token: Optional[str] = None
     scope: Optional[str] = None
+    account_email: Optional[str] = None  # For multi-account support
+    account_name: Optional[str] = None
+    is_primary: bool = False
 
 
 class OAuthTokenResponse(BaseModel):
@@ -115,12 +121,16 @@ class OAuthTokenResponse(BaseModel):
     expires_at: datetime
     scope: Optional[str] = None
     has_refresh_token: bool
+    account_email: Optional[str] = None
+    account_name: Optional[str] = None
+    is_primary: bool = False
 
 
 class OAuthTokenRefreshRequest(BaseModel):
     """Refresh OAuth token request"""
     user_id: str
     provider: OAuthProvider
+    account_email: Optional[str] = None  # Specify which account to refresh
 
 
 class OAuthTokenRefreshResponse(BaseModel):
@@ -277,6 +287,55 @@ class GoogleWorkspaceScopes:
     def get_docs_scopes(cls) -> List[str]:
         """Get Docs scopes"""
         return [cls.DOCUMENTS]
+
+
+# ============================================================================
+# Multi-Account Management Models
+# ============================================================================
+
+class GoogleAccountInfo(BaseModel):
+    """Google account information"""
+    account_email: str
+    account_name: Optional[str] = None
+    picture_url: Optional[str] = None
+    is_primary: bool = False
+    token_id: str
+    expires_at: datetime
+    scopes: List[str]
+    created_at: datetime
+
+
+class GoogleAccountListResponse(BaseModel):
+    """List of connected Google accounts"""
+    accounts: List[GoogleAccountInfo]
+    total_accounts: int
+    primary_account: Optional[str] = None  # Email of primary account
+
+
+class GoogleAccountSetPrimaryRequest(BaseModel):
+    """Set primary Google account"""
+    user_id: str
+    account_email: str
+
+
+class GoogleAccountSetPrimaryResponse(BaseModel):
+    """Set primary account response"""
+    success: bool
+    message: str
+    primary_account: str
+
+
+class GoogleAccountRemoveRequest(BaseModel):
+    """Remove Google account"""
+    user_id: str
+    account_email: str
+
+
+class GoogleAccountRemoveResponse(BaseModel):
+    """Remove account response"""
+    success: bool
+    message: str
+    removed_account: str
 
 
 # ============================================================================
