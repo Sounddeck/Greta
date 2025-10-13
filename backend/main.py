@@ -71,6 +71,21 @@ except ImportError as e:
         error: str
         details: Optional[Dict] = None
 
+# Rate limiting imports - Phase 3 Rate Limiting
+try:
+    from slowapi import Limiter
+    from slowapi.errors import RateLimitExceeded
+    from slowapi.util import get_remote_address
+    from middleware.rate_limit_middleware import rate_limit_exceeded_handler
+
+    limiter = Limiter(key_func=get_remote_address)
+    RATE_LIMIT_AVAILABLE = True
+    logger.info("✅ Rate limiting loaded")
+except ImportError as e:
+    logger.warning(f"⚠️ Rate limiting not available: {e}")
+    RATE_LIMIT_AVAILABLE = False
+    limiter = None
+
 # Performance imports - Phase 2 Performance Optimization
 try:
     from utils.performance import (

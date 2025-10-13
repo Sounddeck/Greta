@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- Service Label -->
+    <key>Label</key>
+    <string>com.greta.backup</string>
+    
+    <!-- Program to Run -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/macone/CPAS/Desktop/CPAS5/backend/scripts/backup_database.sh</string>
+        <string>--verbose</string>
+    </array>
+    
+    <!-- Schedule: Daily at 2:00 AM -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Hour</key>
+        <integer>2</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+    
+    <!-- Working Directory -->
+    <key>WorkingDirectory</key>
+    <string>/Users/macone/CPAS/Desktop/CPAS5/backend</string>
+    
+    <!-- Standard Output and Error Logs -->
+    <key>StandardOutPath</key>
+    <string>/Users/macone/greta_backups/launchd_stdout.log</string>
+    
+    <key>StandardErrorPath</key>
+    <string>/Users/macone/greta_backups/launchd_stderr.log</string>
+    
+    <!-- Run at Load (optional - for testing) -->
+    <!-- Uncomment to run backup immediately when loaded -->
+    <!--
+    <key>RunAtLoad</key>
+    <true/>
+    -->
+    
+    <!-- Environment Variables (if needed) -->
+    <key>EnvironmentVariables</key>
+    <dict>
+        <key>PATH</key>
+        <string>/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>
+    </dict>
+    
+    <!-- Keep Alive (restart if crashes) -->
+    <key>KeepAlive</key>
+    <false/>
+    
+    <!-- Process Type -->
+    <key>ProcessType</key>
+    <string>Background</string>
+</dict>
+</plist>
+

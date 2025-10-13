@@ -7,7 +7,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../ui/
 import { useUIStore } from '../../stores/uiStore';
 import { useChatStore } from '../../stores/chatStore';
 import { cn } from '../../lib/utils';
-import { taskAPI, promptAPI } from '../../lib/api';
+import { taskAPI, promptAPI, knowledgeAPI } from '../../lib/api';
 import { getAgentConfig } from '../../config/agentConfig';
 import type { Message, AgentType } from '../../types';
 
@@ -23,6 +23,7 @@ export function MasterAgentContext() {
   const [isLoading, setIsLoading] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [_error, setError] = useState<string | null>(null);
+  const [uploadedFiles, setUploadedFiles] = useState<any[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -134,12 +135,39 @@ export function MasterAgentContext() {
         formData.append('files', file);
       });
 
-// //       const response = await knowledgeAPI.upload(formData);
+      const response = await knowledgeAPI.upload(formData);
 
-      // // setMessages((prev) => [...prev, successMessage]);
+      if (response.data.success) {
+        // Store uploaded files
+        setUploadedFiles((prev) => [...prev, ...response.data.files]);
+
+        // Add success message to chat
+        const currentAgentType = (agentType as AgentType) || null;
+        const successMessage: Message = {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: `✅ Successfully uploaded ${response.data.total} file(s): ${response.data.files.map((f: any) => f.filename).join(', ')}`,
+          timestamp: new Date().toISOString(),
+          agentType: currentAgentType,
+        };
+        addMessage(currentAgentType, successMessage);
+      }
+
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     } catch (err: any) {
       console.error('Error uploading files:', err);
-      // // setMessages((prev) => [...prev, errorMessage]);
+      const currentAgentType = (agentType as AgentType) || null;
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `❌ Failed to upload files: ${err.message || 'Unknown error'}`,
+        timestamp: new Date().toISOString(),
+        agentType: currentAgentType,
+      };
+      addMessage(currentAgentType, errorMessage);
       setError(err.message);
     } finally {
       setIsLoading(false);
@@ -172,12 +200,34 @@ export function MasterAgentContext() {
         formData.append('files', file);
       });
 
-// //       const response = await knowledgeAPI.upload(formData);
+      const response = await knowledgeAPI.upload(formData);
 
-      // // setMessages((prev) => [...prev, successMessage]);
+      if (response.data.success) {
+        // Store uploaded files
+        setUploadedFiles((prev) => [...prev, ...response.data.files]);
+
+        // Add success message to chat
+        const currentAgentType = (agentType as AgentType) || null;
+        const successMessage: Message = {
+          id: Date.now().toString(),
+          role: 'assistant',
+          content: `✅ Successfully uploaded ${response.data.total} file(s) via drag & drop: ${response.data.files.map((f: any) => f.filename).join(', ')}`,
+          timestamp: new Date().toISOString(),
+          agentType: currentAgentType,
+        };
+        addMessage(currentAgentType, successMessage);
+      }
     } catch (err: any) {
       console.error('Error uploading files:', err);
-      // // setMessages((prev) => [...prev, errorMessage]);
+      const currentAgentType = (agentType as AgentType) || null;
+      const errorMessage: Message = {
+        id: Date.now().toString(),
+        role: 'assistant',
+        content: `❌ Failed to upload files: ${err.message || 'Unknown error'}`,
+        timestamp: new Date().toISOString(),
+        agentType: currentAgentType,
+      };
+      addMessage(currentAgentType, errorMessage);
       setError(err.message);
     } finally {
       setIsLoading(false);
@@ -230,6 +280,35 @@ export function MasterAgentContext() {
             </div>
           </div>
         </div>
+
+        {/* Uploaded Files Display */}
+        {uploadedFiles.length > 0 && (
+          <div className="px-4 py-2 border-b border-border bg-muted/30">
+            <div className="flex items-center gap-2 text-xs text-muted-foreground mb-2">
+              <Upload className="h-3 w-3" />
+              <span>Uploaded Files ({uploadedFiles.length})</span>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {uploadedFiles.map((file, index) => (
+                <div
+                  key={index}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-background border border-border text-xs"
+                >
+                  <span className="font-medium">{file.filename}</span>
+                  <span className="text-muted-foreground">
+                    ({(file.file_size / 1024).toFixed(1)} KB)
+                  </span>
+                  <button
+                    onClick={() => setUploadedFiles((prev) => prev.filter((_, i) => i !== index))}
+                    className="ml-1 text-muted-foreground hover:text-destructive"
+                  >
+                    ×
+                  </button>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
 
         {/* Messages Area */}
         <div
