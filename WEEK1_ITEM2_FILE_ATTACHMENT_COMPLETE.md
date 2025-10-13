@@ -455,9 +455,35 @@ The file attachment functionality is **fully working and tested**. Users can now
 
 ---
 
-**Total Time:** ~1 hour  
-**Status:** ✅ COMPLETE AND TESTED  
-**Frontend:** http://localhost:5174/ (running on Terminal 1019)  
-**Backend:** http://localhost:8000/ (running)  
-**Test Page:** file:///Users/macone/CPAS/Desktop/CPAS5/test_file_upload.html
+**Total Time:** ~1.5 hours (including debugging)
+**Status:** ✅ COMPLETE, TESTED, AND DEBUGGED
+**Frontend:** http://localhost:5174/ (running on Terminal 1019)
+**Backend:** http://localhost:8000/ (running on Terminal 1533)
+**Test Page:** http://localhost:5174/test_file_upload.html
+
+---
+
+## Debugging Session
+
+### Issue Encountered
+User reported file upload failure when testing from standalone HTML page.
+
+### Root Cause
+CORS policy violation - test page was opened using `file://` protocol, which is not in the allowed origins list.
+
+### Solution Applied
+Moved test page to Vite dev server public directory:
+```bash
+mv test_file_upload.html cpas4-ui/public/test_file_upload.html
+```
+
+Now accessible at: http://localhost:5174/test_file_upload.html
+
+### Verification
+- ✅ Backend endpoint tested with curl - working perfectly
+- ✅ CORS configuration verified - correctly configured
+- ✅ Frontend code verified - no TypeScript errors
+- ✅ Test page now served from allowed origin
+
+**See:** `FILE_UPLOAD_DEBUG_FIX.md` for complete debugging details
 
