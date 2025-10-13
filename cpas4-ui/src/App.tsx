@@ -15,6 +15,7 @@ const MCPManager = lazy(() => import('./components/mcp/MCPManager').then(m => ({
 const HookManager = lazy(() => import('./components/hooks/HookManager').then(m => ({ default: m.HookManager })));
 const PromptLibrary = lazy(() => import('./pages/PromptLibrary'));
 const GoogleAccountSettings = lazy(() => import('./pages/GoogleAccountSettings'));
+const LeadGenerationDashboard = lazy(() => import('./pages/LeadGenerationDashboard'));
 
 // Loading fallback component
 function LoadingFallback() {
@@ -66,6 +67,7 @@ function App() {
                 <Route path="/hooks" element={<HookManager />} />
                 <Route path="/prompts/library" element={<PromptLibrary />} />
                 <Route path="/settings/google-accounts" element={<GoogleAccountSettings />} />
+                <Route path="/leads" element={<LeadGenerationDashboard />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
