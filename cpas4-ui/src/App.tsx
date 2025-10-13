@@ -14,6 +14,7 @@ const VoiceSettings = lazy(() => import('./components/voice/VoiceSettings').then
 const MCPManager = lazy(() => import('./components/mcp/MCPManager').then(m => ({ default: m.MCPManager })));
 const HookManager = lazy(() => import('./components/hooks/HookManager').then(m => ({ default: m.HookManager })));
 const PromptLibrary = lazy(() => import('./pages/PromptLibrary'));
+const GoogleAccountSettings = lazy(() => import('./pages/GoogleAccountSettings'));
 
 // Loading fallback component
 function LoadingFallback() {
@@ -64,6 +65,7 @@ function App() {
                 <Route path="/mcp" element={<MCPManager />} />
                 <Route path="/hooks" element={<HookManager />} />
                 <Route path="/prompts/library" element={<PromptLibrary />} />
+                <Route path="/settings/google-accounts" element={<GoogleAccountSettings />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
