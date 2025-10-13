@@ -1016,6 +1016,15 @@ try:
 except Exception as e:
     logger.warning(f"⚠️ Drive router error: {e}")
 
+# Add Lead Generation Router - Automated Lead Research
+try:
+    from routers.lead_generation_router import router as lead_generation_router
+    app.include_router(lead_generation_router, tags=["Lead Generation"])
+    routers_loaded += 1
+    logger.info("✅ Lead Generation Router integrated - Automated lead research and monitoring available")
+except Exception as e:
+    logger.warning(f"⚠️ Lead Generation router error: {e}")
+
 logger.info(f"Total routers included in app: {routers_loaded}")
 
 # Phase 1 Security: Secure API Endpoints with Rate Limiting
