@@ -1,0 +1,387 @@
+import { useState, useEffect } from 'react';
+import { Webhook, Zap, Filter, Package, Plus, Trash2, Play, Loader2 } from 'lucide-react';
+import { Button } from '../ui/button';
+import { toast } from 'sonner';
+import * as hookApi from '../../api/hookApi';
+
+interface Hook {
+  id: string;
+  name: string;
+  event: string;
+  type: 'pre' | 'post';
+  priority: number;
+  enabled: boolean;
+  condition?: string;
+}
+
+interface Plugin {
+  id: string;
+  name: string;
+  description: string;
+  hooks: number;
+  enabled: boolean;
+}
+
+export function HookManager() {
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  const [hooks, setHooks] = useState<Hook[]>([]);
+  const [plugins, setPlugins] = useState<Plugin[]>([]);
+  const [eventTypes, setEventTypes] = useState<string[]>([]);
+  const [showAddHook, setShowAddHook] = useState(false);
+  const [newHookName, setNewHookName] = useState('');
+  const [newHookEvent, setNewHookEvent] = useState('');
+  const [newHookType, setNewHookType] = useState<'pre' | 'post'>('pre');
+  const [newHookPriority, setNewHookPriority] = useState(10);
+
+  // Load hooks, plugins, and event types on mount
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        // Load hooks
+        const hooksData = await hookApi.listHooks();
+        setHooks(hooksData.map((h: any) => ({
+          id: h.hook_id,
+          name: h.name,
+          event: h.event_type,
+          type: h.hook_type,
+          priority: h.priority,
+          enabled: h.enabled,
+          condition: h.condition,
+        })));
+
+        // Load plugins
+        const pluginsData = await hookApi.listPlugins();
+        setPlugins(pluginsData.map((p: any) => ({
+          id: p.plugin_id,
+          name: p.name,
+          description: p.description,
+          hooks: p.hooks?.length || 0,
+          enabled: p.enabled,
+        })));
+
+        // Load event types
+        const eventsData = await hookApi.getEventTypes();
+        setEventTypes(eventsData);
+
+        toast.success('Hook data loaded');
+      } catch (error) {
+        console.error('Failed to load hook data:', error);
+        toast.error('Failed to load hook data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const handleAddHook = async () => {
+    if (!newHookName || !newHookEvent) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const newHook = await hookApi.registerHook({
+        hook_id: `hook_${Date.now()}`,
+        name: newHookName,
+        event_type: newHookEvent,
+        hook_type: newHookType,
+        priority: newHookPriority,
+        handler: 'default_handler',
+        enabled: true,
+      });
+
+      setHooks([...hooks, {
+        id: newHook.hook_id,
+        name: newHook.name,
+        event: newHook.event_type,
+        type: newHook.hook_type,
+        priority: newHook.priority,
+        enabled: newHook.enabled,
+      }]);
+
+      setNewHookName('');
+      setNewHookEvent('');
+      setNewHookType('pre');
+      setNewHookPriority(10);
+      setShowAddHook(false);
+      toast.success('Hook added');
+    } catch (error) {
+      console.error('Failed to add hook:', error);
+      toast.error('Failed to add hook');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleToggleHook = async (id: string) => {
+    const hook = hooks.find(h => h.id === id);
+    if (!hook) return;
+
+    setProcessing(true);
+    try {
+      await hookApi.updateHook(id, { enabled: !hook.enabled });
+      setHooks(hooks.map((h) => (h.id === id ? { ...h, enabled: !h.enabled } : h)));
+      toast.success(`Hook ${hook.enabled ? 'disabled' : 'enabled'}`);
+    } catch (error) {
+      console.error('Failed to toggle hook:', error);
+      toast.error('Failed to toggle hook');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleRemoveHook = async (id: string) => {
+    setProcessing(true);
+    try {
+      await hookApi.unregisterHook(id);
+      setHooks(hooks.filter((h) => h.id !== id));
+      toast.success('Hook removed');
+    } catch (error) {
+      console.error('Failed to remove hook:', error);
+      toast.error('Failed to remove hook');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleTogglePlugin = async (id: string) => {
+    const plugin = plugins.find(p => p.id === id);
+    if (!plugin) return;
+
+    setProcessing(true);
+    try {
+      if (plugin.enabled) {
+        await hookApi.disablePlugin(id);
+      } else {
+        await hookApi.enablePlugin(id);
+      }
+      setPlugins(plugins.map((p) => (p.id === id ? { ...p, enabled: !p.enabled } : p)));
+      toast.success(`Plugin ${plugin.enabled ? 'disabled' : 'enabled'}`);
+    } catch (error) {
+      console.error('Failed to toggle plugin:', error);
+      toast.error('Failed to toggle plugin');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleTestHook = async (hook: Hook) => {
+    setProcessing(true);
+    try {
+      toast.info(`Testing hook: ${hook.name}...`);
+      const result = await hookApi.testHook(hook.id, { test: 'data' });
+
+      if (result.success) {
+        toast.success('Hook test successful');
+      } else {
+        toast.error('Hook test failed');
+      }
+    } catch (error) {
+      console.error('Hook test failed:', error);
+      toast.error('Hook test failed');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Loading hook data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 p-6">
+      <div>
+        <h2 className="text-2xl font-bold mb-2">Hook Manager</h2>
+        <p className="text-muted-foreground">
+          Manage event hooks and plugins for extensible functionality
+        </p>
+        {processing && (
+          <div className="mt-2 flex items-center gap-2 text-sm text-yellow-600">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Processing...</span>
+          </div>
+        )}
+      </div>
+
+      {/* Hooks */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Webhook className="h-5 w-5 text-primary" />
+            <h3 className="font-semibold">Event Hooks</h3>
+          </div>
+          <Button size="sm" onClick={() => setShowAddHook(!showAddHook)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Hook
+          </Button>
+        </div>
+
+        {/* Add Hook Form */}
+        {showAddHook && (
+          <div className="p-4 bg-muted rounded-md space-y-3">
+            <input
+              type="text"
+              placeholder="Hook Name"
+              value={newHookName}
+              onChange={(e) => setNewHookName(e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-md"
+            />
+            <select
+              value={newHookEvent}
+              onChange={(e) => setNewHookEvent(e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-md"
+            >
+              <option value="">Select Event</option>
+              {eventTypes.map((event) => (
+                <option key={event} value={event}>
+                  {event}
+                </option>
+              ))}
+            </select>
+            <div className="flex gap-3">
+              <select
+                value={newHookType}
+                onChange={(e) => setNewHookType(e.target.value as 'pre' | 'post')}
+                className="flex-1 px-3 py-2 bg-background border border-border rounded-md"
+              >
+                <option value="pre">Pre-Hook</option>
+                <option value="post">Post-Hook</option>
+              </select>
+              <input
+                type="number"
+                placeholder="Priority (0-100)"
+                value={newHookPriority}
+                onChange={(e) => setNewHookPriority(parseInt(e.target.value))}
+                min="0"
+                max="100"
+                className="flex-1 px-3 py-2 bg-background border border-border rounded-md"
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleAddHook}>
+                Add
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setShowAddHook(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Hook List */}
+        <div className="space-y-2">
+          {hooks.map((hook) => (
+            <div
+              key={hook.id}
+              className="p-3 bg-card border border-border rounded-md"
+            >
+              <div className="flex items-start justify-between">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-medium text-sm">{hook.name}</h4>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        hook.type === 'pre'
+                          ? 'bg-blue-500/20 text-blue-500'
+                          : 'bg-green-500/20 text-green-500'
+                      }`}
+                    >
+                      {hook.type}
+                    </span>
+                    <span className="text-xs px-2 py-1 bg-muted rounded-full">
+                      Priority: {hook.priority}
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">{hook.event}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleTestHook(hook)}
+                  >
+                    <Play className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant={hook.enabled ? 'default' : 'outline'}
+                    onClick={() => handleToggleHook(hook.id)}
+                  >
+                    {hook.enabled ? 'Enabled' : 'Disabled'}
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleRemoveHook(hook.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Plugins */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Package className="h-5 w-5 text-primary" />
+          <h3 className="font-semibold">Plugins</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {plugins.map((plugin) => (
+            <div
+              key={plugin.id}
+              className="p-4 bg-card border border-border rounded-md"
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <h4 className="font-semibold">{plugin.name}</h4>
+                  <p className="text-sm text-muted-foreground">{plugin.description}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {plugin.hooks} hooks registered
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant={plugin.enabled ? 'default' : 'outline'}
+                  onClick={() => handleTogglePlugin(plugin.id)}
+                >
+                  {plugin.enabled ? 'Enabled' : 'Disabled'}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Hook System Info */}
+      <div className="p-4 bg-muted rounded-md text-sm text-muted-foreground">
+        <p className="font-semibold mb-2">Hook System Features:</p>
+        <ul className="list-disc list-inside space-y-1">
+          <li>Event-driven architecture with 40+ event types</li>
+          <li>Pre/post hooks for all operations</li>
+          <li>Priority-based execution (0-100)</li>
+          <li>Conditional hook execution</li>
+          <li>Plugin system for extensibility</li>
+          <li>Middleware for event transformation</li>
+          <li>Hook chains with context propagation</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+

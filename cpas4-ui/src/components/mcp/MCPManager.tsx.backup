@@ -1,0 +1,344 @@
+import { useState, useEffect } from 'react';
+import { Server, Plug, Tool, Key, Activity, Plus, Trash2, Loader2 } from 'lucide-react';
+import { Button } from '../ui/button';
+import { toast } from 'sonner';
+import * as mcpApi from '../../api/mcpApi';
+
+interface MCPServer {
+  id: string;
+  name: string;
+  url: string;
+  status: 'connected' | 'disconnected' | 'error';
+  tools: number;
+}
+
+interface MCPTool {
+  id: string;
+  name: string;
+  description: string;
+  server: string;
+  enabled: boolean;
+}
+
+export function MCPManager() {
+  const [loading, setLoading] = useState(true);
+  const [processing, setProcessing] = useState(false);
+  const [servers, setServers] = useState<MCPServer[]>([]);
+  const [tools, setTools] = useState<MCPTool[]>([]);
+  const [showAddServer, setShowAddServer] = useState(false);
+  const [newServerName, setNewServerName] = useState('');
+  const [newServerUrl, setNewServerUrl] = useState('');
+
+  // Load servers and tools on mount
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      try {
+        // Load MCP servers
+        const serversData = await mcpApi.listServers();
+        setServers(serversData.map((s: any) => ({
+          id: s.server_id,
+          name: s.name,
+          url: s.url,
+          status: s.status,
+          tools: s.tools?.length || 0,
+        })));
+
+        // Load MCP tools
+        const toolsData = await mcpApi.listTools();
+        setTools(toolsData.map((t: any) => ({
+          id: t.tool_id,
+          name: t.name,
+          description: t.description,
+          server: t.server_id,
+          enabled: t.enabled,
+        })));
+
+        toast.success('MCP data loaded');
+      } catch (error) {
+        console.error('Failed to load MCP data:', error);
+        toast.error('Failed to load MCP data');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadData();
+  }, []);
+
+  const handleAddServer = async () => {
+    if (!newServerName || !newServerUrl) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      const newServer = await mcpApi.createServer({
+        server_id: `server_${Date.now()}`,
+        name: newServerName,
+        url: newServerUrl,
+        description: 'Custom MCP server',
+        auth_type: 'none',
+      });
+
+      setServers([...servers, {
+        id: newServer.server_id,
+        name: newServer.name,
+        url: newServer.url,
+        status: newServer.status,
+        tools: 0,
+      }]);
+
+      setNewServerName('');
+      setNewServerUrl('');
+      setShowAddServer(false);
+      toast.success('MCP server added');
+    } catch (error) {
+      console.error('Failed to add server:', error);
+      toast.error('Failed to add server');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleRemoveServer = async (id: string) => {
+    setProcessing(true);
+    try {
+      await mcpApi.deleteServer(id);
+      setServers(servers.filter((s) => s.id !== id));
+      toast.success('MCP server removed');
+    } catch (error) {
+      console.error('Failed to delete server:', error);
+      toast.error('Failed to delete server');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleToggleTool = async (id: string) => {
+    const tool = tools.find(t => t.id === id);
+    if (!tool) return;
+
+    setProcessing(true);
+    try {
+      await mcpApi.toggleTool(id, !tool.enabled);
+      setTools(tools.map((t) => (t.id === id ? { ...t, enabled: !t.enabled } : t)));
+      toast.success(`Tool ${tool.enabled ? 'disabled' : 'enabled'}`);
+    } catch (error) {
+      console.error('Failed to toggle tool:', error);
+      toast.error('Failed to toggle tool');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  const handleTestConnection = async (server: MCPServer) => {
+    setProcessing(true);
+    try {
+      toast.info(`Testing connection to ${server.name}...`);
+      const result = await mcpApi.testServerConnection(server.id);
+
+      if (result.success) {
+        toast.success('Connection successful');
+        setServers(servers.map(s =>
+          s.id === server.id ? { ...s, status: 'connected' as const } : s
+        ));
+      } else {
+        toast.error('Connection failed');
+        setServers(servers.map(s =>
+          s.id === server.id ? { ...s, status: 'error' as const } : s
+        ));
+      }
+    } catch (error) {
+      console.error('Connection test failed:', error);
+      toast.error('Connection test failed');
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="flex flex-col items-center gap-3">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Loading MCP data...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6 p-6">
+      <div>
+        <h2 className="text-2xl font-bold mb-2">MCP Manager</h2>
+        <p className="text-muted-foreground">
+          Manage Model Context Protocol servers and tools
+        </p>
+        {processing && (
+          <div className="mt-2 flex items-center gap-2 text-sm text-yellow-600">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            <span>Processing...</span>
+          </div>
+        )}
+      </div>
+
+      {/* MCP Servers */}
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Server className="h-5 w-5 text-primary" />
+            <h3 className="font-semibold">MCP Servers</h3>
+          </div>
+          <Button size="sm" onClick={() => setShowAddServer(!showAddServer)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Server
+          </Button>
+        </div>
+
+        {/* Add Server Form */}
+        {showAddServer && (
+          <div className="p-4 bg-muted rounded-md space-y-3">
+            <input
+              type="text"
+              placeholder="Server Name"
+              value={newServerName}
+              onChange={(e) => setNewServerName(e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-md"
+            />
+            <input
+              type="text"
+              placeholder="Server URL (e.g., http://localhost:8000/mcp)"
+              value={newServerUrl}
+              onChange={(e) => setNewServerUrl(e.target.value)}
+              className="w-full px-3 py-2 bg-background border border-border rounded-md"
+            />
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleAddServer}>
+                Add
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setShowAddServer(false)}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        )}
+
+        {/* Server List */}
+        <div className="space-y-2">
+          {servers.map((server) => (
+            <div
+              key={server.id}
+              className="p-4 bg-card border border-border rounded-md"
+            >
+              <div className="flex items-start justify-between mb-3">
+                <div className="flex-1">
+                  <div className="flex items-center gap-2 mb-1">
+                    <h4 className="font-semibold">{server.name}</h4>
+                    <span
+                      className={`text-xs px-2 py-1 rounded-full ${
+                        server.status === 'connected'
+                          ? 'bg-green-500/20 text-green-500'
+                          : server.status === 'error'
+                          ? 'bg-red-500/20 text-red-500'
+                          : 'bg-gray-500/20 text-gray-500'
+                      }`}
+                    >
+                      {server.status}
+                    </span>
+                  </div>
+                  <p className="text-sm text-muted-foreground">{server.url}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {server.tools} tools available
+                  </p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleTestConnection(server)}
+                  >
+                    <Activity className="h-4 w-4 mr-2" />
+                    Test
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    onClick={() => handleRemoveServer(server.id)}
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* MCP Tools */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Tool className="h-5 w-5 text-primary" />
+          <h3 className="font-semibold">Available Tools</h3>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+          {tools.map((tool) => (
+            <div
+              key={tool.id}
+              className="p-3 bg-card border border-border rounded-md"
+            >
+              <div className="flex items-start justify-between mb-2">
+                <div className="flex-1">
+                  <h4 className="font-medium text-sm">{tool.name}</h4>
+                  <p className="text-xs text-muted-foreground">{tool.description}</p>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    Server: {servers.find((s) => s.id === tool.server)?.name}
+                  </p>
+                </div>
+                <Button
+                  size="sm"
+                  variant={tool.enabled ? 'default' : 'outline'}
+                  onClick={() => handleToggleTool(tool.id)}
+                >
+                  {tool.enabled ? 'Enabled' : 'Disabled'}
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* API Key Management */}
+      <div className="space-y-3">
+        <div className="flex items-center gap-2">
+          <Key className="h-5 w-5 text-primary" />
+          <h3 className="font-semibold">API Keys</h3>
+        </div>
+        <div className="p-4 bg-muted rounded-md">
+          <p className="text-sm text-muted-foreground mb-3">
+            Manage API keys for MCP authentication
+          </p>
+          <Button size="sm">
+            <Plus className="h-4 w-4 mr-2" />
+            Generate API Key
+          </Button>
+        </div>
+      </div>
+
+      {/* MCP Info */}
+      <div className="p-4 bg-muted rounded-md text-sm text-muted-foreground">
+        <p className="font-semibold mb-2">MCP Integration Features:</p>
+        <ul className="list-disc list-inside space-y-1">
+          <li>Expose Greta tools via MCP protocol</li>
+          <li>Connect to external MCP servers</li>
+          <li>Tool registry with 6+ default tools</li>
+          <li>Authentication and rate limiting</li>
+          <li>Context sharing between clients/servers</li>
+          <li>Agent-to-agent communication</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
+
