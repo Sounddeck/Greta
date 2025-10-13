@@ -19,6 +19,11 @@ from models.oauth_models import (
     OAuthRevokeRequest,
     OAuthRevokeResponse,
     OAuthHealthResponse,
+    GoogleAccountListResponse,
+    GoogleAccountSetPrimaryRequest,
+    GoogleAccountSetPrimaryResponse,
+    GoogleAccountRemoveRequest,
+    GoogleAccountRemoveResponse,
 )
 from services.oauth_service import OAuthService
 
@@ -255,6 +260,114 @@ async def get_token_status(
         "expires_at": token.expires_at.isoformat(),
         "has_refresh_token": token.refresh_token is not None
     }
+
+
+# ============================================================================
+# Multi-Account Management
+# ============================================================================
+
+@router.get("/accounts/google", response_model=GoogleAccountListResponse)
+async def list_google_accounts(
+    user_id: str = Query(..., description="User ID")
+):
+    """
+    List all connected Google accounts for a user
+
+    Returns list of all Google accounts connected to the user's profile,
+    including account email, name, primary status, and token information.
+
+    **Example**:
+    ```
+    GET /api/v1/oauth/accounts/google?user_id=user_123
+    ```
+
+    **Response**:
+    ```json
+    {
+        "accounts": [
+            {
+                "account_email": "user@gmail.com",
+                "account_name": "John Doe",
+                "is_primary": true,
+                "token_id": "tok_abc123",
+                "expires_at": "2025-10-14T10:00:00Z",
+                "scopes": ["gmail.readonly", "calendar"],
+                "created_at": "2025-10-13T10:00:00Z"
+            }
+        ],
+        "total_accounts": 1,
+        "primary_account": "user@gmail.com"
+    }
+    ```
+    """
+    service = OAuthService()
+    return await service.list_user_accounts(user_id, OAuthProvider.GOOGLE)
+
+
+@router.post("/accounts/google/primary", response_model=GoogleAccountSetPrimaryResponse)
+async def set_primary_google_account(
+    request: GoogleAccountSetPrimaryRequest
+):
+    """
+    Set primary Google account for a user
+
+    Marks the specified account as the primary account. The primary account
+    is used by default when no specific account is specified in API calls.
+
+    **Example**:
+    ```
+    POST /api/v1/oauth/accounts/google/primary
+    {
+        "user_id": "user_123",
+        "account_email": "work@company.com"
+    }
+    ```
+
+    **Response**:
+    ```json
+    {
+        "success": true,
+        "message": "Primary account set to work@company.com",
+        "primary_account": "work@company.com"
+    }
+    ```
+    """
+    service = OAuthService()
+    return await service.set_primary_account(request)
+
+
+@router.delete("/accounts/google/{account_email}")
+async def remove_google_account(
+    account_email: str,
+    user_id: str = Query(..., description="User ID")
+):
+    """
+    Remove a connected Google account
+
+    Revokes the OAuth token and removes the account from the user's profile.
+    If the removed account was the primary account, another account will be
+    automatically set as primary.
+
+    **Example**:
+    ```
+    DELETE /api/v1/oauth/accounts/google/user@gmail.com?user_id=user_123
+    ```
+
+    **Response**:
+    ```json
+    {
+        "success": true,
+        "message": "Account user@gmail.com removed successfully",
+        "removed_account": "user@gmail.com"
+    }
+    ```
+    """
+    service = OAuthService()
+    request = GoogleAccountRemoveRequest(
+        user_id=user_id,
+        account_email=account_email
+    )
+    return await service.remove_account(request)
 
 
 # ============================================================================
