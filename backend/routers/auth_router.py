@@ -63,9 +63,8 @@ class PasswordStrengthResponse(BaseModel):
     errors: list[str]
 
 
-@router.post("/login"
+@router.post("/login", response_model=Token)
 @limiter.limit(get_rate_limit("auth_login"))
-@limiter.limit(get_rate_limit("auth_login")), response_model=Token)
 async def login(request: LoginRequest):
     """
     Login endpoint - authenticate user and return JWT token
@@ -107,9 +106,8 @@ async def login(request: LoginRequest):
     )
 
 
-@router.post("/register"
+@router.post("/register", response_model=UserResponse)
 @limiter.limit(get_rate_limit("auth_register"))
-@limiter.limit(get_rate_limit("auth_register")), response_model=UserResponse)
 async def register(request: RegisterRequest):
     """
     Register a new user
