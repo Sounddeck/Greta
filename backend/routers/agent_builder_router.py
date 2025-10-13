@@ -6,7 +6,9 @@ from fastapi import APIRouter, HTTPException, Depends, Query
 from typing import List, Optional
 import logging
 from services.agent_builder_service import AgentBuilderService
+from services.mcp_service import MCPHubService
 from models.agent_builder_models import *
+from models.mcp_models import AgentMCPIntegration, AgentMCPIntegrationCreate, AgentMCPIntegrationUpdate
 from database import Database
 
 logger = logging.getLogger(__name__)
@@ -16,6 +18,11 @@ async def get_service() -> AgentBuilderService:
     db = Database()
     await db.connect()
     return AgentBuilderService(db)
+
+async def get_mcp_service() -> MCPHubService:
+    db = Database()
+    await db.connect()
+    return MCPHubService(db)
 
 # Templates
 @router.post("/templates", response_model=AgentTemplate, status_code=201)
@@ -134,7 +141,38 @@ async def validate_agent(aid: str, svc: AgentBuilderService = Depends(get_servic
 async def get_stats(svc: AgentBuilderService = Depends(get_service)):
     return await svc.get_stats()
 
+# MCP Configuration for Agents
+@router.get("/agents/{aid}/mcp-config", response_model=List[AgentMCPIntegration])
+async def get_agent_mcp_config(aid: str, mcp_svc: MCPHubService = Depends(get_mcp_service)):
+    """Get MCP server integrations for a specific agent"""
+    return await mcp_svc.list_integrations(agent_id=aid, limit=1000)
+
+@router.post("/agents/{aid}/mcp-config", response_model=AgentMCPIntegration, status_code=201)
+async def add_agent_mcp_config(aid: str, integration: AgentMCPIntegrationCreate, agent_svc: AgentBuilderService = Depends(get_service), mcp_svc: MCPHubService = Depends(get_mcp_service)):
+    """Add MCP server integration to an agent"""
+    # Verify agent exists
+    agent = await agent_svc.get_agent(aid)
+    if not agent:
+        raise HTTPException(404, "Agent not found")
+
+    # Create integration
+    return await mcp_svc.create_integration(integration)
+
+@router.put("/agents/{aid}/mcp-config/{integration_id}", response_model=AgentMCPIntegration)
+async def update_agent_mcp_config(aid: str, integration_id: str, integration_update: AgentMCPIntegrationUpdate, mcp_svc: MCPHubService = Depends(get_mcp_service)):
+    """Update MCP server integration for an agent"""
+    intg = await mcp_svc.update_integration(integration_id, integration_update)
+    if not intg:
+        raise HTTPException(404, "Integration not found")
+    return intg
+
+@router.delete("/agents/{aid}/mcp-config/{integration_id}", status_code=204)
+async def delete_agent_mcp_config(aid: str, integration_id: str, mcp_svc: MCPHubService = Depends(get_mcp_service)):
+    """Remove MCP server integration from an agent"""
+    if not await mcp_svc.delete_integration(integration_id):
+        raise HTTPException(404, "Integration not found")
+
 # Health
 @router.get("/health")
 async def health_check():
-    return {"status": "healthy", "module": "Agent Builder", "features": ["Custom Agent Creation", "Template Management", "Tool Assignment", "Deployment Management", "Version Control", "Code Generation", "Execution Tracking", "Statistics"], "endpoints": 27, "database": "MongoDB/File Storage"}
+    return {"status": "healthy", "module": "Agent Builder", "features": ["Custom Agent Creation", "Template Management", "Tool Assignment", "Deployment Management", "Version Control", "Code Generation", "Execution Tracking", "Statistics", "MCP Configuration"], "endpoints": 31, "database": "MongoDB/File Storage"}
