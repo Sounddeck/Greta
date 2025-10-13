@@ -56,6 +56,21 @@ export const knowledgeAPI = {
   delete: (id: string) => api.delete(`/knowledge/documents/${id}`),
 };
 
+// Prompt Template endpoints
+export const promptTemplateAPI = {
+  initialize: () => api.post('/prompts/templates/initialize'),
+  list: (params?: any) => api.get('/prompts/templates', { params }),
+  search: (query: string, category?: string) => api.get('/prompts/templates/search', { params: { q: query, category } }),
+  get: (id: string) => api.get(`/prompts/templates/${id}`),
+  create: (data: any) => api.post('/prompts/templates', data),
+  update: (id: string, data: any) => api.put(`/prompts/templates/${id}`, data),
+  delete: (id: string) => api.delete(`/prompts/templates/${id}`),
+  render: (templateId: string, variables: Record<string, string>) =>
+    api.post('/prompts/templates/render', { template_id: templateId, variables }),
+  rate: (templateId: string, rating: number, feedback?: string) =>
+    api.post('/prompts/templates/rate', { template_id: templateId, rating, feedback }),
+};
+
 // Scraping endpoints
 export const scrapingAPI = {
   createJob: (data: any) => api.post('/scraping/jobs', data),

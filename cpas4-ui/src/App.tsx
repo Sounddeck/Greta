@@ -12,6 +12,7 @@ const AgentBuilderWorkflow = lazy(() => import('./components/agent-builder/Agent
 const VoiceSettings = lazy(() => import('./components/voice/VoiceSettings').then(m => ({ default: m.VoiceSettings })));
 const MCPManager = lazy(() => import('./components/mcp/MCPManager').then(m => ({ default: m.MCPManager })));
 const HookManager = lazy(() => import('./components/hooks/HookManager').then(m => ({ default: m.HookManager })));
+const PromptLibrary = lazy(() => import('./pages/PromptLibrary'));
 
 // Loading fallback component
 function LoadingFallback() {
@@ -61,6 +62,7 @@ function App() {
                 <Route path="/voice" element={<VoiceSettings />} />
                 <Route path="/mcp" element={<MCPManager />} />
                 <Route path="/hooks" element={<HookManager />} />
+                <Route path="/prompts/library" element={<PromptLibrary />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
