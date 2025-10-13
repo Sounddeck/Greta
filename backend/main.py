@@ -146,6 +146,7 @@ def safe_router_import():
         ('master_agent', False, 'Master Agent Greta'),
         ('training', False, 'Interactive Training System'),
         ('osint', False, 'Open Source Intelligence'),
+        ('osint_free_router', False, 'OSINT Free Tools'),
         ('autonomous', False, 'Autonomous Operations'),
         ('multimodal', False, 'Multi-Modal Processing'),
         ('predictive', False, 'Predictive Analytics'),
@@ -472,6 +473,7 @@ ROUTER_CONFIG = [
     ('master_agent', '/api/v1', False),
     ('training', '/api/training', False),
     ('osint', '/api/v1', False),
+    ('osint_free_router', '/api/v1', False),
     ('autonomous', '/api/v1', False),
     ('multimodal', '/api/v1', False),
     ('predictive', '/api/v1', False),
@@ -580,6 +582,17 @@ for router_name, prefix, force_include in ROUTER_CONFIG:
                 continue
             except Exception as e:
                 logger.warning(f"⚠️ OSINT router import failed: {e}")
+
+        # Force include OSINT Free Tools Router
+        if force_include and router_name == 'osint_free_router':
+            try:
+                from routers.osint_free_router import router as osint_free_router
+                app.include_router(osint_free_router, tags=["OSINT Free Tools"])
+                routers_loaded += 1
+                logger.info(f"✅ OSINT Free Tools Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ OSINT Free Tools router import failed: {e}")
 
         # Force include Multi-Modal Router (Module 9)
         if force_include and router_name == 'multimodal_router':

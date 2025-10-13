@@ -11,7 +11,10 @@ venv/
 **/__pycache__/
 *.pyc
 Greta PAI System.app/
-CPAS*/
+# Note: cpas4-ui is our frontend directory and should be tracked
+# Only ignore other CPAS directories
+CPAS[0-3]*/
+CPAS[5-9]*/
 
 # Dynaconf secrets (Phase 4 Integration)
 .secrets.toml
