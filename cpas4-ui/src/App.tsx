@@ -16,6 +16,7 @@ const HookManager = lazy(() => import('./components/hooks/HookManager').then(m =
 const PromptLibrary = lazy(() => import('./pages/PromptLibrary'));
 const GoogleAccountSettings = lazy(() => import('./pages/GoogleAccountSettings'));
 const LeadGenerationDashboard = lazy(() => import('./pages/LeadGenerationDashboard'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
 
 // Loading fallback component
 function LoadingFallback() {
@@ -68,6 +69,7 @@ function App() {
                 <Route path="/prompts/library" element={<PromptLibrary />} />
                 <Route path="/settings/google-accounts" element={<GoogleAccountSettings />} />
                 <Route path="/leads" element={<LeadGenerationDashboard />} />
+                <Route path="/settings" element={<SettingsPage />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Suspense>
