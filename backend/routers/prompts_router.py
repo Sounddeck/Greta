@@ -1,15 +1,25 @@
 """
 CPAS4 UI Prompts Router
-Provides prompt enhancement endpoints for the CPAS4 UI
+Provides prompt enhancement endpoints and template library for the CPAS4 UI
 """
 
 from fastapi import APIRouter, HTTPException, Depends
 from pydantic import BaseModel, Field
-from typing import Dict, Any, Optional
+from typing import Dict, Any, Optional, List
 from datetime import datetime
 import logging
 
 from services.llm_service import get_llm_service
+from services.prompt_library_service import PromptLibraryService
+from models.prompt_template_models import (
+    PromptTemplateCreate,
+    PromptTemplateUpdate,
+    PromptTemplateRenderRequest,
+    PromptTemplateRatingRequest,
+    PromptTemplateSearchRequest,
+    PromptCategory
+)
+from database import get_database
 
 logger = logging.getLogger(__name__)
 
@@ -156,4 +166,188 @@ async def get_statistics():
         "average_quality": 0.85,
         "message": "Statistics not fully implemented yet"
     }
+
+
+# ============================================================================
+# PROMPT TEMPLATE LIBRARY ENDPOINTS
+# ============================================================================
+
+@router.post("/templates/initialize")
+async def initialize_templates(db = Depends(get_database)):
+    """Initialize default system templates"""
+    try:
+        service = PromptLibraryService(db)
+        result = await service.initialize_default_templates()
+        return result
+    except Exception as e:
+        logger.error(f"Failed to initialize templates: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/templates")
+async def create_template(template_data: PromptTemplateCreate, db = Depends(get_database)):
+    """Create a new prompt template"""
+    try:
+        service = PromptLibraryService(db)
+        result = await service.create_template(template_data)
+
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result["message"])
+
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to create template: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/templates")
+async def list_templates(
+    category: Optional[PromptCategory] = None,
+    tags: Optional[str] = None,
+    is_active: bool = True,
+    page: int = 1,
+    page_size: int = 20,
+    db = Depends(get_database)
+):
+    """List prompt templates with filtering and pagination"""
+    try:
+        service = PromptLibraryService(db)
+
+        # Parse tags if provided
+        tags_list = tags.split(",") if tags else None
+
+        result = await service.list_templates(
+            category=category,
+            tags=tags_list,
+            is_active=is_active,
+            page=page,
+            page_size=page_size
+        )
+
+        return result
+    except Exception as e:
+        logger.error(f"Failed to list templates: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/templates/search")
+async def search_templates(
+    q: str,
+    category: Optional[PromptCategory] = None,
+    db = Depends(get_database)
+):
+    """Search prompt templates"""
+    try:
+        service = PromptLibraryService(db)
+        templates = await service.search_templates(q, category)
+
+        return {
+            "success": True,
+            "templates": templates,
+            "total": len(templates),
+            "message": f"Found {len(templates)} templates"
+        }
+    except Exception as e:
+        logger.error(f"Failed to search templates: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.get("/templates/{template_id}")
+async def get_template(template_id: str, db = Depends(get_database)):
+    """Get a specific template by ID"""
+    try:
+        service = PromptLibraryService(db)
+        template = await service.get_template(template_id)
+
+        if not template:
+            raise HTTPException(status_code=404, detail=f"Template {template_id} not found")
+
+        return {
+            "success": True,
+            "template": template,
+            "message": "Template retrieved successfully"
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to get template: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/templates/{template_id}")
+async def update_template(
+    template_id: str,
+    update_data: PromptTemplateUpdate,
+    db = Depends(get_database)
+):
+    """Update a template"""
+    try:
+        service = PromptLibraryService(db)
+        result = await service.update_template(template_id, update_data)
+
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result["message"])
+
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to update template: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.delete("/templates/{template_id}")
+async def delete_template(template_id: str, db = Depends(get_database)):
+    """Delete a template (soft delete)"""
+    try:
+        service = PromptLibraryService(db)
+        result = await service.delete_template(template_id)
+
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result["message"])
+
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to delete template: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/templates/render")
+async def render_template(request: PromptTemplateRenderRequest, db = Depends(get_database)):
+    """Render a template with provided variables"""
+    try:
+        service = PromptLibraryService(db)
+        result = await service.render_template(request.template_id, request.variables)
+
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result["message"])
+
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to render template: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.post("/templates/rate")
+async def rate_template(request: PromptTemplateRatingRequest, db = Depends(get_database)):
+    """Rate a template"""
+    try:
+        service = PromptLibraryService(db)
+        result = await service.rate_template(request.template_id, request.rating, request.feedback)
+
+        if not result["success"]:
+            raise HTTPException(status_code=400, detail=result["message"])
+
+        return result
+    except HTTPException:
+        raise
+    except Exception as e:
+        logger.error(f"Failed to rate template: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
 
