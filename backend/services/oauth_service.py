@@ -37,6 +37,12 @@ from models.oauth_models import (
     OAuthRevokeResponse,
     GoogleWorkspaceScopes,
     OAuthHealthResponse,
+    GoogleAccountInfo,
+    GoogleAccountListResponse,
+    GoogleAccountSetPrimaryRequest,
+    GoogleAccountSetPrimaryResponse,
+    GoogleAccountRemoveRequest,
+    GoogleAccountRemoveResponse,
 )
 
 
@@ -213,17 +219,35 @@ class OAuthService:
         self,
         user_id: str,
         provider: OAuthProvider,
-        scopes: List[str]
+        scopes: List[str],
+        account_email: Optional[str] = None,
+        account_name: Optional[str] = None
     ) -> dict:
         """Create mock OAuth token for testing"""
         token_id = f"token_{secrets.token_urlsafe(16)}"
         access_token = f"mock_access_token_{secrets.token_urlsafe(32)}"
         refresh_token = f"mock_refresh_token_{secrets.token_urlsafe(32)}"
 
+        # Generate mock account email if not provided
+        if not account_email:
+            account_email = f"{user_id}@gmail.com"
+        if not account_name:
+            account_name = f"User {user_id}"
+
+        # Check if this is the first account (make it primary)
+        existing_tokens = await self.db.find_many(
+            self.tokens_collection,
+            {"user_id": user_id, "provider": provider, "revoked": False}
+        )
+        is_primary = len(existing_tokens) == 0 if existing_tokens else True
+
         token_record = OAuthToken(
             token_id=token_id,
             user_id=user_id,
             provider=provider,
+            account_email=account_email,
+            account_name=account_name,
+            is_primary=is_primary,
             access_token=access_token,
             token_type="Bearer",
             expires_in=3600,
@@ -253,13 +277,30 @@ class OAuthService:
     async def get_user_token(
         self,
         user_id: str,
-        provider: OAuthProvider
+        provider: OAuthProvider,
+        account_email: Optional[str] = None
     ) -> Optional[OAuthToken]:
-        """Get user's OAuth token"""
-        token_record = await self.db.find_one(
-            self.tokens_collection,
-            {"user_id": user_id, "provider": provider, "revoked": False}
-        )
+        """
+        Get user's OAuth token
+
+        If account_email is provided, get token for that specific account.
+        Otherwise, get primary account token or first available token.
+        """
+        query = {"user_id": user_id, "provider": provider, "revoked": False}
+
+        if account_email:
+            # Get specific account
+            query["account_email"] = account_email
+            token_record = await self.db.find_one(self.tokens_collection, query)
+        else:
+            # Get primary account or first available
+            query["is_primary"] = True
+            token_record = await self.db.find_one(self.tokens_collection, query)
+
+            if not token_record:
+                # No primary account, get first available
+                del query["is_primary"]
+                token_record = await self.db.find_one(self.tokens_collection, query)
 
         if not token_record:
             return None
@@ -362,6 +403,183 @@ class OAuthService:
             message="Token revoked successfully"
         )
     
+    # ========================================================================
+    # Multi-Account Management
+    # ========================================================================
+
+    async def list_user_accounts(
+        self,
+        user_id: str,
+        provider: OAuthProvider = OAuthProvider.GOOGLE
+    ) -> GoogleAccountListResponse:
+        """List all connected accounts for a user"""
+        tokens = await self.db.find_many(
+            self.tokens_collection,
+            {"user_id": user_id, "provider": provider, "revoked": False}
+        )
+
+        if not tokens:
+            return GoogleAccountListResponse(
+                accounts=[],
+                total_accounts=0,
+                primary_account=None
+            )
+
+        accounts = []
+        primary_account = None
+
+        for token_record in tokens:
+            # Convert ISO strings back to datetime
+            if isinstance(token_record.get("created_at"), str):
+                token_record["created_at"] = datetime.fromisoformat(token_record["created_at"])
+            if isinstance(token_record.get("expires_at"), str):
+                token_record["expires_at"] = datetime.fromisoformat(token_record["expires_at"])
+
+            token = OAuthToken(**token_record)
+
+            account_info = GoogleAccountInfo(
+                account_email=token.account_email or f"{user_id}@gmail.com",
+                account_name=token.account_name or "Unknown",
+                picture_url=None,  # TODO: Fetch from Google API
+                is_primary=token.is_primary,
+                token_id=token.token_id,
+                expires_at=token.expires_at,
+                scopes=token.scope.split() if token.scope else [],
+                created_at=token.created_at
+            )
+
+            accounts.append(account_info)
+
+            if token.is_primary:
+                primary_account = token.account_email
+
+        return GoogleAccountListResponse(
+            accounts=accounts,
+            total_accounts=len(accounts),
+            primary_account=primary_account
+        )
+
+    async def set_primary_account(
+        self,
+        request: GoogleAccountSetPrimaryRequest
+    ) -> GoogleAccountSetPrimaryResponse:
+        """Set primary account for a user"""
+        # Verify account exists
+        token = await self.get_user_token(
+            request.user_id,
+            OAuthProvider.GOOGLE,
+            request.account_email
+        )
+
+        if not token:
+            return GoogleAccountSetPrimaryResponse(
+                success=False,
+                message=f"Account {request.account_email} not found",
+                primary_account=request.account_email
+            )
+
+        # Unset all primary flags for this user
+        await self.db.update_one(
+            self.tokens_collection,
+            {"user_id": request.user_id, "provider": OAuthProvider.GOOGLE},
+            {"$set": {"is_primary": False}},
+            update_all=True  # Update all matching documents
+        )
+
+        # Set new primary account
+        await self.db.update_one(
+            self.tokens_collection,
+            {
+                "user_id": request.user_id,
+                "provider": OAuthProvider.GOOGLE,
+                "account_email": request.account_email
+            },
+            {"$set": {"is_primary": True}}
+        )
+
+        return GoogleAccountSetPrimaryResponse(
+            success=True,
+            message=f"Primary account set to {request.account_email}",
+            primary_account=request.account_email
+        )
+
+    async def remove_account(
+        self,
+        request: GoogleAccountRemoveRequest
+    ) -> GoogleAccountRemoveResponse:
+        """Remove a connected account"""
+        # Verify account exists
+        token = await self.get_user_token(
+            request.user_id,
+            OAuthProvider.GOOGLE,
+            request.account_email
+        )
+
+        if not token:
+            return GoogleAccountRemoveResponse(
+                success=False,
+                message=f"Account {request.account_email} not found",
+                removed_account=request.account_email
+            )
+
+        # Mark token as revoked
+        revoked_at = datetime.utcnow()
+        await self.db.update_one(
+            self.tokens_collection,
+            {
+                "user_id": request.user_id,
+                "provider": OAuthProvider.GOOGLE,
+                "account_email": request.account_email
+            },
+            {
+                "$set": {
+                    "revoked": True,
+                    "revoked_at": revoked_at.isoformat()
+                }
+            }
+        )
+
+        # If this was the primary account, set another account as primary
+        if token.is_primary:
+            remaining_tokens = await self.db.find_many(
+                self.tokens_collection,
+                {
+                    "user_id": request.user_id,
+                    "provider": OAuthProvider.GOOGLE,
+                    "revoked": False
+                }
+            )
+
+            if remaining_tokens and len(remaining_tokens) > 0:
+                # Set first remaining account as primary
+                await self.db.update_one(
+                    self.tokens_collection,
+                    {"token_id": remaining_tokens[0]["token_id"]},
+                    {"$set": {"is_primary": True}}
+                )
+
+        return GoogleAccountRemoveResponse(
+            success=True,
+            message=f"Account {request.account_email} removed successfully",
+            removed_account=request.account_email
+        )
+
+    async def get_account_token(
+        self,
+        user_id: str,
+        account_email: Optional[str] = None
+    ) -> Optional[OAuthToken]:
+        """
+        Get token for specific account or primary account
+
+        This is a convenience method that wraps get_user_token
+        """
+        return await self.get_user_token(
+            user_id,
+            OAuthProvider.GOOGLE,
+            account_email
+        )
+
     # ========================================================================
     # Health Check
     # ========================================================================
