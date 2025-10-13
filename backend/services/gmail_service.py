@@ -70,12 +70,26 @@ class GmailService:
         # return service
         return None
     
-    async def _get_user_access_token(self, user_id: str) -> Optional[str]:
-        """Get user's access token"""
-        token = await self.oauth_service.get_user_token(user_id, OAuthProvider.GOOGLE)
+    async def _get_user_access_token(
+        self,
+        user_id: str,
+        account_email: Optional[str] = None
+    ) -> Optional[str]:
+        """
+        Get user's access token for specific account or primary account
+
+        Args:
+            user_id: User ID
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        token = await self.oauth_service.get_user_token(
+            user_id,
+            OAuthProvider.GOOGLE,
+            account_email
+        )
         if not token:
             return None
-        
+
         # Check if token expired
         if datetime.utcnow() > token.expires_at:
             # Refresh token
@@ -83,7 +97,7 @@ class GmailService:
             if refreshed:
                 return refreshed.access_token
             return None
-        
+
         return token.access_token
     
     # ========================================================================
@@ -93,14 +107,20 @@ class GmailService:
     async def send_email(
         self,
         user_id: str,
-        request: GmailSendRequest
+        request: GmailSendRequest,
+        account_email: Optional[str] = None
     ) -> GmailSendResponse:
         """
-        Send email via Gmail API
-        
+        Send email via Gmail API from specific account
+
+        Args:
+            user_id: User ID
+            request: Email send request
+            account_email: Optional account email. If not provided, uses primary account.
+
         TODO: Implement real Gmail API send
         """
-        access_token = await self._get_user_access_token(user_id)
+        access_token = await self._get_user_access_token(user_id, account_email)
         if not access_token and not self.mock_mode:
             return GmailSendResponse(
                 message_id="",
@@ -170,14 +190,20 @@ class GmailService:
     async def list_emails(
         self,
         user_id: str,
-        request: GmailListRequest
+        request: GmailListRequest,
+        account_email: Optional[str] = None
     ) -> GmailMessageListResponse:
         """
-        List emails from Gmail
-        
+        List emails from Gmail from specific account
+
+        Args:
+            user_id: User ID
+            request: List request parameters
+            account_email: Optional account email. If not provided, uses primary account.
+
         TODO: Implement real Gmail API list
         """
-        access_token = await self._get_user_access_token(user_id)
+        access_token = await self._get_user_access_token(user_id, account_email)
         if not access_token and not self.mock_mode:
             return GmailMessageListResponse(
                 messages=[],
@@ -217,14 +243,20 @@ class GmailService:
     async def search_emails(
         self,
         user_id: str,
-        request: GmailSearchRequest
+        request: GmailSearchRequest,
+        account_email: Optional[str] = None
     ) -> GmailSearchResponse:
         """
-        Search emails in Gmail
-        
+        Search emails in Gmail from specific account
+
+        Args:
+            user_id: User ID
+            request: Search request parameters
+            account_email: Optional account email. If not provided, uses primary account.
+
         TODO: Implement real Gmail API search
         """
-        access_token = await self._get_user_access_token(user_id)
+        access_token = await self._get_user_access_token(user_id, account_email)
         if not access_token and not self.mock_mode:
             return GmailSearchResponse(
                 messages=[],
@@ -266,14 +298,20 @@ class GmailService:
     async def get_email(
         self,
         user_id: str,
-        message_id: str
+        message_id: str,
+        account_email: Optional[str] = None
     ) -> Optional[GmailMessage]:
         """
-        Get email by ID
-        
+        Get email by ID from specific account
+
+        Args:
+            user_id: User ID
+            message_id: Message ID
+            account_email: Optional account email. If not provided, uses primary account.
+
         TODO: Implement real Gmail API get
         """
-        access_token = await self._get_user_access_token(user_id)
+        access_token = await self._get_user_access_token(user_id, account_email)
         if not access_token and not self.mock_mode:
             return None
         
@@ -301,14 +339,20 @@ class GmailService:
     async def modify_email(
         self,
         user_id: str,
-        request: GmailModifyRequest
+        request: GmailModifyRequest,
+        account_email: Optional[str] = None
     ) -> GmailModifyResponse:
         """
-        Modify email labels
+        Modify email labels from specific account
+
+        Args:
+            user_id: User ID
+            request: Modify request parameters
+            account_email: Optional account email. If not provided, uses primary account.
 
         TODO: Implement real Gmail API modify
         """
-        access_token = await self._get_user_access_token(user_id)
+        access_token = await self._get_user_access_token(user_id, account_email)
         if not access_token and not self.mock_mode:
             return GmailModifyResponse(
                 message_id=request.message_id,
@@ -343,14 +387,20 @@ class GmailService:
     async def delete_email(
         self,
         user_id: str,
-        message_id: str
+        message_id: str,
+        account_email: Optional[str] = None
     ) -> bool:
         """
-        Delete email
+        Delete email from specific account
+
+        Args:
+            user_id: User ID
+            message_id: Message ID
+            account_email: Optional account email. If not provided, uses primary account.
 
         TODO: Implement real Gmail API delete
         """
-        access_token = await self._get_user_access_token(user_id)
+        access_token = await self._get_user_access_token(user_id, account_email)
         if not access_token and not self.mock_mode:
             return False
 
@@ -369,14 +419,19 @@ class GmailService:
 
     async def list_labels(
         self,
-        user_id: str
+        user_id: str,
+        account_email: Optional[str] = None
     ) -> List[GmailLabel]:
         """
-        List Gmail labels
+        List Gmail labels from specific account
+
+        Args:
+            user_id: User ID
+            account_email: Optional account email. If not provided, uses primary account.
 
         TODO: Implement real Gmail API labels list
         """
-        access_token = await self._get_user_access_token(user_id)
+        access_token = await self._get_user_access_token(user_id, account_email)
         if not access_token and not self.mock_mode:
             return []
 
@@ -414,14 +469,20 @@ class GmailService:
     async def create_label(
         self,
         user_id: str,
-        request: GmailLabelCreate
+        request: GmailLabelCreate,
+        account_email: Optional[str] = None
     ) -> GmailLabelResponse:
         """
-        Create Gmail label
+        Create Gmail label in specific account
+
+        Args:
+            user_id: User ID
+            request: Label create request
+            account_email: Optional account email. If not provided, uses primary account.
 
         TODO: Implement real Gmail API label create
         """
-        access_token = await self._get_user_access_token(user_id)
+        access_token = await self._get_user_access_token(user_id, account_email)
         if not access_token and not self.mock_mode:
             return GmailLabelResponse(
                 label_id="",
@@ -453,14 +514,20 @@ class GmailService:
     async def batch_modify(
         self,
         user_id: str,
-        request: GmailBatchModifyRequest
+        request: GmailBatchModifyRequest,
+        account_email: Optional[str] = None
     ) -> GmailBatchModifyResponse:
         """
-        Batch modify emails
+        Batch modify emails in specific account
+
+        Args:
+            user_id: User ID
+            request: Batch modify request
+            account_email: Optional account email. If not provided, uses primary account.
 
         TODO: Implement real Gmail API batch modify
         """
-        access_token = await self._get_user_access_token(user_id)
+        access_token = await self._get_user_access_token(user_id, account_email)
         if not access_token and not self.mock_mode:
             return GmailBatchModifyResponse(
                 success=False,
@@ -485,14 +552,20 @@ class GmailService:
     async def batch_delete(
         self,
         user_id: str,
-        request: GmailBatchDeleteRequest
+        request: GmailBatchDeleteRequest,
+        account_email: Optional[str] = None
     ) -> GmailBatchDeleteResponse:
         """
-        Batch delete emails
+        Batch delete emails from specific account
+
+        Args:
+            user_id: User ID
+            request: Batch delete request
+            account_email: Optional account email. If not provided, uses primary account.
 
         TODO: Implement real Gmail API batch delete
         """
-        access_token = await self._get_user_access_token(user_id)
+        access_token = await self._get_user_access_token(user_id, account_email)
         if not access_token and not self.mock_mode:
             return GmailBatchDeleteResponse(
                 success=False,
@@ -518,9 +591,19 @@ class GmailService:
     # Health Check
     # ========================================================================
 
-    async def get_health(self, user_id: str) -> GmailHealthResponse:
-        """Get Gmail service health"""
-        access_token = await self._get_user_access_token(user_id)
+    async def get_health(
+        self,
+        user_id: str,
+        account_email: Optional[str] = None
+    ) -> GmailHealthResponse:
+        """
+        Get Gmail service health for specific account
+
+        Args:
+            user_id: User ID
+            account_email: Optional account email. If not provided, uses primary account.
+        """
+        access_token = await self._get_user_access_token(user_id, account_email)
         authenticated = access_token is not None
 
         status = "healthy" if authenticated else "not_authenticated"
