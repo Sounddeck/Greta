@@ -1,353 +1,309 @@
 """
-CPAS4 UI Prompts Router
-Provides prompt enhancement endpoints and template library for the CPAS4 UI
+Prompts Router
+
+API endpoints for prompt enhancement, orchestration, and Chain-of-Thought integration.
 """
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, status
 from pydantic import BaseModel, Field
 from typing import Dict, Any, Optional, List
-from datetime import datetime
 import logging
 
-from services.llm_service import get_llm_service
-from services.prompt_library_service import PromptLibraryService
-from models.prompt_template_models import (
-    PromptTemplateCreate,
-    PromptTemplateUpdate,
-    PromptTemplateRenderRequest,
-    PromptTemplateRatingRequest,
-    PromptTemplateSearchRequest,
-    PromptCategory
-)
-from database import get_database
+from services.cot_prompt_enhancer import CoTPromptEnhancer, TaskType
+from services.prompt_orchestrator import PromptOrchestrator
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/v1/prompts", tags=["Prompts"])
 
-# Pydantic models
-class PromptEnhanceRequest(BaseModel):
-    """Prompt enhancement request"""
-    prompt: str = Field(..., description="Original prompt to enhance")
-    agent_type: str = Field(default="general", description="Agent type for context")
-    context: Dict[str, Any] = Field(default_factory=dict, description="Additional context")
+# Initialize services
+cot_enhancer = CoTPromptEnhancer()
+prompt_orchestrator = PromptOrchestrator()
 
-class PromptEnhanceResponse(BaseModel):
-    """Prompt enhancement response"""
-    id: str
-    original_prompt: str
-    enhanced_prompt: str
-    quality_metrics: Dict[str, float]
-    engine: str
-    created_at: str
 
-@router.post("/enhance")
-async def enhance_prompt(request: PromptEnhanceRequest):
-    """
-    Enhance a prompt using AI
-    
-    This endpoint improves the clarity, specificity, and structure of user prompts.
-    """
-    try:
-        logger.info(f"Enhancing prompt for agent type: {request.agent_type}")
-        logger.info(f"Original prompt: {request.prompt}")
-        
-        # Get LLM service
-        llm_service = await get_llm_service()
-        
-        # Agent-specific enhancement strategies
-        enhancement_strategies = {
-            'research': "Make this research prompt more specific and structured. Include what sources to check, what format the output should be in, and what depth of analysis is needed.",
-            'coding': "Make this coding prompt more specific. Include programming language, framework preferences, code style requirements, and expected output format.",
-            'data_analysis': "Make this data analysis prompt more specific. Include what type of analysis is needed, what visualizations to create, and what insights to focus on.",
-            'content_creation': "Make this content creation prompt more specific. Include target audience, tone, length, format, and key messages to convey.",
-            'task_automation': "Make this automation prompt more specific. Include what tasks to automate, what triggers to use, and what the expected outcome should be.",
-            'customer_support': "Make this customer support prompt more specific. Include customer context, issue type, desired resolution, and tone requirements.",
-            'sales': "Make this sales prompt more specific. Include target customer profile, value proposition to emphasize, and desired call-to-action.",
-            'marketing': "Make this marketing prompt more specific. Include campaign goals, target audience, channels to use, and success metrics.",
-            'finance': "Make this finance prompt more specific. Include time period, metrics to analyze, reporting format, and key insights needed.",
-            'general': "Make this prompt more clear, specific, and actionable. Add relevant context and structure."
-        }
-        
-        strategy = enhancement_strategies.get(request.agent_type, enhancement_strategies['general'])
-        
-        # Build enhancement prompt
-        enhancement_prompt = f"""You are a prompt engineering expert. Enhance the user's prompt to make it more effective.
+# Request/Response Models
 
-Enhancement Strategy: {strategy}
+class CoTEnhanceRequest(BaseModel):
+    """Request model for CoT enhancement"""
+    prompt: str = Field(..., description="The prompt to enhance with Chain-of-Thought reasoning")
+    task_type: Optional[str] = Field(None, description="Explicit task type (auto-detected if not provided)")
+    custom_template: Optional[str] = Field(None, description="Custom CoT template to use")
 
-User's Original Prompt:
-"{request.prompt}"
-
-Your Task: Rewrite the above prompt to be more clear, specific, and effective. Output ONLY the improved prompt text with no preamble, no labels, and no explanations. Start directly with the enhanced prompt."""
-        
-        try:
-            # Query LLM for enhancement using generate_completion
-            llm_request = {
-                "message": enhancement_prompt,
-                "max_tokens": 500,
-                "temperature": 0.7
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "prompt": "How can I optimize the performance of my Python application?",
+                "task_type": "problem_solving"
             }
-
-            response = await llm_service.generate_completion(llm_request)
-
-            enhanced_prompt = response.get('response', response.get('text', request.prompt)).strip()
-
-            # Remove any quotes or extra formatting
-            enhanced_prompt = enhanced_prompt.strip('"').strip("'").strip()
-
-            # If the LLM added explanations, try to extract just the prompt
-            if '\n\n' in enhanced_prompt:
-                enhanced_prompt = enhanced_prompt.split('\n\n')[0]
-
-        except Exception as llm_error:
-            logger.error(f"LLM enhancement failed: {llm_error}")
-            # Fallback: Add basic structure to the prompt
-            enhanced_prompt = f"Please {request.prompt.lower().strip('?.!')}. Provide a detailed, well-structured response with specific examples and actionable insights."
-        
-        # Calculate simple quality metrics
-        original_length = len(request.prompt.split())
-        enhanced_length = len(enhanced_prompt.split())
-        
-        quality_metrics = {
-            "clarity": min(1.0, enhanced_length / max(original_length, 1) * 0.8),
-            "specificity": min(1.0, (enhanced_length - original_length) / max(original_length, 1) * 0.5 + 0.5),
-            "structure": 0.85 if len(enhanced_prompt) > len(request.prompt) else 0.6
         }
-        
-        # Create response
-        prompt_id = f"prompt_{datetime.utcnow().timestamp()}"
-        
-        return {
-            "id": prompt_id,
-            "original_prompt": request.prompt,
-            "enhanced_prompt": enhanced_prompt,
-            "quality_metrics": quality_metrics,
-            "engine": "llm",
-            "created_at": datetime.utcnow().isoformat()
+
+
+class CoTEnhanceResponse(BaseModel):
+    """Response model for CoT enhancement"""
+    success: bool
+    enhanced_prompt: str
+    original_prompt: str
+    task_type: str
+    cot_template_used: str
+    enhancement_applied: bool
+    metadata: Dict[str, Any]
+    error: Optional[str] = None
+
+
+class PromptGenerateRequest(BaseModel):
+    """Request model for full prompt generation with orchestration"""
+    user_context: Dict[str, Any] = Field(default_factory=dict, description="User context information")
+    task_type: str = Field("general", description="Type of task being performed")
+    enable_cot: bool = Field(True, description="Whether to apply CoT enhancement")
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "user_context": {
+                    "user_id": "user123",
+                    "tags": ["technical", "python"]
+                },
+                "task_type": "coding",
+                "enable_cot": True
+            }
         }
+
+
+class PromptGenerateResponse(BaseModel):
+    """Response model for prompt generation"""
+    prompt: str
+    metadata: Dict[str, Any]
+    components: Dict[str, Any]
+
+
+class TaskTypesResponse(BaseModel):
+    """Response model for available task types"""
+    task_types: List[str]
+    count: int
+
+
+# API Endpoints
+
+@router.post("/enhance-cot", response_model=CoTEnhanceResponse)
+async def enhance_prompt_with_cot(request: CoTEnhanceRequest):
+    """
+    Enhance a prompt with Chain-of-Thought reasoning patterns
+    
+    This endpoint adds structured step-by-step reasoning to prompts,
+    improving LLM performance on complex tasks.
+    
+    **Task Types:**
+    - reasoning: Logical reasoning and deduction
+    - analysis: Analytical and evaluative tasks
+    - problem_solving: Problem-solving and troubleshooting
+    - creative: Creative and ideation tasks
+    - research: Research and investigation
+    - coding: Programming and development
+    - planning: Planning and strategy
+    - decision_making: Decision-making tasks
+    - general: General-purpose tasks
+    
+    **Example:**
+    ```json
+    {
+        "prompt": "How can I improve database query performance?",
+        "task_type": "problem_solving"
+    }
+    ```
+    """
+    try:
+        # Convert task_type string to TaskType enum if provided
+        task_type_enum = None
+        if request.task_type:
+            try:
+                task_type_enum = TaskType(request.task_type.lower())
+            except ValueError:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"Invalid task_type. Must be one of: {', '.join([t.value for t in TaskType])}"
+                )
         
+        # Enhance the prompt
+        result = cot_enhancer.enhance_with_cot(
+            prompt=request.prompt,
+            task_type=task_type_enum,
+            custom_cot_template=request.custom_template
+        )
+        
+        if not result.get("success"):
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail=result.get("error", "Failed to enhance prompt")
+            )
+        
+        return CoTEnhanceResponse(**result)
+        
+    except HTTPException:
+        raise
     except Exception as e:
-        logger.error(f"Prompt enhancement failed: {e}")
+        logger.error(f"Error enhancing prompt with CoT: {e}")
         raise HTTPException(
-            status_code=500,
-            detail=f"Prompt enhancement failed: {str(e)}"
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}"
         )
 
-@router.post("/enhance/async")
-async def enhance_prompt_async(request: PromptEnhanceRequest):
-    """Enhance a prompt asynchronously"""
-    # For now, just call the sync version
-    return await enhance_prompt(request)
 
-@router.get("/enhance/{prompt_id}")
-async def get_enhanced_prompt(prompt_id: str):
-    """Get enhanced prompt by ID"""
-    return {
-        "id": prompt_id,
-        "status": "completed",
-        "message": "Prompt retrieval not fully implemented yet"
+@router.post("/generate", response_model=PromptGenerateResponse)
+async def generate_pai_prompt(request: PromptGenerateRequest):
+    """
+    Generate a complete PAI prompt with orchestration and CoT enhancement
+    
+    This endpoint combines:
+    - Master prompt selection
+    - Context prompt selection
+    - Dynamic adaptations
+    - Chain-of-Thought enhancement (optional)
+    
+    **Example:**
+    ```json
+    {
+        "user_context": {
+            "user_id": "user123",
+            "tags": ["technical", "python"]
+        },
+        "task_type": "coding",
+        "enable_cot": true
     }
-
-@router.post("/enhance/{prompt_id}/feedback")
-async def submit_feedback(prompt_id: str, feedback: Dict[str, Any]):
-    """Submit feedback on enhanced prompt"""
-    return {
-        "id": prompt_id,
-        "feedback_received": True,
-        "message": "Feedback recorded"
-    }
-
-@router.get("/statistics")
-async def get_statistics():
-    """Get prompt enhancement statistics"""
-    return {
-        "total_enhancements": 0,
-        "average_quality": 0.85,
-        "message": "Statistics not fully implemented yet"
-    }
-
-
-# ============================================================================
-# PROMPT TEMPLATE LIBRARY ENDPOINTS
-# ============================================================================
-
-@router.post("/templates/initialize")
-async def initialize_templates(db = Depends(get_database)):
-    """Initialize default system templates"""
+    ```
+    """
     try:
-        service = PromptLibraryService(db)
-        result = await service.initialize_default_templates()
-        return result
+        result = await prompt_orchestrator.generate_pai_prompt(
+            user_context=request.user_context,
+            task_type=request.task_type,
+            enable_cot=request.enable_cot
+        )
+        
+        return PromptGenerateResponse(**result)
+        
     except Exception as e:
-        logger.error(f"Failed to initialize templates: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.post("/templates")
-async def create_template(template_data: PromptTemplateCreate, db = Depends(get_database)):
-    """Create a new prompt template"""
-    try:
-        service = PromptLibraryService(db)
-        result = await service.create_template(template_data)
-
-        if not result["success"]:
-            raise HTTPException(status_code=400, detail=result["message"])
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Failed to create template: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.get("/templates")
-async def list_templates(
-    category: Optional[PromptCategory] = None,
-    tags: Optional[str] = None,
-    is_active: bool = True,
-    page: int = 1,
-    page_size: int = 20,
-    db = Depends(get_database)
-):
-    """List prompt templates with filtering and pagination"""
-    try:
-        service = PromptLibraryService(db)
-
-        # Parse tags if provided
-        tags_list = tags.split(",") if tags else None
-
-        result = await service.list_templates(
-            category=category,
-            tags=tags_list,
-            is_active=is_active,
-            page=page,
-            page_size=page_size
+        logger.error(f"Error generating PAI prompt: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}"
         )
 
-        return result
-    except Exception as e:
-        logger.error(f"Failed to list templates: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
 
-
-@router.get("/templates/search")
-async def search_templates(
-    q: str,
-    category: Optional[PromptCategory] = None,
-    db = Depends(get_database)
-):
-    """Search prompt templates"""
+@router.get("/task-types", response_model=TaskTypesResponse)
+async def get_available_task_types():
+    """
+    Get list of available task types for CoT enhancement
+    
+    Returns all supported task types that can be used with the
+    enhance-cot endpoint.
+    """
     try:
-        service = PromptLibraryService(db)
-        templates = await service.search_templates(q, category)
-
-        return {
-            "success": True,
-            "templates": templates,
-            "total": len(templates),
-            "message": f"Found {len(templates)} templates"
-        }
+        task_types = cot_enhancer.get_available_task_types()
+        return TaskTypesResponse(
+            task_types=task_types,
+            count=len(task_types)
+        )
     except Exception as e:
-        logger.error(f"Failed to search templates: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error getting task types: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}"
+        )
 
 
-@router.get("/templates/{template_id}")
-async def get_template(template_id: str, db = Depends(get_database)):
-    """Get a specific template by ID"""
+@router.get("/cot-template/{task_type}")
+async def get_cot_template(task_type: str):
+    """
+    Get the CoT template for a specific task type
+    
+    **Parameters:**
+    - task_type: One of the available task types
+    
+    **Example:**
+    ```
+    GET /api/v1/prompts/cot-template/problem_solving
+    ```
+    """
     try:
-        service = PromptLibraryService(db)
-        template = await service.get_template(template_id)
-
-        if not template:
-            raise HTTPException(status_code=404, detail=f"Template {template_id} not found")
-
+        # Convert to TaskType enum
+        try:
+            task_type_enum = TaskType(task_type.lower())
+        except ValueError:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Invalid task_type. Must be one of: {', '.join([t.value for t in TaskType])}"
+            )
+        
+        template = cot_enhancer.get_cot_template(task_type_enum)
+        
         return {
-            "success": True,
+            "task_type": task_type,
             "template": template,
-            "message": "Template retrieved successfully"
+            "length": len(template)
         }
+        
     except HTTPException:
         raise
     except Exception as e:
-        logger.error(f"Failed to get template: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error getting CoT template: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}"
+        )
 
 
-@router.put("/templates/{template_id}")
-async def update_template(
-    template_id: str,
-    update_data: PromptTemplateUpdate,
-    db = Depends(get_database)
-):
-    """Update a template"""
+@router.get("/cot-stats")
+async def get_cot_stats():
+    """
+    Get statistics about CoT enhancement usage
+    
+    Returns information about CoT configuration and usage.
+    """
     try:
-        service = PromptLibraryService(db)
-        result = await service.update_template(template_id, update_data)
-
-        if not result["success"]:
-            raise HTTPException(status_code=400, detail=result["message"])
-
-        return result
-    except HTTPException:
-        raise
+        stats = prompt_orchestrator.get_cot_stats()
+        return stats
     except Exception as e:
-        logger.error(f"Failed to update template: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error getting CoT stats: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}"
+        )
 
 
-@router.delete("/templates/{template_id}")
-async def delete_template(template_id: str, db = Depends(get_database)):
-    """Delete a template (soft delete)"""
+@router.post("/cot-enable")
+async def enable_cot(enabled: bool = True):
+    """
+    Enable or disable CoT enhancement globally
+    
+    **Parameters:**
+    - enabled: True to enable, False to disable
+    
+    **Example:**
+    ```
+    POST /api/v1/prompts/cot-enable?enabled=true
+    ```
+    """
     try:
-        service = PromptLibraryService(db)
-        result = await service.delete_template(template_id)
-
-        if not result["success"]:
-            raise HTTPException(status_code=400, detail=result["message"])
-
-        return result
-    except HTTPException:
-        raise
+        prompt_orchestrator.enable_cot_enhancement(enabled)
+        return {
+            "success": True,
+            "cot_enabled": enabled,
+            "message": f"CoT enhancement {'enabled' if enabled else 'disabled'}"
+        }
     except Exception as e:
-        logger.error(f"Failed to delete template: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+        logger.error(f"Error toggling CoT: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Internal server error: {str(e)}"
+        )
 
 
-@router.post("/templates/render")
-async def render_template(request: PromptTemplateRenderRequest, db = Depends(get_database)):
-    """Render a template with provided variables"""
-    try:
-        service = PromptLibraryService(db)
-        result = await service.render_template(request.template_id, request.variables)
-
-        if not result["success"]:
-            raise HTTPException(status_code=400, detail=result["message"])
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Failed to render template: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
-
-
-@router.post("/templates/rate")
-async def rate_template(request: PromptTemplateRatingRequest, db = Depends(get_database)):
-    """Rate a template"""
-    try:
-        service = PromptLibraryService(db)
-        result = await service.rate_template(request.template_id, request.rating, request.feedback)
-
-        if not result["success"]:
-            raise HTTPException(status_code=400, detail=result["message"])
-
-        return result
-    except HTTPException:
-        raise
-    except Exception as e:
-        logger.error(f"Failed to rate template: {e}")
-        raise HTTPException(status_code=500, detail=str(e))
+@router.get("/health")
+async def health_check():
+    """Health check endpoint for prompts service"""
+    return {
+        "status": "healthy",
+        "service": "prompts",
+        "cot_enabled": prompt_orchestrator.cot_enabled,
+        "available_task_types": len(cot_enhancer.get_available_task_types())
+    }
 
