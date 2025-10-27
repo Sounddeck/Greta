@@ -8,7 +8,35 @@ from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Request
 from fastapi.responses import HTMLResponse
 from typing import Dict, Any
 
-from ..services.websocket_manager import websocket_manager
+try:
+    from services.websocket_manager import websocket_manager
+except ImportError:
+    try:
+        from ..services.websocket_manager import websocket_manager
+    except ImportError:
+        # Fallback: create a simple websocket manager
+        class SimpleWebSocketManager:
+            def __init__(self):
+                self.active_connections: Dict[str, WebSocket] = {}
+
+            async def connect(self, websocket: WebSocket, client_ip: str):
+                await websocket.accept()
+                connection_id = f"{client_ip}_{len(self.active_connections)}"
+                self.active_connections[connection_id] = websocket
+                return connection_id
+
+            async def disconnect(self, connection_id: str):
+                if connection_id in self.active_connections:
+                    del self.active_connections[connection_id]
+
+            async def broadcast(self, message: Dict[str, Any]):
+                for connection in self.active_connections.values():
+                    try:
+                        await connection.send_json(message)
+                    except:
+                        pass
+
+        websocket_manager = SimpleWebSocketManager()
 
 logger = logging.getLogger(__name__)
 router = APIRouter()

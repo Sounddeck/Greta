@@ -145,6 +145,7 @@ def safe_router_import():
         ('reasoning', False, 'Reasoning Engine'),
         ('master_agent', False, 'Master Agent Greta'),
         ('training', False, 'Interactive Training System'),
+        ('training_router', False, 'LLM Training Automation'),
         ('osint', False, 'Open Source Intelligence'),
         ('osint_free_router', False, 'OSINT Free Tools'),
         ('autonomous', False, 'Autonomous Operations'),
@@ -250,7 +251,15 @@ async def lifespan(app: FastAPI):
         logger.info("✅ MCP Service initialized (Week 17-18)")
     except Exception as e:
         logger.warning(f"⚠️ MCP Service initialization failed: {e}")
-    
+
+    # Initialize Event-WebSocket Bridge (Phase 3)
+    try:
+        from services.event_websocket_bridge import start_bridge
+        await start_bridge()
+        logger.info("✅ Event-WebSocket Bridge started (Phase 3)")
+    except Exception as e:
+        logger.warning(f"⚠️ Event-WebSocket Bridge initialization failed: {e}")
+
     # Store database in app state
     app.state.db = db
 
@@ -299,6 +308,14 @@ async def lifespan(app: FastAPI):
             logger.info("✅ MCP Service shutdown complete")
     except Exception as e:
         logger.error(f"❌ MCP Service shutdown error: {e}")
+
+    # Cleanup Event-WebSocket Bridge (Phase 3)
+    try:
+        from services.event_websocket_bridge import stop_bridge
+        await stop_bridge()
+        logger.info("✅ Event-WebSocket Bridge stopped")
+    except Exception as e:
+        logger.error(f"❌ Event-WebSocket Bridge shutdown error: {e}")
 
     # Cleanup performance resources - Phase 2
     if PERFORMANCE_AVAILABLE:
@@ -456,6 +473,7 @@ ROUTER_CONFIG = [
     ('agent_management_router', '', True),  # Agent Management - no prefix, router has its own
     ('autonomous_operations_router', '', True),  # Autonomous Operations - no prefix, router has its own
     ('agent_builder_router', '', True),  # Agent Builder - no prefix, router has its own
+    ('team_router', '', True),  # Team Router - Multi-agent teams, no prefix, router has /api/v1/teams
     ('mcp_hub_router', '', True),  # MCP Hub - no prefix, router has its own
     ('mcp_router', '', True),  # MCP Router (Week 17-18) - no prefix, router has /api/v1/mcp
     ('osint_router', '', True),  # OSINT - no prefix, router has its own
@@ -470,7 +488,7 @@ ROUTER_CONFIG = [
     ('agent', '/api/v1', False),
     ('voice', '/api/v1', False),
     ('reasoning', '/api/v1', False),
-    ('master_agent', '/api/v1', False),
+    ('master_agent', '', True),  # Master Agent - no prefix, router has its own /api/master
     ('training', '/api/training', False),
     ('osint', '/api/v1', False),
     ('osint_free_router', '/api/v1', False),
@@ -505,6 +523,17 @@ for router_name, prefix, force_include in ROUTER_CONFIG:
                 continue
             except Exception as e:
                 logger.warning(f"⚠️ Enhanced Master Agent router import failed: {e}")
+
+        # Force include Master Agent router
+        if force_include and router_name == 'master_agent':
+            try:
+                from routers.master_agent import router as master_agent_router
+                app.include_router(master_agent_router, tags=["Master Agent"])  # No prefix since router has /api/master
+                routers_loaded += 1
+                logger.info(f"✅ Master Agent Router forced inclusion (no additional prefix)")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Master Agent router import failed: {e}")
 
         # Force include PAI Hub router
         if force_include and router_name == 'pai_hub_router':
@@ -560,6 +589,17 @@ for router_name, prefix, force_include in ROUTER_CONFIG:
                 continue
             except Exception as e:
                 logger.warning(f"⚠️ Agent Builder router import failed: {e}")
+
+        # Force include Team Router (Multi-Agent Teams)
+        if force_include and router_name == 'team_router':
+            try:
+                from routers.team_router import router as team_router
+                app.include_router(team_router, tags=["Teams"])
+                routers_loaded += 1
+                logger.info(f"✅ Team Router forced inclusion - /api/v1/teams endpoints available")
+                continue
+            except Exception as e:
+                logger.warning(f"⚠️ Team router import failed: {e}")
 
         # Force include MCP Hub Router (Module 7)
         if force_include and router_name == 'mcp_hub_router':
@@ -683,9 +723,12 @@ for router_name, prefix, force_include in ROUTER_CONFIG:
         logger.warning(f"⚠️ Router '{router_name}' not available: {e}")
 
 # Add Jina MCP Router - Full 16-tool integration
+# Add Jina MCP Router - AI-powered search and embeddings
+# Add Jina MCP Router - AI-powered search and embeddings
 try:
+    from routers.jina_mcp_router import router as jina_mcp_router
     app.include_router(jina_mcp_router, tags=["Jina MCP"])
-    logger.info("✅ Jina Remote MCP Server integrated - 16 advanced tools available")
+    logger.info("✅ Jina MCP Router integrated - AI search, embeddings, content analysis available")
 except Exception as e:
     logger.warning(f"⚠️ Jina MCP router not available: {e}")
 
@@ -826,12 +869,28 @@ async def greta_system_status():
     }
 
 # Add WebSocket Router - Real-time communication (simplified for now)
-# try:
-#     from routers.websocket_router import router as websocket_router
-#     app.include_router(websocket_router, prefix="/api/v1", tags=["WebSocket"])
-#     logger.info("✅ WebSocket Router integrated - Real-time updates available")
-# except Exception as e:
-#     logger.warning(f"⚠️ WebSocket router error: {e}")
+try:
+    from routers.websocket_router import router as websocket_router
+    app.include_router(websocket_router, prefix="/api/v1", tags=["WebSocket"])
+    logger.info("✅ WebSocket Router integrated - Real-time updates available")
+except Exception as e:
+    logger.warning(f"⚠️ WebSocket router error: {e}")
+
+# Add Business Management Router (CRUD for businesses)
+try:
+    from routers.business_router import router as business_router
+    app.include_router(business_router, tags=["Businesses"])
+    logger.info("✅ Business Router integrated - Business CRUD operations available")
+except Exception as e:
+    logger.warning(f"⚠️ Business router error: {e}")
+
+# Add Executive Team Router
+try:
+    from routers.executive_team_router import router as executive_team_router
+    app.include_router(executive_team_router, tags=["Executive Teams"])
+    logger.info("✅ Executive Team Router integrated - AI executive teams available")
+except Exception as e:
+    logger.warning(f"⚠️ Executive Team router error: {e}")
 
 # Add Business Tools Router (CRM & ATS)
 try:
@@ -1081,6 +1140,24 @@ try:
     logger.info("✅ Lead Generation Router integrated - Automated lead research and monitoring available")
 except Exception as e:
     logger.warning(f"⚠️ Lead Generation router error: {e}")
+
+# Add Workflow Router - Visual Workflow Builder
+try:
+    from routers.workflow_router import router as workflow_router
+    app.include_router(workflow_router, tags=["Workflows"])
+    routers_loaded += 1
+    logger.info("✅ Workflow Router integrated - Visual workflow builder and execution available")
+except Exception as e:
+    logger.warning(f"⚠️ Workflow router error: {e}")
+
+# Add Metrics Router - Prometheus Metrics
+try:
+    from routers.metrics_router import router as metrics_router
+    app.include_router(metrics_router, tags=["Metrics"])
+    routers_loaded += 1
+    logger.info("✅ Metrics Router integrated - Prometheus metrics available at /metrics")
+except Exception as e:
+    logger.warning(f"⚠️ Metrics router error: {e}")
 
 logger.info(f"Total routers included in app: {routers_loaded}")
 
