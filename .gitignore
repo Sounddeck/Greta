@@ -1,0 +1,50 @@
+node_modules/
+.next/
+dist/
+build/
+*.app/
+*.dmg
+*.log
+.env
+.env.local
+.env.*.local
+.env.secrets
+.env.production.local
+venv/
+venv_test/
+**/venv/
+**/__pycache__/
+*.pyc
+Greta PAI System.app/
+# Note: cpas4-ui is our frontend directory and should be tracked
+# Only ignore other CPAS directories
+CPAS[0-3]*/
+CPAS[5-9]*/
+
+# Dynaconf secrets (Phase 4 Integration)
+.secrets.toml
+*.secrets.toml
+.secrets.yaml
+*.secrets.yaml
+.secrets.json
+*.secrets.json
+
+# Data directories
+backend/data/uploads/
+backend/data/vector_db/
+backend/logs/
+backend/generated_files/
+backend/test_data/
+data/
+
+# Process IDs
+.pids/
+
+# Tauri binaries
+cpas4-ui/src-tauri/binaries/
+
+# Test files
+backend/tests/data/tool_registry/
+
+# macOS
+.DS_Store

@@ -1,0 +1,82 @@
+version: '3.8'
+
+services:
+  # HashiCorp Vault for secrets management
+  vault:
+    image: hashicorp/vault:latest
+    container_name: cpas5-vault
+    ports:
+      - "8200:8200"
+    environment:
+      VAULT_DEV_ROOT_TOKEN_ID: "cpas5-dev-token"
+      VAULT_DEV_LISTEN_ADDRESS: "0.0.0.0:8200"
+      VAULT_ADDR: "http://0.0.0.0:8200"
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - vault-data:/vault/data
+      - vault-logs:/vault/logs
+      - ./vault-config:/vault/config
+    command: server -dev
+    healthcheck:
+      test: ["CMD", "vault", "status"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cpas5-network
+
+  # Redis for JWT token blacklisting and caching
+  redis:
+    image: redis:7-alpine
+    container_name: cpas5-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --requirepass cpas5-redis-password
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cpas5-network
+
+  # MongoDB (if not running locally)
+  mongodb:
+    image: mongo:7
+    container_name: cpas5-mongodb
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: cpas5
+      MONGO_INITDB_ROOT_PASSWORD: cpas5-mongo-password
+      MONGO_INITDB_DATABASE: greta_pai
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cpas5-network
+
+volumes:
+  vault-data:
+    driver: local
+  vault-logs:
+    driver: local
+  redis-data:
+    driver: local
+  mongodb-data:
+    driver: local
+  mongodb-config:
+    driver: local
+
+networks:
+  cpas5-network:
+    driver: bridge
+
